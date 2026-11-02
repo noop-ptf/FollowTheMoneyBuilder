@@ -16,6 +16,7 @@
 		loadCollections,
 		bulkEntityUpload,
 		validateEntityUpload,
+		confirmSaveEntities,
 		getInstanceSettings,
 		openPluginSettings,
 	}: {
@@ -28,6 +29,10 @@
 			entities: Entity[],
 			collection: OpenAlephCollection,
 		) => Promise<string | undefined>;
+		confirmSaveEntities: (
+			entities: Entity[],
+			collection: OpenAlephCollection | null,
+		) => void;
 		getInstanceSettings: (id: string) => OpenAlephInstanceSettings;
 		openPluginSettings: () => void;
 	} = $props();
@@ -58,6 +63,19 @@
 		}
 		// Reset report, as upload changes validation result
 		validationReport = undefined;
+	}
+
+	function writeEntitiesToVault() {
+		let entities = cards
+			.map((card) => card.entity)
+			.filter((entity) => entity !== undefined);
+		confirmSaveEntities(entities, selectedCollection);
+		/*
+					writeNote={(entity: OpenAlephEntity) => {
+						const instanceHostname = new URL(entity.links.self)
+							.hostname;
+					}}
+	*/
 	}
 
 	let validationReport = $state();
@@ -120,23 +138,33 @@
 <h3>
 	Save or Upload<span
 		class="info-hover"
-		aria-label="Save the entities to your vault (TODO: implement) or upload them to OpenAleph"
+		aria-label="Save the entities to your vault or upload them to OpenAleph"
 		{@attach lucideIcon('info')}
 	></span>
 </h3>
-{#if !selectedCollection}
-	<p>Select an investigation to upload entities</p>
-{:else if cards.length === 0}
-	<p>Create an entity to upload</p>
+{#if cards.length === 0}
+	<p>Create an entity to upload or save.</p>
 {:else}
-	<button class="mod-cta" onclick={postEntitiesToSelectedCollection}
-		>Upload {cards.length}
-		{cards.length == 1 ? 'entity' : 'entities'} to OpenAleph</button
-	>
-	<button onclick={validateUploadSelectedCollection}>Verify upload</button>
-	{#if validationReport}
-		<pre class="report">{validationReport}</pre>
-	{/if}
+	<div class="actions">
+		<button class="mod-cta" onclick={writeEntitiesToVault}
+			>Save {cards.length}
+			{cards.length == 1 ? 'entity' : 'entities'} to this vault</button
+		>
+		{#if !selectedCollection}
+			<p>Select an investigation to upload entities.</p>
+		{:else}
+			<button class="mod-cta" onclick={postEntitiesToSelectedCollection}
+				>Upload {cards.length}
+				{cards.length == 1 ? 'entity' : 'entities'} to OpenAleph</button
+			>
+			<button onclick={validateUploadSelectedCollection}
+				>Verify upload</button
+			>
+			{#if validationReport}
+				<pre class="report">{validationReport}</pre>
+			{/if}
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -175,6 +203,11 @@
 	.card.ghost .plus {
 		font-size: 1.8em;
 		line-height: 1;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
 	}
 	.report {
 		white-space: pre-wrap; /* keep newlines and indentation, but wrap long lines */

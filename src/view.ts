@@ -41,6 +41,10 @@ export class FTMBuilderView extends ItemView {
 					entities: Entity[],
 					collection: OpenAlephCollection,
 				) => this.plugin.validateEntityUpload(entities, collection),
+				confirmSaveEntities: (
+					entities: Entity[],
+					collection: OpenAlephCollection | null,
+				) => this.plugin.confirmSaveEntities(entities, collection),
 				getInstanceSettings: (id: string) =>
 					this.plugin.getInstanceSettings(id),
 				openPluginSettings: () => this.plugin.openPluginSettings(),

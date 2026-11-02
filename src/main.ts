@@ -12,6 +12,8 @@ import {
 	validateEntityUpload,
 } from './requests';
 import type { Entity } from '@opensanctions/followthemoney';
+import { ConfirmNoteModal } from './modals';
+import { yamlifyEntity, writeNotes } from './noteExport';
 
 export interface ResizableSidebarSplit {
 	collapsed: boolean;
@@ -133,6 +135,32 @@ export default class FTMBuilderPlugin extends Plugin {
 			entities,
 			collection,
 		);
+	}
+
+	confirmSaveEntities(
+		entities: Entity[],
+		collection: OpenAlephCollection | null,
+	) {
+		if (entities.length === 0) {
+			new Notice('No valid entities found to save to vault');
+			return;
+		}
+		let today = new Date().toISOString().slice(0, 'YYYY-MM-DD'.length);
+		let instanceFolder = collection
+			? new URL(
+					this.getInstanceSettings(collection.instanceId).instanceUrl,
+				).hostname
+			: 'local_ftm_entities';
+		let dataset = collection ? collection.name : today;
+		let importPath = `${this.settings.importFolder}/${instanceFolder}/${dataset}`;
+		let exportPreview = '';
+		for (const entity of entities) {
+			exportPreview += yamlifyEntity(entity);
+		}
+		new ConfirmNoteModal(this.app, importPath, exportPreview, () => {
+			void writeNotes(entities, importPath, this);
+			new Notice('Saved entities to vault');
+		}).open();
 	}
 
 	getInstanceSettings(id: string): OpenAlephInstanceSettings {
