@@ -59,8 +59,10 @@ export default defineConfig(
 				{
 					brands: [
 						'OpenAleph',
-						'OpenAleph Builder',
+						'FTM',
 						'FollowTheMoney',
+						'Follow the Money',
+						'Follow the Money Builder',
 						'Obsidian',
 					],
 					mode: 'loose',

@@ -1,7 +1,7 @@
 import { App, Notice, requestUrl } from 'obsidian';
 import type {
 	OpenAlephEntity,
-	OpenAlephPluginSettings,
+	FTMBuilderPluginSettings,
 	OpenAlephPercolationApiResult,
 	OpenAlephPercolationApiEntity,
 	OpenAlephGraph,
@@ -129,7 +129,7 @@ async function getCloselyCorrelated(
 }
 
 export async function explore(
-	settings: OpenAlephPluginSettings,
+	settings: FTMBuilderPluginSettings,
 	app: App,
 	content: string,
 	noteName: string,
@@ -339,7 +339,7 @@ async function getInstanceCollections(
 }
 
 export async function getCollections(
-	settings: OpenAlephPluginSettings,
+	settings: FTMBuilderPluginSettings,
 	app: App,
 ): Promise<OpenAlephCollection[]> {
 	const enabledInstances = settings.instances.filter(
@@ -367,7 +367,7 @@ export async function getCollections(
 }
 
 export async function bulkEntityUpload(
-	settings: OpenAlephPluginSettings,
+	settings: FTMBuilderPluginSettings,
 	app: App,
 	entities: Entity[],
 	collection: OpenAlephCollection,
@@ -442,7 +442,7 @@ function diffEntity(local: Entity, remote: Entity): PropertyDiff[] {
 }
 
 export async function validateEntityUpload(
-	settings: OpenAlephPluginSettings,
+	settings: FTMBuilderPluginSettings,
 	app: App,
 	entities: Entity[],
 	collection: OpenAlephCollection,

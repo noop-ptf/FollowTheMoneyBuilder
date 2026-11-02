@@ -1,11 +1,11 @@
 import { Plugin, Notice, WorkspaceLeaf, type App } from 'obsidian';
-import { DEFAULT_SETTINGS, OpenAlephSettingTab } from './settings';
+import { DEFAULT_SETTINGS, FTMBuilderSettingTab } from './settings';
 import type {
 	OpenAlephCollection,
 	OpenAlephInstanceSettings,
-	OpenAlephPluginSettings,
+	FTMBuilderPluginSettings,
 } from './types';
-import { OpenAlephBuilderView, VIEW_TYPE_OPENALEPH_BUILDER } from './view';
+import { FTMBuilderView, VIEW_TYPE_FTM_BUILDER } from './view';
 import {
 	getCollections,
 	bulkEntityUpload,
@@ -22,22 +22,22 @@ export interface ResizableSidebarSplit {
 	collapse(): void;
 }
 
-export default class OpenAlephPlugin extends Plugin {
-	settings!: OpenAlephPluginSettings;
+export default class FTMBuilderPlugin extends Plugin {
+	settings!: FTMBuilderPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
 
-		this.addSettingTab(new OpenAlephSettingTab(this.app, this));
+		this.addSettingTab(new FTMBuilderSettingTab(this.app, this));
 
 		this.registerView(
-			VIEW_TYPE_OPENALEPH_BUILDER,
-			(leaf) => new OpenAlephBuilderView(leaf, this),
+			VIEW_TYPE_FTM_BUILDER,
+			(leaf) => new FTMBuilderView(leaf, this),
 		);
 
 		this.addRibbonIcon(
 			'factory',
-			'OpenAleph Builder',
+			'Follow the Money Builder',
 			(_evt: MouseEvent) => {
 				this.activateView().catch((err: unknown) => {
 					const message =
@@ -58,7 +58,7 @@ export default class OpenAlephPlugin extends Plugin {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			(await this.loadData()) as Partial<OpenAlephPluginSettings>,
+			(await this.loadData()) as Partial<FTMBuilderPluginSettings>,
 		);
 	}
 
@@ -85,13 +85,13 @@ export default class OpenAlephPlugin extends Plugin {
 		const { workspace } = this.app;
 
 		let leaf: WorkspaceLeaf | null =
-			workspace.getLeavesOfType(VIEW_TYPE_OPENALEPH_BUILDER)[0] ?? null;
+			workspace.getLeavesOfType(VIEW_TYPE_FTM_BUILDER)[0] ?? null;
 
 		if (!leaf) {
 			leaf = workspace.getLeftLeaf(false);
 			if (!leaf) return;
 			await leaf.setViewState({
-				type: VIEW_TYPE_OPENALEPH_BUILDER,
+				type: VIEW_TYPE_FTM_BUILDER,
 				active: true,
 			});
 		}

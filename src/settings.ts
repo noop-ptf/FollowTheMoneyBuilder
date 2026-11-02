@@ -10,9 +10,9 @@ import {
 } from 'obsidian';
 import type {
 	OpenAlephInstanceSettings,
-	OpenAlephPluginSettings,
+	FTMBuilderPluginSettings,
 } from './types';
-import OpenAlephPlugin from './main';
+import FTMBuilderPlugin from './main';
 
 export const DEFAULT_INSTANCE: Omit<OpenAlephInstanceSettings, 'id'> = {
 	apiKeyName: '',
@@ -22,14 +22,14 @@ export const DEFAULT_INSTANCE: Omit<OpenAlephInstanceSettings, 'id'> = {
 	connectionValid: false,
 };
 
-export const DEFAULT_SETTINGS: OpenAlephPluginSettings = {
+export const DEFAULT_SETTINGS: FTMBuilderPluginSettings = {
 	importFolder: 'followthemarkdown',
 	instances: [],
 };
 
 class InstancesPage extends SettingPage {
 	constructor(
-		private plugin: OpenAlephPlugin,
+		private plugin: FTMBuilderPlugin,
 		private app: App,
 	) {
 		super();
@@ -175,10 +175,10 @@ class InstancesPage extends SettingPage {
 	}
 }
 
-export class OpenAlephSettingTab extends PluginSettingTab {
-	plugin: OpenAlephPlugin;
+export class FTMBuilderSettingTab extends PluginSettingTab {
+	plugin: FTMBuilderPlugin;
 
-	constructor(app: App, plugin: OpenAlephPlugin) {
+	constructor(app: App, plugin: FTMBuilderPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

@@ -79,7 +79,7 @@ export interface OpenAlephGroupedEntities {
 	relatedEntities?: OpenAlephEntity[];
 }
 
-export interface OpenAlephPluginSettings {
+export interface FTMBuilderPluginSettings {
 	importFolder: string;
 	instances: OpenAlephInstanceSettings[];
 }

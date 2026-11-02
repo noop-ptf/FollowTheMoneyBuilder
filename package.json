@@ -1,5 +1,5 @@
 {
-	"name": "openaleph-builder",
+	"name": "followthemoney-builder",
 	"version": "0.0.1",
 	"description": "Manually build structured Follow the Money data and upload to OpenAleph instances.",
 	"main": "main.js",
@@ -7,8 +7,8 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"export": "npm run build && mkdir -p OpenAlephBuilder && cp main.js manifest.json styles.css OpenAlephBuilder && zip -r OpenAlephBuilder OpenAlephBuilder && rm -r OpenAlephBuilder",
-		"deploy": "npm run build && mkdir -p \"${PLUGIN_DEPLOY_DIR:-.}/OpenAlephBuilder\" && cp main.js manifest.json styles.css \"${PLUGIN_DEPLOY_DIR:-.}/OpenAlephBuilder\"",
+		"export": "npm run build && mkdir -p FTMBuilder && cp main.js manifest.json styles.css FTMBuilder && zip -r FTMBuilder FTMBuilder && rm -r FTMBuilder",
+		"deploy": "npm run build && mkdir -p \"${PLUGIN_DEPLOY_DIR:-.}/FTMBuilder\" && cp main.js manifest.json styles.css \"${PLUGIN_DEPLOY_DIR:-.}/FTMBuilder\"",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint .",
 		"svelte-check": "svelte-check --tsconfig tsconfig.json"

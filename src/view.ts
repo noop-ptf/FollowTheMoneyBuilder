@@ -1,27 +1,27 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
-import OpenAlephPlugin from './main';
+import FTMBuilderPlugin from './main';
 import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 
-export const VIEW_TYPE_OPENALEPH_BUILDER = 'openaleph-builder-view';
+export const VIEW_TYPE_FTM_BUILDER = 'followthemoney-builder-view';
 
-export class OpenAlephBuilderView extends ItemView {
+export class FTMBuilderView extends ItemView {
 	grid: ReturnType<typeof EntityCardGrid> | undefined;
-	private plugin: OpenAlephPlugin;
+	private plugin: FTMBuilderPlugin;
 
-	constructor(leaf: WorkspaceLeaf, plugin: OpenAlephPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: FTMBuilderPlugin) {
 		super(leaf);
 		this.plugin = plugin;
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE_OPENALEPH_BUILDER;
+		return VIEW_TYPE_FTM_BUILDER;
 	}
 
 	getDisplayText(): string {
-		return 'Federated OpenAleph Builder';
+		return 'Follow the Money Builder';
 	}
 
 	getIcon(): string {
