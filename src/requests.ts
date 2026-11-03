@@ -117,8 +117,11 @@ export async function bulkEntityUpload(
 		headers,
 		body: JSON.stringify(entities),
 	});
-	const status = res.status === 204 ? 'success' : 'failure';
-	new Notice(`Entity Upload Status: ${status}`);
+	if (res.status !== 204) {
+		throw new Error(
+			`Something went wrong while uploading the entities. Status: ${res.status}`,
+		);
+	}
 }
 
 interface PropertyDiff {

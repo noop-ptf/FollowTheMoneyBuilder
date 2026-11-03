@@ -56,15 +56,24 @@
 			.filter((entity) => entity !== undefined),
 	);
 
-	function postEntitiesToSelectedCollection() {
+	async function postEntitiesToSelectedCollection() {
 		if (selectedCollection) {
 			new Notice(
 				`Posting ${entities.length} entities to ${selectedCollection.label}`,
 			);
-			void bulkEntityUpload(entities, selectedCollection);
+			try {
+				await bulkEntityUpload(entities, selectedCollection);
+				// Reset report, as upload changes validation result
+				validationReport = undefined;
+				new Notice(
+					`Uploaded ${entities.length} entities to ${selectedCollection.label}`,
+				);
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			}
 		}
-		// Reset report, as upload changes validation result
-		validationReport = undefined;
 	}
 
 	function writeEntitiesToVault() {
@@ -75,10 +84,16 @@
 	async function validateUploadSelectedCollection() {
 		if (selectedCollection) {
 			new Notice(`Verifying entities in ${selectedCollection.label}`);
-			validationReport = await validateEntityUpload(
-				entities,
-				selectedCollection,
-			);
+			try {
+				validationReport = await validateEntityUpload(
+					entities,
+					selectedCollection,
+				);
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			}
 		}
 	}
 </script>
