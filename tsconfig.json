@@ -18,5 +18,5 @@
 		"allowSyntheticDefaultImports": true,
 		"lib": ["ES2021", "DOM"]
 	},
-	"include": ["src/**/*.ts", "**/*.svelte"]
+	"include": ["src/**/*.ts", "**/*.svelte", "eslint.config.mts"]
 }

@@ -22,7 +22,7 @@ export default defineConfig(
 			globals: { ...globals.browser },
 			parserOptions: {
 				projectService: {
-					allowDefaultProject: ['eslint.config.mts', 'manifest.json'],
+					allowDefaultProject: ['manifest.json'],
 				},
 				tsconfigRootDir: import.meta.dirname,
 				extraFileExtensions: ['.json', '.svelte'],
