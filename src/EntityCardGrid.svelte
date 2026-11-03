@@ -28,7 +28,7 @@
 		validateEntityUpload: (
 			entities: Entity[],
 			collection: OpenAlephCollection,
-		) => Promise<string | undefined>;
+		) => Promise<string>;
 		confirmSaveEntities: (
 			entities: Entity[],
 			collection: OpenAlephCollection | null,

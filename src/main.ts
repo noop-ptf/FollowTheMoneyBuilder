@@ -119,17 +119,32 @@ export default class FTMBuilderPlugin extends Plugin {
 		entities: Entity[],
 		collection: OpenAlephCollection,
 	) {
-		await bulkEntityUpload(this.settings, this.app, entities, collection);
+		const instance = this.getInstanceSettings(collection.instanceId);
+		const apiKey = this.app.secretStorage.getSecret(instance.apiKeyName);
+		if (!apiKey || apiKey.trim() === '') {
+			throw new Error(`API key for ${instance.instanceUrl} is empty.`);
+		}
+		await bulkEntityUpload(
+			instance.instanceUrl,
+			apiKey,
+			entities,
+			collection.id,
+		);
 	}
 	async validateEntityUpload(
 		entities: Entity[],
 		collection: OpenAlephCollection,
-	): Promise<string | undefined> {
+	): Promise<string> {
+		const instance = this.getInstanceSettings(collection.instanceId);
+		const apiKey = this.app.secretStorage.getSecret(instance.apiKeyName);
+		if (!apiKey || apiKey.trim() === '') {
+			throw new Error(`API key for ${instance.instanceUrl} is empty.`);
+		}
 		return await validateEntityUpload(
-			this.settings,
-			this.app,
+			instance.instanceUrl,
+			apiKey,
 			entities,
-			collection,
+			collection.name,
 		);
 	}
 

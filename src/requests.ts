@@ -98,29 +98,18 @@ export async function getCollections(
 }
 
 export async function bulkEntityUpload(
-	settings: FTMBuilderPluginSettings,
-	app: App,
+	instanceUrl: string,
+	apiKey: string,
 	entities: Entity[],
-	collection: OpenAlephCollection,
+	collectionId: OpenAlephCollection['id'],
 ) {
-	const instance = settings.instances.find(
-		(instance) => instance.id === collection.instanceId,
-	);
-	if (!instance) return;
-	const apiKey = app.secretStorage.getSecret(instance.apiKeyName);
-	if (!apiKey || apiKey.trim() === '') {
-		throw new Error(`API key for ${instance.instanceUrl} is empty.`);
-	}
 	const headers: Record<string, string> = {
 		'User-Agent': 'alephclient',
 		Authorization: apiKey,
 		Pragma: 'no-cache',
 	};
 
-	const url = new URL(
-		`/api/2/collections/${collection.id}/bulk`,
-		instance.instanceUrl,
-	);
+	const url = new URL(`/api/2/collections/${collectionId}/bulk`, instanceUrl);
 	const res = await requestUrl({
 		url: url.toString(),
 		method: 'POST',
@@ -173,26 +162,18 @@ function diffEntity(local: Entity, remote: Entity): PropertyDiff[] {
 }
 
 export async function validateEntityUpload(
-	settings: FTMBuilderPluginSettings,
-	app: App,
+	instanceUrl: string,
+	apiKey: string,
 	entities: Entity[],
-	collection: OpenAlephCollection,
-): Promise<string | undefined> {
-	const instance = settings.instances.find(
-		(instance) => instance.id === collection.instanceId,
-	);
-	if (!instance) return;
-	const apiKey = app.secretStorage.getSecret(instance.apiKeyName);
-	if (!apiKey || apiKey.trim() === '') {
-		throw new Error(`API key for ${instance.instanceUrl} is empty.`);
-	}
+	collectionName: string,
+): Promise<string> {
 	const headers: Record<string, string> = {
 		'User-Agent': 'alephclient',
 		Authorization: apiKey,
 		Pragma: 'no-cache',
 	};
-	const url = new URL('/api/2/entities', instance.instanceUrl);
-	url.searchParams.set('filter:dataset', collection.name);
+	const url = new URL('/api/2/entities', instanceUrl);
+	url.searchParams.set('filter:dataset', collectionName);
 	// fetch "all at once" (for now)
 	url.searchParams.set('limit', '100000');
 
