@@ -11,7 +11,9 @@
 		"deploy": "npm run build && mkdir -p \"${PLUGIN_DEPLOY_DIR:-.}/FTMBuilder\" && cp main.js manifest.json styles.css \"${PLUGIN_DEPLOY_DIR:-.}/FTMBuilder\"",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint .",
-		"svelte-check": "svelte-check --tsconfig tsconfig.json"
+		"svelte-check": "svelte-check --tsconfig tsconfig.json",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
 	},
 	"keywords": [],
 	"license": "AGPL-3.0-or-later",
