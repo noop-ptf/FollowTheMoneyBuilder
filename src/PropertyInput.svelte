@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
+	import { focusOnMount } from './attachments';
+
 	let {
 		name,
 		type,
@@ -23,10 +26,7 @@
 	{name}
 	placeholder={typeMapping[type]?.placeholder}
 	bind:value
-	{@attach ((value) => (node) => {
-		if (value) return;
-		node.focus();
-	})(value)}
+	{@attach focusOnMount(untrack(() => value))}
 />
 
 <style>

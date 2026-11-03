@@ -2,7 +2,9 @@
 	import type { Property } from '@opensanctions/followthemoney';
 	import CustomCombobox from './CustomCombobox.svelte';
 	import { createAttachmentKey } from 'svelte/attachments';
+	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
+	import { untrack } from 'svelte';
 
 	let {
 		property,
@@ -27,12 +29,6 @@
 
 	function removeValue(index: number) {
 		values.splice(index, 1);
-	}
-	function focusOnMount(value: string | undefined) {
-		return function inner(node: HTMLInputElement | HTMLTextAreaElement) {
-			if (value) return;
-			node.focus();
-		};
 	}
 </script>
 
@@ -72,7 +68,9 @@
 						items={enumValues}
 						bind:value={values[i]}
 						inputProps={{
-							[createAttachmentKey()]: focusOnMount(values[i]),
+							[createAttachmentKey()]: focusOnMount(
+								untrack(() => values[i]),
+							),
 						}}
 					>
 						{#snippet itemRow(item)}
@@ -82,7 +80,8 @@
 				{:else if property.type.name === 'text' || property.type.name === 'json' || property.type.name === 'html'}
 					<textarea
 						bind:value={values[i]}
-						{@attach focusOnMount(values[i])}></textarea>
+						{@attach focusOnMount(untrack(() => values[i]))}
+					></textarea>
 				{:else}
 					<PropertyInput
 						name={property.name}
