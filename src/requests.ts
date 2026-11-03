@@ -297,40 +297,53 @@ async function getInstanceCollections(
 		throw new Error(`API key for ${instanceUrl} is empty.`);
 	}
 
-	// As we're interested in all writeable collections, but
-	// we can't filter for them until OpenAleph issue #137 is fixed,
-	// https://github.com/openaleph/openaleph/issues/137
-	// we have to fetch *all* collections and filter locally.
-	//
-	// TODO: Maybe change the strategy if this turns out to be too slow.
 	const url = new URL('/api/2/collections', instanceUrl);
-	// first request to determine the total
-	url.searchParams.set('limit', '1');
-
+	url.searchParams.set('filter:writeable', 'true');
 	const headers: Record<string, string> = {
 		'User-Agent': 'alephclient',
 		Authorization: apiKey,
 		Pragma: 'no-cache',
 	};
 
-	const preRes = await requestUrl({
-		url: url.toString(),
-		method: 'GET',
-		contentType: 'application/json',
-		headers,
-	});
+	let result;
+	try {
+		const firstAttempt = await requestUrl({
+			url: url.toString(),
+			method: 'GET',
+			contentType: 'application/json',
+			headers,
+		});
+		result = firstAttempt;
+	} catch {
+		// We might have ran into issue no #137, which is only fixed
+		// for OpenAleph version 5.4.0 and later.
+		// https://github.com/openaleph/openaleph/issues/137
+		url.searchParams.delete('filter:writeable');
+		// We have to fetch *all* collections and filter locally. But
+		// in order to get all collections, we first need to know
+		// how many are there.
+		url.searchParams.set('limit', '1');
 
-	const preJsonRes = preRes.json as unknown as OpenAlephCollectionApiResult;
+		const resultWithTotal = await requestUrl({
+			url: url.toString(),
+			method: 'GET',
+			contentType: 'application/json',
+			headers,
+		});
 
-	// Now fetch all of them
-	url.searchParams.set('limit', String(preJsonRes.total));
-	const res = await requestUrl({
-		url: url.toString(),
-		method: 'GET',
-		contentType: 'application/json',
-		headers,
-	});
-	const jsonRes = res.json as unknown as OpenAlephCollectionApiResult;
+		const jsonResultWithTotal =
+			resultWithTotal.json as unknown as OpenAlephCollectionApiResult;
+
+		// Now fetch all of them
+		url.searchParams.set('limit', String(jsonResultWithTotal.total));
+		result = await requestUrl({
+			url: url.toString(),
+			method: 'GET',
+			contentType: 'application/json',
+			headers,
+		});
+	}
+	const jsonRes = result.json as unknown as OpenAlephCollectionApiResult;
 	const writeableCollections = jsonRes.results.filter((c) => c.writeable);
 
 	return writeableCollections.map((c) => {
