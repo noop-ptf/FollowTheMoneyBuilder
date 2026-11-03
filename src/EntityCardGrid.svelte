@@ -50,11 +50,13 @@
 	}
 
 	let selectedCollection: OpenAlephCollection | null = $state(null);
+	const entities = $derived(
+		cards
+			.map((card) => card.entity)
+			.filter((entity) => entity !== undefined),
+	);
 
 	function postEntitiesToSelectedCollection() {
-		let entities = cards
-			.map((card) => card.entity)
-			.filter((entity) => entity !== undefined);
 		if (selectedCollection) {
 			new Notice(
 				`Posting ${entities.length} entities to ${selectedCollection.label}`,
@@ -66,17 +68,11 @@
 	}
 
 	function writeEntitiesToVault() {
-		let entities = cards
-			.map((card) => card.entity)
-			.filter((entity) => entity !== undefined);
 		confirmSaveEntities(entities, selectedCollection);
 	}
 
 	let validationReport = $state();
 	async function validateUploadSelectedCollection() {
-		let entities = cards
-			.map((card) => card.entity)
-			.filter((entity) => entity !== undefined);
 		if (selectedCollection) {
 			new Notice(`Verifying entities in ${selectedCollection.label}`);
 			validationReport = await validateEntityUpload(
@@ -127,20 +123,20 @@
 		{@attach lucideIcon('info')}
 	></span>
 </h3>
-{#if cards.length === 0}
+{#if entities.length === 0}
 	<p>Create an entity to upload or save.</p>
 {:else}
 	<div class="actions">
 		<button class="mod-cta" onclick={writeEntitiesToVault}
-			>Save {cards.length}
-			{cards.length == 1 ? 'entity' : 'entities'} to this vault</button
+			>Save {entities.length}
+			{entities.length === 1 ? 'entity' : 'entities'} to this vault</button
 		>
 		{#if !selectedCollection}
 			<p>Select an investigation to upload entities.</p>
 		{:else}
 			<button class="mod-cta" onclick={postEntitiesToSelectedCollection}
-				>Upload {cards.length}
-				{cards.length == 1 ? 'entity' : 'entities'} to OpenAleph</button
+				>Upload {entities.length}
+				{entities.length === 1 ? 'entity' : 'entities'} to OpenAleph</button
 			>
 			<button onclick={validateUploadSelectedCollection}
 				>Verify upload</button
