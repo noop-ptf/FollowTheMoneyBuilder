@@ -48,7 +48,7 @@
            dedicated widget here. Everything else (address, checksum,
            identifier, ip, mimetype, name, string) falls through to plain text
            below. entity never reaches this component (filtered out in
-           EntityForm). -->
+           getCardProperties). -->
 			<div
 				class="value"
 				onfocusout={(e) => {
@@ -115,9 +115,7 @@
 
 	.value {
 		display: inline-flex;
-		border: 1px solid;
 		gap: 4px;
-		background: var(--accentsoft);
 		border: 1px solid var(--color-base-40);
 		border-radius: 8px;
 		padding: 4px 4px 4px 8px;

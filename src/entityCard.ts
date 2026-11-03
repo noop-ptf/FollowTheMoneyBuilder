@@ -23,10 +23,7 @@ export function createCardState(autofocus = false): CardState {
 	);
 }
 
-// Canonical constructor: builds a CardState from an (optional) entity,
-//  This is the "recreate CardState on mount" seam — a later persistence pass persists
-// Entity objects and always rebuilds a CardState from one via this function,
-// rather than persisting/syncing a parallel copy of its fields.
+// Canonical constructor: builds a CardState from an (optional) entity.
 export function createCardStateFromEntity(
 	key: string,
 	entity: Entity | undefined,
@@ -73,6 +70,8 @@ export function buildAddedPropsFromEntity(entity: Entity): AddedProperty[] {
 	return [...featured, ...others]
 		.map((property) => ({
 			property,
+			// Entity-typed properties are already filtered in getCardProperties,
+			// so this filter is just for the typechecker.
 			values: entity.getProperty(property).filter(isStringValue),
 		}))
 		.filter((ap) => ap.values.length > 0);

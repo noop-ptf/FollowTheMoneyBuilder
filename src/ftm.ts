@@ -1,10 +1,5 @@
-import {
-	Model,
-	type Property,
-	defaultModel,
-	type Value,
-} from '@opensanctions/followthemoney';
-import type { Schema } from '@opensanctions/followthemoney';
+import { Model, defaultModel } from '@opensanctions/followthemoney';
+import type { Schema, Property, Value } from '@opensanctions/followthemoney';
 
 export const model = new Model(defaultModel);
 

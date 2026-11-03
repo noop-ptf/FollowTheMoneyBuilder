@@ -8,7 +8,6 @@
 		title: Snippet;
 		description: Snippet;
 		contentProps?: WithoutChild<Dialog.ContentProps>;
-		// ...other component props if you wish to pass them
 	};
 
 	let {

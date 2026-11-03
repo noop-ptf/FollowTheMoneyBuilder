@@ -71,7 +71,7 @@
 		confirmSaveEntities(entities, selectedCollection);
 	}
 
-	let validationReport = $state();
+	let validationReport = $state<string | undefined>();
 	async function validateUploadSelectedCollection() {
 		if (selectedCollection) {
 			new Notice(`Verifying entities in ${selectedCollection.label}`);

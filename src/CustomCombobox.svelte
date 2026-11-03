@@ -42,12 +42,13 @@
 		searchValue = e.currentTarget.value;
 	}
 
-	// Writing this directly is a bit hacky and leads to a stale Bits UI state
-	// but updating inputValue properly is much more involved and I didn't
-	// want to go down that route.
 	const displayLabel = $derived(
 		items.find((i) => i.value === value)?.label ?? '',
 	);
+
+	// Writing this directly is a bit hacky and leads to a stale Bits UI state
+	// but updating inputValue properly is much more involved and I didn't
+	// want to go down that route.
 	function syncDisplayValue() {
 		if (inputRef) {
 			inputRef.value = displayLabel;
