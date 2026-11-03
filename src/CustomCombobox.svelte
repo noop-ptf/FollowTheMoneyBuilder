@@ -45,9 +45,12 @@
 	// Writing this directly is a bit hacky and leads to a stale Bits UI state
 	// but updating inputValue properly is much more involved and I didn't
 	// want to go down that route.
+	const displayLabel = $derived(
+		items.find((i) => i.value === value)?.label ?? '',
+	);
 	function syncDisplayValue() {
 		if (inputRef) {
-			inputRef.value = items.find((i) => i.value === value)?.label || '';
+			inputRef.value = displayLabel;
 		}
 	}
 
@@ -65,11 +68,7 @@
 	// sidebar re-mounting this combobox with an already-selected value) —
 	// handleOpenChangeComplete alone only covers closing an interactively
 	// opened popover, not a fresh mount that starts pre-selected.
-	$effect(() => {
-		value;
-		items;
-		syncDisplayValue();
-	});
+	$effect(syncDisplayValue);
 
 	function handleInputFocus(e: Event & { currentTarget: HTMLInputElement }) {
 		e.currentTarget.select();

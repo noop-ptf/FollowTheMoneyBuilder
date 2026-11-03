@@ -18,7 +18,6 @@
 	} = $props();
 
 	$effect(() => {
-		ap.values;
 		syncProperty(entity, ap);
 	});
 </script>
