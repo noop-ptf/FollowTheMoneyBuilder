@@ -24,7 +24,7 @@
 		bulkEntityUpload: (
 			entities: Entity[],
 			collection: OpenAlephCollection,
-		) => void;
+		) => Promise<void>;
 		validateEntityUpload: (
 			entities: Entity[],
 			collection: OpenAlephCollection,
@@ -61,7 +61,7 @@
 			new Notice(
 				`Posting ${entities.length} entities to ${selectedCollection.label}`,
 			);
-			bulkEntityUpload(entities, selectedCollection);
+			void bulkEntityUpload(entities, selectedCollection);
 		}
 		// Reset report, as upload changes validation result
 		validationReport = undefined;

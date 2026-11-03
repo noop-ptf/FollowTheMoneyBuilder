@@ -30,7 +30,7 @@
 
 	function refreshWithFeedback(): void {
 		new Notice('Reloading investigations...');
-		collections.refresh();
+		void collections.refresh();
 	}
 </script>
 
