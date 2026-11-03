@@ -45,50 +45,6 @@
     border-radius: 0.5rem;
 }
 
-.openaleph-max-entities-setting-container {
-    padding: 1em;
-}
-
-.openaleph-max-entities-setting .setting-item-name {
-    font-size: inherit;
-}
-
 .openaleph-note-preview {
-    white-space: pre-wrap;
-}
-
-.openaleph-entity-graph-view-container {
-    height: 100%;
-    width: 100%;
-    display: flex;
-}
-
-.openaleph-entity-graph-cy-container {
-    flex: 1 1 auto;
-    height: 100%;
-    width: 100%;
-}
-
-/* TODO - unify the spin animation CSS between this & settings */
-.openaleph-loading-modal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--size-2-2);
-    padding: var(--size-2-3);
-}
-
-.openaleph-spinner {
-    width: var(--size-4-8);
-    height: var(--size-4-8);
-    border: 3px solid var(--background-modifier-border);
-    border-top-color: var(--interactive-accent);
-    border-radius: 50%;
-    animation: openaleph-spin 0.8s linear infinite;
-}
-
-@keyframes openaleph-spin {
-    to {
-        transform: rotate(360deg);
-    }
+	white-space: pre-wrap;
 }

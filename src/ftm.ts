@@ -1,9 +1,4 @@
-import {
-	type Entity,
-	Model,
-	Property,
-	defaultModel,
-} from '@opensanctions/followthemoney';
+import { Model, Property, defaultModel } from '@opensanctions/followthemoney';
 import type { Schema } from '@opensanctions/followthemoney';
 
 export const model = new Model(defaultModel);
@@ -309,6 +304,7 @@ export const FIELD_GROUPS = {
 		tendersForLots: 'specific',
 		numberAwards: 'specific',
 	},
+	// TODO: (How) should this be used?
 	bySchema: {
 		Person: { position: 'identity', country: 'identity' },
 		Address: { country: 'contact' },
@@ -323,42 +319,6 @@ export function listEntitySchemata() {
 		.filter((s) => !s.generated && !s.abstract && s.isA('Thing'))
 		.sort((a, b) => a.label.localeCompare(b.label));
 }
-
-// used for debugging / demonstration purposes
-export function getPropertyForEachType(): Property[] {
-	let availableTypes = new Set(Object.keys(model.types));
-	let selectedProperties: Property[] = [];
-	model.getProperties().forEach((p) => {
-		if (availableTypes.has(p.type.name)) {
-			selectedProperties.push(p);
-			availableTypes.delete(p.type.name);
-		}
-	});
-	return selectedProperties;
-}
-
-/*
-import fs from 'node:fs';
-// used for development / data preparation purposes
-export function editablePropertyListToCSV(): void {
-	const schemata = listEntitySchemata();
-	const editableProperties = new Set(
-		schemata.flatMap((schema) => schema.getEditableProperties()),
-	);
-	// TODO: add property type
-	let result = ['qname,description,category'];
-	editableProperties.forEach((p) =>
-		result.push(
-			[
-				p.qname,
-				p.description ? `"${p.description}"` : '',
-				isPropertyGroup(p.name) ? FIELD_GROUPS.byProp[p.name] : '',
-			].join(','),
-		),
-	);
-	fs.writeFileSync('properties.csv', result.join('\n'));
-}
-*/
 
 type PropertyGroup = keyof typeof FIELD_GROUPS.byProp;
 
@@ -386,18 +346,4 @@ export function getGroupedProperty(
 	});
 
 	return grouped;
-}
-
-export async function testEntity(): Promise<Entity> {
-	const personSchema = model.schemata.Person;
-	if (!personSchema) {
-		throw new Error(
-			"Couldn't find person schema. This should not happen /o\\",
-		);
-	}
-	const entity = await model.createEntity(personSchema);
-	entity.setProperty('name', 'Tonn Zinga');
-	entity.setProperty('nationality', 'ie');
-	entity.setProperty('phone', '+4710101');
-	return entity;
 }

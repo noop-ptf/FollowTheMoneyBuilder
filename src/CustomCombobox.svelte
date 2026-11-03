@@ -154,15 +154,6 @@ side, the component will still be type-checked correctly.
 		width: 100%;
 	}
 
-	.control :global(.caret) {
-		flex-shrink: 0;
-		padding: 0;
-		border: none;
-		box-shadow: none;
-		background: transparent;
-		color: inherit;
-	}
-
 	.check {
 		flex-shrink: 0;
 	}

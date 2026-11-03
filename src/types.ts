@@ -1,40 +1,5 @@
 import type { Entity } from '@opensanctions/followthemoney';
 
-export interface OpenAlephGraph {
-	centralNote: string;
-	relatedEntities?: OpenAlephEntity[];
-}
-
-export interface OpenAlephEntity {
-	schema: string;
-	dataset: string;
-	caption: string;
-	id: string;
-	instance: string;
-	instanceName: string;
-	instanceUrl: string;
-	url: string;
-	closelyCorrelated: OpenAlephCloselyCorrelatedApiTerm[];
-	properties?: Record<string, unknown[]>;
-	[key: string]: unknown;
-}
-
-export interface OpenAlephCloselyCorrelatedApiResult {
-	status: string;
-	facets: {
-		'names.significant_terms'?: {
-			values: OpenAlephCloselyCorrelatedApiTerm[];
-		};
-	};
-}
-
-export interface OpenAlephCloselyCorrelatedApiTerm {
-	id: string;
-	label: string;
-	count: number;
-	searchQuery?: string;
-}
-
 export interface OpenAlephCollection {
 	id: string;
 	name: string;
@@ -56,29 +21,6 @@ export interface OpenAlephEntityApiResult {
 	results: Entity[];
 }
 
-export interface OpenAlephPercolationApiResult {
-	status: string;
-	results: OpenAlephPercolationApiEntity[];
-	next?: string | null;
-	complete: boolean;
-	error?: unknown;
-}
-
-export interface OpenAlephPercolationApiEntity {
-	schema: string;
-	dataset: string;
-	caption: string;
-	id: string;
-	links: {
-		self: string;
-	};
-}
-
-export interface OpenAlephGroupedEntities {
-	instance: string;
-	relatedEntities?: OpenAlephEntity[];
-}
-
 export interface FTMBuilderPluginSettings {
 	importFolder: string;
 	instances: OpenAlephInstanceSettings[];
@@ -91,11 +33,4 @@ export interface OpenAlephInstanceSettings {
 	apiKeyName: string;
 	enabled: boolean;
 	connectionValid: boolean;
-}
-
-export interface ExplorationRecord {
-	uuid: string;
-	folderPath: string;
-	jsonPath: string;
-	tablePath: string;
 }

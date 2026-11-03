@@ -15,7 +15,7 @@ import type { Entity } from '@opensanctions/followthemoney';
 import { ConfirmNoteModal } from './modals';
 import { yamlifyEntity, writeNotes } from './noteExport';
 
-export interface ResizableSidebarSplit {
+interface ResizableSidebarSplit {
 	collapsed: boolean;
 	size: number;
 	containerEl: HTMLElement;
@@ -37,17 +37,13 @@ export default class FTMBuilderPlugin extends Plugin {
 			(leaf) => new FTMBuilderView(leaf, this),
 		);
 
-		this.addRibbonIcon(
-			'factory',
-			'Follow the Money Builder',
-			(_evt: MouseEvent) => {
-				this.activateView().catch((err: unknown) => {
-					const message =
-						err instanceof Error ? err.message : String(err);
-					new Notice(message);
-				});
-			},
-		);
+		this.addRibbonIcon('factory', 'Follow the Money Builder', () => {
+			this.activateView().catch((err: unknown) => {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			});
+		});
 
 		this.addCommand({
 			id: 'search-openaleph-instances',

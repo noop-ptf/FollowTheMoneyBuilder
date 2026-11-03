@@ -26,7 +26,6 @@ export async function writeNotes(
 ): Promise<void> {
 	for (const entity of entities) {
 		if (!entity.id) {
-			console.log('skip');
 			continue;
 		}
 		const filePath = `${path}/${entity.id}.md`;

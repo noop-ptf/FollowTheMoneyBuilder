@@ -8,12 +8,10 @@
 		property,
 		values = $bindable(),
 		required = false,
-		debug = false,
 	}: {
 		property: Property;
 		values: string[];
 		required?: boolean;
-		debug?: boolean;
 	} = $props();
 
 	const enumValues = $derived(
@@ -22,13 +20,6 @@
 			label: v,
 		})),
 	);
-
-	// Properties whose values realistically never repeat for a single entity,
-	// even though FtM itself imposes no limit on any property (see EntityForm).
-	// Hides add/remove for these so the form doesn't invite meaningless
-	// duplicate rows.
-	// const SINGLE_VALUE_TYPES = new Set(["date", "number", "gender"]);
-	// const isMultiValue = !SINGLE_VALUE_TYPES.has(property.type.name);
 
 	function addValue() {
 		values.push('');
@@ -53,7 +44,6 @@
 		{property.label}{#if required}<span class="required" aria-hidden="true">
 				*</span
 			>{/if}
-		{#if debug}({property.type.label}){/if}
 	</legend>
 	<div class="values">
 		{#each values, i (i)}

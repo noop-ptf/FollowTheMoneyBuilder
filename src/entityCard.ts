@@ -23,15 +23,6 @@ export function createCardState(autofocus = false): CardState {
 	);
 }
 
-export function testCard(entity: Entity): CardState {
-	return createCardStateFromEntity(
-		model.generateRandomId(),
-		entity,
-		false,
-		false,
-	);
-}
-
 // Canonical constructor: builds a CardState from an (optional) entity,
 //  This is the "recreate CardState on mount" seam — a later persistence pass persists
 // Entity objects and always rebuilds a CardState from one via this function,

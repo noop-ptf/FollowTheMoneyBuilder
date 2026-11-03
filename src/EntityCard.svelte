@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Schema } from '@opensanctions/followthemoney';
-	import { getSchemaCategory } from './schemaStyle';
 	import { type CardState } from './entityCard';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
@@ -15,13 +14,9 @@
 		schemata: Schema[];
 		onremove: () => void;
 	} = $props();
-
-	const category = $derived(
-		card.entity ? getSchemaCategory(card.entity.schema) : 'default',
-	);
 </script>
 
-<article class="card" data-category={category}>
+<article class="card">
 	<div class="entity-header">
 		<button
 			class="entity-toggle"

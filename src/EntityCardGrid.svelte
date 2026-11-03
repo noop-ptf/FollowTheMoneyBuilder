@@ -70,12 +70,6 @@
 			.map((card) => card.entity)
 			.filter((entity) => entity !== undefined);
 		confirmSaveEntities(entities, selectedCollection);
-		/*
-					writeNote={(entity: OpenAlephEntity) => {
-						const instanceHostname = new URL(entity.links.self)
-							.hostname;
-					}}
-	*/
 	}
 
 	let validationReport = $state();
@@ -91,19 +85,10 @@
 			);
 		}
 	}
-
-	let testcard = $state<CardState>();
-
-	// testEntity().then((entity) => {
-	// 	testcard = testCard(entity);
-	// });
 </script>
 
 <h3>Entities</h3>
 <div class="entities">
-	{#if testcard}
-		<EntityCard bind:card={testcard} {schemata} onremove={() => 0} />
-	{/if}
 	{#each cards as card, index (card.key)}
 		<EntityCard
 			bind:card={() => card, (c) => (cards[index] = c)}

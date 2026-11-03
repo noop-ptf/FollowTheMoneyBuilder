@@ -79,6 +79,3 @@
 		<button onclick={onDelete}>Delete Entity</button>
 	{/if}
 {/if}
-
-<style>
-</style>
