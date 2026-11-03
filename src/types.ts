@@ -1,4 +1,4 @@
-import type { Entity } from '@opensanctions/followthemoney';
+import type { IEntityDatum } from '@opensanctions/followthemoney';
 
 export interface OpenAlephCollection {
 	id: string;
@@ -18,7 +18,7 @@ export interface OpenAlephCollectionApiResult {
 export interface OpenAlephEntityApiResult {
 	status: string;
 	total: number;
-	results: Entity[];
+	results: IEntityDatum[];
 }
 
 export interface FTMBuilderPluginSettings {

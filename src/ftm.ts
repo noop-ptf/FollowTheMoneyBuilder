@@ -2,6 +2,7 @@ import {
 	Model,
 	type Property,
 	defaultModel,
+	type Value,
 } from '@opensanctions/followthemoney';
 import type { Schema } from '@opensanctions/followthemoney';
 
@@ -316,6 +317,16 @@ export const FIELD_GROUPS = {
 		Note: { entity: 'connections', description: 'sources' },
 	},
 };
+
+// Entity-typed properties may hold Entity objects rather than strings,
+// so reduce them to a string when needed.
+export function valueToString(value: Value): string {
+	return typeof value === 'string' ? value : value.id;
+}
+
+export function isStringValue(value: Value): value is string {
+	return typeof value === 'string';
+}
 
 export function listEntitySchemata() {
 	return model

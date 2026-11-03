@@ -1,5 +1,5 @@
 import type { Entity, Property, Schema } from '@opensanctions/followthemoney';
-import { model } from './ftm';
+import { model, isStringValue } from './ftm';
 
 export interface AddedProperty {
 	property: Property;
@@ -73,7 +73,7 @@ export function buildAddedPropsFromEntity(entity: Entity): AddedProperty[] {
 	return [...featured, ...others]
 		.map((property) => ({
 			property,
-			values: entity.getProperty(property) as string[],
+			values: entity.getProperty(property).filter(isStringValue),
 		}))
 		.filter((ap) => ap.values.length > 0);
 }

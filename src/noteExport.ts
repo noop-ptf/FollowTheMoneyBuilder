@@ -1,6 +1,7 @@
 import { stringifyYaml } from 'obsidian';
 import FTMBuilderPlugin from './main';
 import type { Entity } from '@opensanctions/followthemoney';
+import { valueToString } from './ftm';
 
 export function yamlifyEntity(entity: Entity): string {
 	if (!entity.schema) {
@@ -10,9 +11,7 @@ export function yamlifyEntity(entity: Entity): string {
 		id: entity.id,
 	};
 	for (const property of entity.getProperties()) {
-		const strings = entity
-			.getProperty(property)
-			.map((value) => value.toString());
+		const strings = entity.getProperty(property).map(valueToString);
 		flatEntity[property.name] =
 			strings.length === 1 ? (strings[0] ?? '') : strings;
 	}

@@ -6,7 +6,7 @@ import type {
 	OpenAlephEntityApiResult,
 } from './types';
 import type { Entity } from '@opensanctions/followthemoney';
-import { model } from './ftm';
+import { model, valueToString } from './ftm';
 
 async function getInstanceCollections(
 	instanceUrl: string,
@@ -133,26 +133,22 @@ interface EntityDiff {
 	properties: PropertyDiff[];
 }
 
-// Entity-typed properties may hold Entity objects rather than strings,
-// so reduce every value to a comparable string key.
-function valueKey(value: unknown): string {
-	return typeof value === 'string' ? value : (value as Entity).id;
-}
-
 function diffEntity(local: Entity, remote: Entity): PropertyDiff[] {
 	const diffs: PropertyDiff[] = [];
 	for (const prop of local.getProperties()) {
 		const remoteValues = new Set(
-			remote.getProperty(prop.name).map(valueKey),
+			remote.getProperty(prop.name).map(valueToString),
 		);
-		const localValues = new Set(local.getProperty(prop.name).map(valueKey));
+		const localValues = new Set(
+			local.getProperty(prop.name).map(valueToString),
+		);
 		const missing = local
 			.getProperty(prop.name)
-			.map(valueKey)
+			.map(valueToString)
 			.filter((v) => !remoteValues.has(v));
 		const added = remote
 			.getProperty(prop.name)
-			.map(valueKey)
+			.map(valueToString)
 			.filter((v) => !localValues.has(v));
 		if (missing.length > 0 || added.length > 0) {
 			diffs.push({ property: prop.name, missing, added });
