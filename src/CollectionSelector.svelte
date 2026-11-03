@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
-	import { lucideIcon } from './lucideIcon';
+	import { obsidianIcon } from './attachments';
 	import { createResource } from './store';
 	import { onMount } from 'svelte';
 	import type {
@@ -77,7 +77,7 @@
 				class="clickable-icon"
 				aria-label="Refresh investigations"
 				onclick={refreshWithFeedback}
-				{@attach lucideIcon('refresh-cw')}
+				{@attach obsidianIcon('refresh-cw')}
 			></button>
 		{/if}
 	{/if}

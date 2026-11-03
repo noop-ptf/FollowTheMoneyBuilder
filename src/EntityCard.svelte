@@ -3,7 +3,7 @@
 	import { type CardState } from './entityCard';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
-	import { lucideIcon } from './lucideIcon';
+	import { obsidianIcon } from './attachments';
 
 	let {
 		card = $bindable(),
@@ -26,7 +26,7 @@
 		>
 			<div
 				class="collapse-icon {card.editing ? '' : 'is-collapsed'}"
-				{@attach lucideIcon('right-triangle')}
+				{@attach obsidianIcon('right-triangle')}
 			></div>
 			<div class="caption">
 				{card.entity?.getCaption() ||
@@ -38,7 +38,7 @@
 			class="clickable-icon {card.editing ? '' : 'invisible'}"
 			aria-label="Remove entity"
 			onclick={onremove}
-			{@attach lucideIcon('trash')}
+			{@attach obsidianIcon('trash')}
 		></button>
 	</div>
 	{#if card.editing}

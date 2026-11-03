@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
-	import { lucideIcon } from './lucideIcon';
+	import { obsidianIcon } from './attachments';
 	import type { Schema } from '@opensanctions/followthemoney';
 	import { listEntitySchemata } from './ftm';
 	import { createCardState, type CardState } from './entityCard';
@@ -107,7 +107,7 @@
 	Investigation<span
 		class="info-hover"
 		aria-label="Select to which OpenAleph investigation the entities will go"
-		{@attach lucideIcon('info')}
+		{@attach obsidianIcon('info')}
 	></span>
 </h3>
 <CollectionSelector
@@ -120,7 +120,7 @@
 	Save or Upload<span
 		class="info-hover"
 		aria-label="Save the entities to your vault or upload them to OpenAleph"
-		{@attach lucideIcon('info')}
+		{@attach obsidianIcon('info')}
 	></span>
 </h3>
 {#if entities.length === 0}

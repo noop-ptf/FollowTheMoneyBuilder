@@ -3,7 +3,7 @@
 	generics="T extends { value: string; label: string; disabled?: boolean }"
 >
 	import { Combobox, type WithoutChildrenOrChild, mergeProps } from 'bits-ui';
-	import { lucideIcon } from './lucideIcon';
+	import { obsidianIcon } from './attachments';
 	import { fuzzyFilter } from './fuzzy';
 	import type { Snippet } from 'svelte';
 
@@ -119,7 +119,7 @@ side, the component will still be type-checked correctly.
 		<!-- align="start" is an option to influence the Floating UI placement. -->
 		<Combobox.Content class="options" align="start" {...contentProps}>
 			<Combobox.ScrollUpButton>
-				<span {@attach lucideIcon('chevrons-up')}></span>
+				<span {@attach obsidianIcon('chevrons-up')}></span>
 			</Combobox.ScrollUpButton>
 			<Combobox.Viewport>
 				{#each filteredItems as item (item.value)}
@@ -140,7 +140,7 @@ side, the component will still be type-checked correctly.
 				{/each}
 			</Combobox.Viewport>
 			<Combobox.ScrollDownButton>
-				<span {@attach lucideIcon('chevrons-down')}></span>
+				<span {@attach obsidianIcon('chevrons-down')}></span>
 			</Combobox.ScrollDownButton>
 		</Combobox.Content>
 	</Combobox.Portal>

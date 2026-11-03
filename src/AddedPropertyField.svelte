@@ -3,7 +3,7 @@
 	import type { AddedProperty } from './entityCard';
 	import { syncProperty } from './entityCard';
 	import PropertyField from './PropertyField.svelte';
-	import { lucideIcon } from './lucideIcon';
+	import { obsidianIcon } from './attachments';
 
 	let {
 		entity,
@@ -30,7 +30,7 @@
 		class="clickable-icon field-remove"
 		aria-label="Remove field"
 		onclick={onremove}
-		{@attach lucideIcon('circle-minus')}
+		{@attach obsidianIcon('circle-minus')}
 	></button>
 </div>
 
