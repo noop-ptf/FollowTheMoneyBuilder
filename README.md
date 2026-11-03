@@ -29,7 +29,7 @@ If you already have the Beta Reviewers Auto-update Tester plug-in (called BRAT),
 ## Related projects
 
 [OpenAleph Search](https://github.com/noop-ptf/OpenAlephSearch) allows a user to search through many different FollowTheMoney instances simultaneously.
-[OpenAleph Explore](https://github.com/noop-ptf/OpenAlephExplore) allows a user to send a note to all the OpenAleph instances they have access to in order to extract structured Follow the Money data and related terms. 
+[OpenAleph Explore](https://github.com/noop-ptf/OpenAlephExplore) allows a user to send a note to all the OpenAleph instances they have access to in order to extract structured Follow the Money data and related terms.
 
 ## Sponsor
 

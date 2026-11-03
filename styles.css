@@ -1,48 +1,47 @@
 :root {
-  --schema-person-fg: #bd401f;
-  --schema-person-bg: #faeae8;
-  --schema-legalentity-fg: #f9841c;
-  --schema-legalentity-bg: #fffee8;
-  --schema-document-fg: #311b92;
-  --schema-document-bg: #ede7f6;
-  --schema-default-fg: #595959;
-  --schema-default-bg: #f2f2f2;
-  
+	--schema-person-fg: #bd401f;
+	--schema-person-bg: #faeae8;
+	--schema-legalentity-fg: #f9841c;
+	--schema-legalentity-bg: #fffee8;
+	--schema-document-fg: #311b92;
+	--schema-document-bg: #ede7f6;
+	--schema-default-fg: #595959;
+	--schema-default-bg: #f2f2f2;
 }
 .openaleph-source-box {
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin-bottom: 12px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 8px 12px;
+	margin-bottom: 12px;
 }
 
 .openaleph-spin svg {
-    animation: spin-rotation 0.8s linear infinite;
+	animation: spin-rotation 0.8s linear infinite;
 }
 
 @keyframes spin-rotation {
-    0% {
-        transform: rotate(0deg);
-    }
+	0% {
+		transform: rotate(0deg);
+	}
 
-    100% {
-        transform: rotate(360deg);
-    }
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .openaleph-instance-connection-valid svg {
-    color: var(--color-green);
+	color: var(--color-green);
 }
 
 .openaleph-instance-connection-invalid svg {
-    color: var(--color-red);
+	color: var(--color-red);
 }
 
 .openaleph-note-preview-container {
-    overflow: hidden;
-    padding: 1em;
-    border: 1px solid var(--color-accent);
-    border-radius: 0.5rem;
+	overflow: hidden;
+	padding: 1em;
+	border: 1px solid var(--color-accent);
+	border-radius: 0.5rem;
 }
 
 .openaleph-note-preview {

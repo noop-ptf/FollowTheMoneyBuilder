@@ -1,7 +1,7 @@
 {
-    "tabWidth": 4,
-    "useTabs": true,
-    "endOfLine": "lf",
-    "singleQuote": true,
+	"tabWidth": 4,
+	"useTabs": true,
+	"endOfLine": "lf",
+	"singleQuote": true,
 	"plugins": ["prettier-plugin-svelte"]
 }
