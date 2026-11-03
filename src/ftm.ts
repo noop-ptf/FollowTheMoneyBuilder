@@ -342,7 +342,7 @@ export function getGroupedProperty(
 ): {
 	[key: string]: Property[];
 } {
-	let grouped: { [key: string]: Property[] } = {};
+	const grouped: { [key: string]: Property[] } = {};
 
 	entitySchema?.getEditableProperties().forEach((p) => {
 		if (filter?.has(p)) return;

@@ -4,8 +4,6 @@ import type { Entity } from '@opensanctions/followthemoney';
 import { valueToString } from './ftm';
 
 export function yamlifyEntity(entity: Entity): string {
-	if (!entity.schema) {
-	}
 	const flatEntity: Record<string, string | string[]> = {
 		schema: entity.schema.name,
 		id: entity.id,

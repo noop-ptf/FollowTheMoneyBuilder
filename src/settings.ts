@@ -147,7 +147,7 @@ class InstancesPage extends SettingPage {
 	}
 
 	display() {
-		let containerEl = this.containerEl;
+		const containerEl = this.containerEl;
 		containerEl.empty();
 
 		containerEl.createEl('p', {

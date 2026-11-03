@@ -54,6 +54,7 @@ export default defineConfig(
 		files: ['**/*.ts', '**/*.tsx', '**/*.svelte'],
 		rules: {
 			'eslint-comments/no-restricted-disable': 'off',
+			'svelte/prefer-const': 'error',
 			'obsidianmd/ui/sentence-case': [
 				'warn',
 				{

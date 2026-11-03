@@ -39,7 +39,7 @@
 	const schemata: Schema[] = listEntitySchemata();
 
 	// The shared store array: only ever mutated in place, never reassigned.
-	let cards = $state<CardState[]>([]);
+	const cards = $state<CardState[]>([]);
 
 	function addCard() {
 		cards.push(createCardState(true));

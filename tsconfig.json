@@ -8,6 +8,8 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"moduleResolution": "node",
 		"isolatedModules": true,
 		"skipLibCheck": true,

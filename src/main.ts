@@ -156,14 +156,14 @@ export default class FTMBuilderPlugin extends Plugin {
 			new Notice('No valid entities found to save to vault');
 			return;
 		}
-		let today = new Date().toISOString().slice(0, 'YYYY-MM-DD'.length);
-		let instanceFolder = collection
+		const today = new Date().toISOString().slice(0, 'YYYY-MM-DD'.length);
+		const instanceFolder = collection
 			? new URL(
 					this.getInstanceSettings(collection.instanceId).instanceUrl,
 				).hostname
 			: 'local_ftm_entities';
-		let dataset = collection ? collection.name : today;
-		let importPath = `${this.settings.importFolder}/${instanceFolder}/${dataset}`;
+		const dataset = collection ? collection.name : today;
+		const importPath = `${this.settings.importFolder}/${instanceFolder}/${dataset}`;
 		let exportPreview = '';
 		for (const entity of entities) {
 			exportPreview += yamlifyEntity(entity);
