@@ -46,6 +46,7 @@
 		const existing = card.addedProps.find((ap) => ap.property === prop);
 		if (existing) {
 			card.addedProps = card.addedProps.filter((ap) => ap !== existing);
+			card.entity?.properties.delete(existing.property);
 		} else {
 			card.addedProps.push({ property: prop, values: [] });
 		}
