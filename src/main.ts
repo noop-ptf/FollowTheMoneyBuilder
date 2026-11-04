@@ -167,6 +167,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		new ConfirmNoteModal(this.app, importPath, exportPreview, async () => {
 			try {
 				await writeNotes(entities, importPath, this.app.vault);
+				// TODO: Improve this message.
 				new Notice('Saved entities to vault');
 			} catch (err) {
 				new Notice(
@@ -177,6 +178,7 @@ export default class FTMBuilderPlugin extends Plugin {
 	}
 
 	getInstanceSettings(id: string): OpenAlephInstanceSettings {
+		// TODO: detect and invalidate stuff (collections, ...) once the settings have changed
 		const instanceSettings = this.settings.instances.find(
 			(instance) => instance.id === id,
 		);

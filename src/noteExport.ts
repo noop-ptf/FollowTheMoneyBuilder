@@ -1,4 +1,4 @@
-import { stringifyYaml, Vault } from 'obsidian';
+import { stringifyYaml, type Vault } from 'obsidian';
 import type { Entity } from '@opensanctions/followthemoney';
 import { valueToString } from './ftm';
 

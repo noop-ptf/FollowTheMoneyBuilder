@@ -16,7 +16,6 @@
 	} = $props();
 
 	const caption = $derived.by(() => {
-		let theCaption = 'unknown entity';
 		if (card.entity) {
 			for (const captionProp of card.entity.schema.caption) {
 				const addedProp = card.addedProps.find(
@@ -28,7 +27,7 @@
 			}
 			return `unknown ${card.entity.schema.label}`;
 		}
-		return theCaption;
+		return 'unknown entity';
 	});
 </script>
 

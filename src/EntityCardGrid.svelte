@@ -6,10 +6,7 @@
 	import { createCardState, type CardState } from './entityCard';
 	import EntityCard from './EntityCard.svelte';
 	import CollectionSelector from './CollectionSelector.svelte';
-	import type {
-		OpenAlephCollection,
-		OpenAlephInstanceSettings,
-	} from './types';
+	import type { OpenAlephCollection } from './types';
 	import type { Entity } from '@opensanctions/followthemoney';
 
 	let {
@@ -17,7 +14,7 @@
 		bulkEntityUpload,
 		validateEntityUpload,
 		confirmSaveEntities,
-		getInstanceSettings,
+		getInstanceName,
 		openPluginSettings,
 	}: {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
@@ -33,7 +30,7 @@
 			entities: Entity[],
 			collection: OpenAlephCollection | null,
 		) => void;
-		getInstanceSettings: (id: string) => OpenAlephInstanceSettings;
+		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
 	} = $props();
 	const schemata: Schema[] = listEntitySchemata();
@@ -144,7 +141,7 @@
 </h3>
 <CollectionSelector
 	{loadCollections}
-	{getInstanceSettings}
+	{getInstanceName}
 	{openPluginSettings}
 	bind:selectedCollection
 />

@@ -3,20 +3,17 @@
 	import { obsidianIcon } from './attachments';
 	import { createResource } from './store';
 	import { onMount } from 'svelte';
-	import type {
-		OpenAlephCollection,
-		OpenAlephInstanceSettings,
-	} from './types';
+	import type { OpenAlephCollection } from './types';
 
 	type Props = {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
-		getInstanceSettings: (id: string) => OpenAlephInstanceSettings;
+		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
 		selectedCollection: OpenAlephCollection | null;
 	};
 	let {
 		loadCollections,
-		getInstanceSettings,
+		getInstanceName,
 		openPluginSettings,
 		selectedCollection = $bindable(null),
 	}: Props = $props();
@@ -69,7 +66,7 @@
 				{#each $collections.data as collection (keyOf(collection))}
 					<option value={keyOf(collection)}>
 						{collection.label} |
-						{getInstanceSettings(collection.instanceId)?.name}
+						{getInstanceName(collection.instanceId)}
 					</option>
 				{/each}
 			</select>
