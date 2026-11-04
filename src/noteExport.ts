@@ -1,5 +1,4 @@
-import { stringifyYaml } from 'obsidian';
-import FTMBuilderPlugin from './main';
+import { stringifyYaml, Vault } from 'obsidian';
 import type { Entity } from '@opensanctions/followthemoney';
 import { valueToString } from './ftm';
 
@@ -19,8 +18,11 @@ export function yamlifyEntity(entity: Entity): string {
 export async function writeNotes(
 	entities: Entity[],
 	path: string,
-	plugin: FTMBuilderPlugin,
+	vault: Vault,
 ): Promise<void> {
+	if (!vault.getFolderByPath(path)) {
+		await vault.createFolder(path);
+	}
 	for (const entity of entities) {
 		if (!entity.id) {
 			continue;
@@ -28,15 +30,11 @@ export async function writeNotes(
 		const filePath = `${path}/${entity.id}.md`;
 		const fileContent = yamlifyEntity(entity);
 
-		plugin.app.vault.createFolder(path).catch(() => {
-			// folder already exists, ignore
-		});
-
-		const existingFile = plugin.app.vault.getFileByPath(filePath);
-		existingFile
-			? await plugin.app.vault
-					.modify(existingFile, fileContent)
-					.then(() => existingFile)
-			: await plugin.app.vault.create(filePath, fileContent);
+		const existingFile = vault.getFileByPath(filePath);
+		if (existingFile) {
+			await vault.modify(existingFile, fileContent);
+		} else {
+			await vault.create(filePath, fileContent);
+		}
 	}
 }

@@ -1,4 +1,10 @@
-import { Plugin, Notice, WorkspaceLeaf, type App } from 'obsidian';
+import {
+	Plugin,
+	Notice,
+	WorkspaceLeaf,
+	type App,
+	normalizePath,
+} from 'obsidian';
 import { DEFAULT_SETTINGS, FTMBuilderSettingTab } from './settings';
 import type {
 	OpenAlephCollection,
@@ -163,14 +169,22 @@ export default class FTMBuilderPlugin extends Plugin {
 				).hostname
 			: 'local_ftm_entities';
 		const dataset = collection ? collection.name : today;
-		const importPath = `${this.settings.importFolder}/${instanceFolder}/${dataset}`;
+		const importPath = normalizePath(
+			`${this.settings.importFolder}/${instanceFolder}/${dataset}`,
+		);
 		let exportPreview = '';
 		for (const entity of entities) {
 			exportPreview += yamlifyEntity(entity);
 		}
-		new ConfirmNoteModal(this.app, importPath, exportPreview, () => {
-			void writeNotes(entities, importPath, this);
-			new Notice('Saved entities to vault');
+		new ConfirmNoteModal(this.app, importPath, exportPreview, async () => {
+			try {
+				await writeNotes(entities, importPath, this.app.vault);
+				new Notice('Saved entities to vault');
+			} catch (err) {
+				new Notice(
+					`Saving failed: ${err instanceof Error ? err.message : String(err)}`,
+				);
+			}
 		}).open();
 	}
 

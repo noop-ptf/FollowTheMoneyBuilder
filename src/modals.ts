@@ -3,13 +3,13 @@ import { App, Modal } from 'obsidian';
 export class ConfirmNoteModal extends Modal {
 	private notePath: string;
 	private noteText: string;
-	private onConfirm: () => void;
+	private onConfirm: () => Promise<void>;
 
 	constructor(
 		app: App,
 		notePath: string,
 		noteText: string,
-		onConfirm: () => void,
+		onConfirm: () => Promise<void>,
 	) {
 		super(app);
 		this.notePath = notePath;
@@ -50,7 +50,7 @@ export class ConfirmNoteModal extends Modal {
 		});
 		confirmButton.addEventListener('click', () => {
 			this.close();
-			this.onConfirm();
+			void this.onConfirm(); // onConfirm must handle its own errors.
 		});
 
 		const cancelButton = buttonContainer.createEl('button', {
