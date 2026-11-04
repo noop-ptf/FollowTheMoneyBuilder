@@ -57,22 +57,27 @@
 	);
 
 	async function postEntitiesToSelectedCollection() {
-		if (selectedCollection) {
-			new Notice(
-				`Posting ${entities.length} entities to ${selectedCollection.label}`,
-			);
-			try {
-				await bulkEntityUpload(entities, selectedCollection);
-				// Reset report, as upload changes validation result
-				validationReport = undefined;
-				new Notice(
-					`Uploaded ${entities.length} entities to ${selectedCollection.label}`,
-				);
-			} catch (err) {
-				const message =
-					err instanceof Error ? err.message : String(err);
-				new Notice(message);
-			}
+		// Copy to prevent a race condition if these reactive
+		// values are changing during a (longer running) upload.
+		const collection = selectedCollection;
+		const entitiesToUpload = entities;
+		const numEntities = entitiesToUpload.length;
+		const numEntitiesLabel = `${numEntities} ${numEntities > 1 ? 'entities' : 'entity'}`;
+		if (!collection || uploadRunning) {
+			return;
+		}
+		uploadRunning = true;
+		try {
+			new Notice(`Uploading ${numEntitiesLabel} to ${collection.label}`);
+			await bulkEntityUpload(entitiesToUpload, collection);
+			// Reset report, as upload changes validation result
+			validationReport = undefined;
+			new Notice(`Uploaded ${numEntitiesLabel} to ${collection.label}`);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			new Notice(`Upload failed: ${message}`);
+		} finally {
+			uploadRunning = false;
 		}
 	}
 
@@ -82,20 +87,32 @@
 
 	let validationReport = $state<string | undefined>();
 	async function validateUploadSelectedCollection() {
-		if (selectedCollection) {
-			new Notice(`Verifying entities in ${selectedCollection.label}`);
-			try {
-				validationReport = await validateEntityUpload(
-					entities,
-					selectedCollection,
-				);
-			} catch (err) {
-				const message =
-					err instanceof Error ? err.message : String(err);
-				new Notice(message);
-			}
+		// Copy to prevent a race condition if these reactive
+		// values are changing during a (longer running) validation.
+		const collection = selectedCollection;
+		const entitiesToValidate = entities;
+		if (!collection || validationRunning) {
+			return;
+		}
+		validationRunning = true;
+		try {
+			new Notice(`Validating entities in ${collection.label}`);
+			validationReport = await validateEntityUpload(
+				entitiesToValidate,
+				collection,
+			);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			const note = `Validation failed: ${message}`;
+			new Notice(note);
+			validationReport = note;
+		} finally {
+			validationRunning = false;
 		}
 	}
+
+	let uploadRunning = $state(false);
+	let validationRunning = $state(false);
 </script>
 
 <h3>Entities</h3>
@@ -149,12 +166,16 @@
 		{#if !selectedCollection}
 			<p>Select an investigation to upload entities.</p>
 		{:else}
-			<button class="mod-cta" onclick={postEntitiesToSelectedCollection}
+			<button
+				class="mod-cta"
+				onclick={postEntitiesToSelectedCollection}
+				disabled={uploadRunning}
 				>Upload {entities.length}
 				{entities.length === 1 ? 'entity' : 'entities'} to OpenAleph</button
 			>
-			<button onclick={validateUploadSelectedCollection}
-				>Verify upload</button
+			<button
+				onclick={validateUploadSelectedCollection}
+				disabled={validationRunning}>Validate upload</button
 			>
 			{#if validationReport}
 				<pre class="report">{validationReport}</pre>
