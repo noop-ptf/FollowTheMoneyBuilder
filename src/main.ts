@@ -50,12 +50,6 @@ export default class FTMBuilderPlugin extends Plugin {
 				new Notice(message);
 			});
 		});
-
-		this.addCommand({
-			id: 'search-openaleph-instances',
-			name: 'Open search view',
-			callback: () => this.activateView(),
-		});
 	}
 
 	async loadSettings(): Promise<void> {
