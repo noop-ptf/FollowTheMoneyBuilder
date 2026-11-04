@@ -111,14 +111,8 @@ export default class FTMBuilderPlugin extends Plugin {
 	}
 
 	async loadCollections(): Promise<OpenAlephCollection[]> {
-		try {
-			const collections = await getCollections(this.settings, this.app);
-			return collections;
-		} catch (err: unknown) {
-			const message = err instanceof Error ? err.message : String(err);
-			new Notice(message);
-		}
-		return [];
+		const collections = await getCollections(this.settings, this.app);
+		return collections;
 	}
 
 	async bulkEntityUpload(

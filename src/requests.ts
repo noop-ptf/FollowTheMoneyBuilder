@@ -88,9 +88,13 @@ export async function getCollections(
 				apiKey,
 			);
 			result = result.concat(collections);
-		} catch {
+		} catch (err) {
+			// Just print a notice, if fetching the collection fails for one instance,
+			// in order to allow fetching the collections of the other instances.
+			//
+			// TODO: Somehow ripple the error up and display the different results independently?
 			new Notice(
-				`Failed to fetch collection from ${enabledInstance.name}`,
+				`Failed to fetch collection from ${enabledInstance.name}: ${err}`,
 			);
 		}
 	}
