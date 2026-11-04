@@ -14,6 +14,22 @@
 		schemata: Schema[];
 		onremove: () => void;
 	} = $props();
+
+	const caption = $derived.by(() => {
+		let theCaption = 'unknown entity';
+		if (card.entity) {
+			for (const captionProp of card.entity.schema.caption) {
+				const addedProp = card.addedProps.find(
+					(ap) => ap.property.name === captionProp,
+				);
+				if (addedProp && addedProp.values[0]) {
+					return addedProp.values[0];
+				}
+			}
+			return `unknown ${card.entity.schema.label}`;
+		}
+		return theCaption;
+	});
 </script>
 
 <article class="card">
@@ -29,8 +45,7 @@
 				{@attach obsidianIcon('right-triangle')}
 			></div>
 			<div class="caption">
-				{card.entity?.getCaption() ||
-					`unknown ${card.entity?.schema.label || 'entity'}`}
+				{caption}
 			</div>
 		</button>
 		<button
