@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { focusOnMount } from './attachments';
 
 	let {
@@ -11,20 +12,21 @@
 		type: string;
 		value: string | undefined;
 	} = $props();
-	const typeMapping: Record<string, { type: string; placeholder?: string }> =
-		{
-			date: { type: 'text', placeholder: 'YYYY-MM-DD' },
-			phone: { type: 'tel', placeholder: '+49...' },
-			number: { type: 'number' },
-			email: { type: 'email', placeholder: 'jd@example.com' },
-			url: { type: 'url', placeholder: 'https://example.com' },
-		};
+	const typeMapping: Record<
+		string,
+		Pick<HTMLInputAttributes, 'type' | 'placeholder' | 'inputmode'>
+	> = {
+		date: { type: 'text', placeholder: 'YYYY-MM-DD' },
+		phone: { type: 'tel', placeholder: '+49...' },
+		number: { type: 'text', inputmode: 'decimal' },
+		email: { type: 'email', placeholder: 'jd@example.com' },
+		url: { type: 'url', placeholder: 'https://example.com' },
+	};
 </script>
 
 <input
-	type={typeMapping[type]?.type || 'text'}
+	{...typeMapping[type]}
 	{name}
-	placeholder={typeMapping[type]?.placeholder}
 	bind:value
 	{@attach focusOnMount(untrack(() => value))}
 />
