@@ -177,8 +177,9 @@ export async function validateEntityUpload(
 	};
 	const url = new URL('/api/2/entities', instanceUrl);
 	url.searchParams.set('filter:dataset', collectionName);
-	// fetch "all at once" (for now)
-	url.searchParams.set('limit', '100000');
+	// Fetch a reasonable amount (for now). Unlikely that we surpass this.
+	const validationLimit = 100;
+	url.searchParams.set('limit', validationLimit.toString());
 
 	const res = await requestUrl({
 		url: url.toString(),
@@ -188,6 +189,7 @@ export async function validateEntityUpload(
 	});
 	const jsonRes = res.json as unknown as OpenAlephEntityApiResult;
 
+	const exceededLimit = jsonRes.total > jsonRes.results.length;
 	const entityById = new Map(entities.map((e) => [e.id, e]));
 	const seen = new Set<string>();
 	const results: EntityDiff[] = [];
@@ -231,6 +233,11 @@ export async function validateEntityUpload(
 				report += `  ${p.property}: added ${JSON.stringify(p.added)}\n`;
 			}
 		}
+	}
+
+	if (exceededLimit) {
+		report += '\n Validation exceeded the pagination limit. ';
+		report += `Could only validate the first ${validationLimit} entities.`;
 	}
 
 	if (report === '') {
