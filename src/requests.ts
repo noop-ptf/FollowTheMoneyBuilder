@@ -95,7 +95,7 @@ export async function getCollections(
 			// TODO: Somehow ripple the error up and display the different results independently?
 			const message = err instanceof Error ? err.message : String(err);
 			new Notice(
-				`Failed to fetch collection from ${enabledInstance.name}: ${message}`,
+				`Failed to fetch investigations from ${enabledInstance.name}: ${message}`,
 			);
 		}
 	}
