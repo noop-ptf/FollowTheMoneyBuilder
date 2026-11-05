@@ -19,7 +19,7 @@
 	// Schema → entity lifecycle. Guarded by a token so a rapid type-switch
 	// can't let a stale createEntity() resolution clobber a newer one.
 	let creationToken = 0;
-	async function handleSchemaChange(name: string) {
+	async function changeSchema(name: string) {
 		const schema = schemata.find((s) => s.name === name);
 		if (!schema || schema === card.entity?.schema) return;
 		const token = ++creationToken;
@@ -56,7 +56,7 @@
 <SchemaCombobox
 	selectedSchema={card.entity?.schema.name}
 	{schemata}
-	{handleSchemaChange}
+	onSchemaChange={changeSchema}
 	autofocus={card.autofocus}
 />
 
@@ -66,7 +66,7 @@
 			entity={card.entity}
 			bind:ap={() => ap, (v) => (card.addedProps[apIndex] = v)}
 			required={requiredNames.has(ap.property.name)}
-			onremove={() => toggleProp(ap.property)}
+			onRemove={() => toggleProp(ap.property)}
 		/>
 	{/each}
 	{#if availableOthers.length > 0}

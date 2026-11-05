@@ -8,11 +8,11 @@
 	let {
 		card = $bindable(),
 		schemata,
-		onremove,
+		onRemove,
 	}: {
 		card: CardState;
 		schemata: Schema[];
-		onremove: () => void;
+		onRemove: () => void;
 	} = $props();
 
 	const caption = $derived.by(() => {
@@ -51,7 +51,7 @@
 			type="button"
 			class="clickable-icon {card.editing ? '' : 'invisible'}"
 			aria-label="Remove entity"
-			onclick={onremove}
+			onclick={onRemove}
 			{@attach obsidianIcon('trash')}
 		></button>
 	</div>

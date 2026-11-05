@@ -6,9 +6,9 @@
 		groupedItems: { [key: string]: T[] };
 		groupLabels: { [key: string]: string };
 		groupOrder: string[];
-		itemClickHandler: (item: T) => void;
+		onItemClick: (item: T) => void;
 	};
-	let { groupedItems, groupLabels, groupOrder, itemClickHandler }: Props =
+	let { groupedItems, groupLabels, groupOrder, onItemClick }: Props =
 		$props();
 </script>
 
@@ -18,7 +18,7 @@
 		<ul>
 			{#each groupedItems[group] as item (item.name)}
 				<li>
-					<button onclick={() => itemClickHandler(item)}>
+					<button onclick={() => onItemClick(item)}>
 						<span class="label">{item.label}</span>
 						<span class="description">{item.description}</span>
 					</button>

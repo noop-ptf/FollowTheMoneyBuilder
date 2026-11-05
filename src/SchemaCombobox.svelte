@@ -7,12 +7,12 @@
 	let {
 		selectedSchema,
 		schemata,
-		handleSchemaChange,
+		onSchemaChange,
 		autofocus = false,
 	}: {
 		selectedSchema: string | undefined;
 		schemata: Schema[];
-		handleSchemaChange: (name: string) => void;
+		onSchemaChange: (name: string) => void;
 		autofocus?: boolean;
 	} = $props();
 
@@ -38,7 +38,7 @@
 
 <CustomCombobox
 	items={schemaItems}
-	onValueChange={handleSchemaChange}
+	onValueChange={onSchemaChange}
 	value={selectedSchema}
 	{inputProps}
 >

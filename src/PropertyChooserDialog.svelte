@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Dialog from './Dialog.svelte';
 	import GroupedPropertyChooser from './GroupedPropertyChooser.svelte';
-	import { getGroupedProperty, FIELD_GROUPS } from './ftm';
+	import { getGroupedProperties, FIELD_GROUPS } from './ftm';
 	import { fuzzyFilter } from './fuzzy';
 	import type { Property, Schema } from '@opensanctions/followthemoney';
 
@@ -16,7 +16,7 @@
 	} = $props();
 
 	const groupedProperties = $derived(
-		getGroupedProperty(schema, addedProperties),
+		getGroupedProperties(schema, addedProperties),
 	);
 	let open = $state(false);
 	let filterInput = $state<HTMLInputElement>();
@@ -68,7 +68,7 @@
 			groupedItems={filteredGroups}
 			{groupLabels}
 			groupOrder={FIELD_GROUPS.order}
-			itemClickHandler={(p) => {
+			onItemClick={(p) => {
 				onSelectProperty(p);
 				open = false;
 			}}

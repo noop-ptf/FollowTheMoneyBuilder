@@ -336,7 +336,7 @@ function isPropertyGroup(key: string): key is PropertyGroup {
 	return key in FIELD_GROUPS.byProp;
 }
 
-export function getGroupedProperty(
+export function getGroupedProperties(
 	entitySchema?: Schema,
 	filter?: Set<Property>,
 ): {

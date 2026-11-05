@@ -9,12 +9,12 @@
 		entity,
 		ap = $bindable(),
 		required = false,
-		onremove,
+		onRemove,
 	}: {
 		entity: Entity;
 		ap: AddedProperty;
 		required?: boolean;
-		onremove: () => void;
+		onRemove: () => void;
 	} = $props();
 
 	$effect(() => {
@@ -28,7 +28,7 @@
 		type="button"
 		class="clickable-icon field-remove"
 		aria-label="Remove property"
-		onclick={onremove}
+		onclick={onRemove}
 		{@attach obsidianIcon('circle-minus')}
 	></button>
 </div>

@@ -118,7 +118,7 @@
 		<EntityCard
 			bind:card={() => card, (c) => (cards[index] = c)}
 			{schemata}
-			onremove={() => removeCard(index)}
+			onRemove={() => removeCard(index)}
 		/>
 	{/each}
 
