@@ -26,7 +26,7 @@
 	onMount(() => collections.load());
 
 	function refreshWithFeedback(): void {
-		new Notice('Reloading investigations...');
+		new Notice('Reloading investigations…');
 		void collections.refresh();
 	}
 </script>
@@ -62,7 +62,7 @@
 							null)
 				}
 			>
-				<option value="" disabled>Select investigation...</option>
+				<option value="" disabled>Select investigation…</option>
 				{#each $collections.data as collection (keyOf(collection))}
 					<option value={keyOf(collection)}>
 						{collection.label} |

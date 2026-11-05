@@ -187,7 +187,7 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 		return [
 			{
 				name: 'Follow the Money entity folder',
-				desc: 'The created Follow the Money entities will be saved here, as a Markdown note.',
+				desc: 'The created Follow the Money entities will be saved here, as Markdown notes.',
 				control: {
 					type: 'text',
 					key: 'entityFolder',
@@ -196,7 +196,7 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 			},
 			{
 				type: 'page',
-				name: 'Instance Configuration',
+				name: 'Instance configuration',
 				page: () => new InstancesPage(this.plugin, this.app),
 			},
 		];

@@ -77,6 +77,6 @@
 		/>
 	{/if}
 	{#if onDelete}
-		<button onclick={onDelete}>Delete Entity</button>
+		<button onclick={onDelete}>Delete entity</button>
 	{/if}
 {/if}

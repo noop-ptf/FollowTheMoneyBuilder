@@ -23,7 +23,7 @@ export class ConfirmSaveModal extends Modal {
 		contentEl.createEl('h2', { text: 'Save entities to vault' });
 
 		contentEl.createEl('p', {
-			text: `The entities below will all be saved to your vault as separate notes to ${this.folderPath}`,
+			text: `The entities below will all be saved to your vault as separate notes in ${this.folderPath}`,
 		});
 
 		const notePreview = contentEl.createDiv({

@@ -146,7 +146,7 @@
 	bind:selectedCollection
 />
 <h3>
-	Save or Upload<span
+	Save or upload<span
 		class="info-hover"
 		aria-label="Save the entities to your vault or upload them to OpenAleph"
 		{@attach obsidianIcon('info')}
