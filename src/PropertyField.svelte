@@ -5,6 +5,8 @@
 	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
 	import { untrack } from 'svelte';
+	import { getCards, getCurrentCard } from './cardsContext';
+	import { getCardCaption } from './entityCard';
 
 	let {
 		property,
@@ -16,12 +18,31 @@
 		required?: boolean;
 	} = $props();
 
-	const enumValues = $derived(
-		Array.from(property.type.values).map(([k, v]) => ({
+	const cards = getCards();
+	const currentCard = getCurrentCard();
+	const range = $derived(property.getRange());
+	const candidates = $derived(
+		cards.filter(
+			(c) =>
+				c.entity !== undefined &&
+				c.entity.id !== currentCard().entity?.id &&
+				c.entity.schema.isA(range),
+		),
+	);
+
+	const enumValues = $derived.by(() => {
+		if (property.type.name === 'entity') {
+			return candidates.map((card) => ({
+				// The filter in candidates guarantees the existence of entity
+				value: card.entity!.id,
+				label: getCardCaption(card),
+			}));
+		}
+		return Array.from(property.type.values).map(([k, v]) => ({
 			value: k,
 			label: v,
-		})),
-	);
+		}));
+	});
 
 	function addValue() {
 		values.push('');
@@ -47,8 +68,7 @@
            via .values) and date/number/url/email/phone/text/json/html get a
            dedicated widget here. Everything else (address, checksum,
            identifier, ip, mimetype, name, string) falls through to plain text
-           below. entity never reaches this component (filtered out in
-           getCardProperties). -->
+           below. -->
 			<div
 				class="value"
 				onfocusout={(e) => {
@@ -63,7 +83,7 @@
 					}
 				}}
 			>
-				{#if enumValues.length > 0}
+				{#if property.type.name === 'entity' || enumValues.length > 0}
 					<CustomCombobox
 						items={enumValues}
 						bind:value={values[i]}

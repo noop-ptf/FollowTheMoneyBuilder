@@ -1,5 +1,5 @@
 import type { Entity, Property, Schema } from '@opensanctions/followthemoney';
-import { model, isStringValue } from './ftm';
+import { model, valueToString } from './ftm';
 
 export interface AddedProperty {
 	property: Property;
@@ -43,9 +43,7 @@ export function getCardProperties(schema: Schema): {
 	featured: Property[];
 	others: Property[];
 } {
-	const editable = schema
-		.getEditableProperties()
-		.filter((p) => p.type.name !== 'entity');
+	const editable = schema.getEditableProperties();
 	const featuredNames = new Set(
 		schema.getFeaturedProperties().map((p) => p.name),
 	);
@@ -70,9 +68,7 @@ export function buildAddedPropsFromEntity(entity: Entity): AddedProperty[] {
 	return [...featured, ...others]
 		.map((property) => ({
 			property,
-			// Entity-typed properties are already filtered in getCardProperties,
-			// so this filter is just for the typechecker.
-			values: entity.getProperty(property).filter(isStringValue),
+			values: entity.getProperty(property).map(valueToString),
 		}))
 		.filter((ap) => ap.values.length > 0);
 }

@@ -4,6 +4,7 @@
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
 	import { obsidianIcon } from './attachments';
+	import { setCurrentCard } from './cardsContext';
 
 	let {
 		card = $bindable(),
@@ -14,6 +15,8 @@
 		schemata: Schema[];
 		onRemove: () => void;
 	} = $props();
+
+	setCurrentCard(() => card);
 
 	const caption = $derived(getCardCaption(card));
 </script>

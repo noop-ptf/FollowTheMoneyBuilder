@@ -1,10 +1,18 @@
 <script lang="ts">
-	import { type CardState } from './entityCard';
+	import { getCards } from './cardsContext';
+	import { getCardCaption, type CardState } from './entityCard';
 	let {
 		card,
 	}: {
 		card: CardState;
 	} = $props();
+
+	const cards = getCards();
+
+	function getCaption(entityId: string) {
+		const card = cards.find((c) => c.entity?.id === entityId);
+		return card ? getCardCaption(card) : '<unknown entity reference>';
+	}
 </script>
 
 {#if card.entity}
@@ -16,6 +24,8 @@
 						<span aria-label={ap.property.label}>
 							{#if ap.property.type.values.size > 0}
 								{ap.property.type.values.get(value)}
+							{:else if ap.property.type.name === 'entity'}
+								{getCaption(value)}
 							{:else}
 								{value}
 							{/if}

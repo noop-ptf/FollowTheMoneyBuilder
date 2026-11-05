@@ -8,6 +8,7 @@
 	import CollectionSelector from './CollectionSelector.svelte';
 	import type { OpenAlephCollection } from './types';
 	import type { Entity } from '@opensanctions/followthemoney';
+	import { setCards } from './cardsContext';
 
 	let {
 		loadCollections,
@@ -37,6 +38,7 @@
 
 	// The shared store array: only ever mutated in place, never reassigned.
 	const cards = $state<CardState[]>([]);
+	setCards(cards);
 
 	function addCard() {
 		cards.push(createCardState(true));

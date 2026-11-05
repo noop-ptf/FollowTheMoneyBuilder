@@ -43,6 +43,7 @@
 	}
 
 	const displayLabel = $derived(
+		// TODO: Stale entity references will be showing up as empty here.
 		items.find((i) => i.value === value)?.label ?? '',
 	);
 
