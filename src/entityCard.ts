@@ -76,3 +76,18 @@ export function buildAddedPropsFromEntity(entity: Entity): AddedProperty[] {
 		}))
 		.filter((ap) => ap.values.length > 0);
 }
+
+export function getCardCaption(card: CardState): string {
+	if (!card.entity) {
+		return 'unknown entity';
+	}
+	for (const captionProp of card.entity.schema.caption) {
+		const ap = card.addedProps.find(
+			(ap) => ap.property.name === captionProp,
+		);
+		if (ap?.values[0]) {
+			return ap.values[0];
+		}
+	}
+	return `unknown ${card.entity.schema.label}`;
+}

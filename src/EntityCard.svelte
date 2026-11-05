@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Schema } from '@opensanctions/followthemoney';
-	import { type CardState } from './entityCard';
+	import { getCardCaption, type CardState } from './entityCard';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
 	import { obsidianIcon } from './attachments';
@@ -15,20 +15,7 @@
 		onRemove: () => void;
 	} = $props();
 
-	const caption = $derived.by(() => {
-		if (card.entity) {
-			for (const captionProp of card.entity.schema.caption) {
-				const addedProp = card.addedProps.find(
-					(ap) => ap.property.name === captionProp,
-				);
-				if (addedProp && addedProp.values[0]) {
-					return addedProp.values[0];
-				}
-			}
-			return `unknown ${card.entity.schema.label}`;
-		}
-		return 'unknown entity';
-	});
+	const caption = $derived(getCardCaption(card));
 </script>
 
 <article class="card">
