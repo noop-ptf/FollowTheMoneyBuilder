@@ -20,10 +20,10 @@ export class ConfirmNoteModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 
-		contentEl.createEl('h2', { text: 'Confirm entity import' });
+		contentEl.createEl('h2', { text: 'Save entities to vault' });
 
 		contentEl.createEl('p', {
-			text: `The entities below will all be saved to your vault as a note to ${this.notePath}`,
+			text: `The entities below will all be saved to your vault as separate notes to ${this.notePath}`,
 		});
 
 		const notePreview = contentEl.createDiv({

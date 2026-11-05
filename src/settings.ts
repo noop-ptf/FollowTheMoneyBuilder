@@ -151,7 +151,7 @@ class InstancesPage extends SettingPage {
 		containerEl.empty();
 
 		containerEl.createEl('p', {
-			text: 'Add the domain URL and API key for OpenAleph instances, in order to allow Obsidian to search across them simultaneously.',
+			text: 'Add the domain URL and API key for OpenAleph instances, in order to allow Obsidian to fetch investigations and store entities in them.',
 		});
 
 		this.plugin.settings.instances.forEach((instance, index) => {
@@ -187,7 +187,7 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 		return [
 			{
 				name: 'Follow the Money entity folder',
-				desc: 'Importing a Follow the Money entity from an OpenAleph instance will save it here, as a Markdown note.',
+				desc: 'The created Follow the Money entities will be saved here, as a Markdown note.',
 				control: {
 					type: 'text',
 					key: 'importFolder',
