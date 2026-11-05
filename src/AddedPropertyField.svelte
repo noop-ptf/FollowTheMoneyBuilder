@@ -27,7 +27,7 @@
 	<button
 		type="button"
 		class="clickable-icon field-remove"
-		aria-label="Remove field"
+		aria-label="Remove property"
 		onclick={onremove}
 		{@attach obsidianIcon('circle-minus')}
 	></button>

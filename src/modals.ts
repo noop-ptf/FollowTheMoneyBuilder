@@ -1,19 +1,19 @@
 import { App, Modal } from 'obsidian';
 
-export class ConfirmNoteModal extends Modal {
-	private notePath: string;
-	private noteText: string;
+export class ConfirmSaveModal extends Modal {
+	private folderPath: string;
+	private preview: string;
 	private onConfirm: () => Promise<void>;
 
 	constructor(
 		app: App,
-		notePath: string,
-		noteText: string,
+		folderPath: string,
+		preview: string,
 		onConfirm: () => Promise<void>,
 	) {
 		super(app);
-		this.notePath = notePath;
-		this.noteText = noteText;
+		this.folderPath = folderPath;
+		this.preview = preview;
 		this.onConfirm = onConfirm;
 	}
 
@@ -23,7 +23,7 @@ export class ConfirmNoteModal extends Modal {
 		contentEl.createEl('h2', { text: 'Save entities to vault' });
 
 		contentEl.createEl('p', {
-			text: `The entities below will all be saved to your vault as separate notes to ${this.notePath}`,
+			text: `The entities below will all be saved to your vault as separate notes to ${this.folderPath}`,
 		});
 
 		const notePreview = contentEl.createDiv({
@@ -31,9 +31,9 @@ export class ConfirmNoteModal extends Modal {
 		});
 
 		const preview =
-			this.noteText.length > 300
-				? this.noteText.slice(0, 300) + '…'
-				: this.noteText;
+			this.preview.length > 300
+				? this.preview.slice(0, 300) + '…'
+				: this.preview;
 
 		notePreview.createEl('pre', {
 			text: preview,

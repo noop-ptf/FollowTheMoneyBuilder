@@ -18,8 +18,8 @@ import {
 	validateEntityUpload,
 } from './requests';
 import type { Entity } from '@opensanctions/followthemoney';
-import { ConfirmNoteModal } from './modals';
-import { yamlifyEntity, writeNotes } from './noteExport';
+import { ConfirmSaveModal } from './modals';
+import { entityToFrontmatter, saveEntityNotes } from './noteExport';
 
 interface ResizableSidebarSplit {
 	collapsed: boolean;
@@ -155,18 +155,18 @@ export default class FTMBuilderPlugin extends Plugin {
 			? new URL(
 					this.getInstanceSettings(collection.instanceId).instanceUrl,
 				).hostname
-			: 'local_ftm_entities';
+			: 'local_entities';
 		const dataset = collection ? collection.name : today;
-		const importPath = normalizePath(
-			`${this.settings.importFolder}/${instanceFolder}/${dataset}`,
+		const targetPath = normalizePath(
+			`${this.settings.entityFolder}/${instanceFolder}/${dataset}`,
 		);
-		let exportPreview = '';
+		let notesPreview = '';
 		for (const entity of entities) {
-			exportPreview += yamlifyEntity(entity);
+			notesPreview += entityToFrontmatter(entity);
 		}
-		new ConfirmNoteModal(this.app, importPath, exportPreview, async () => {
+		new ConfirmSaveModal(this.app, targetPath, notesPreview, async () => {
 			try {
-				await writeNotes(entities, importPath, this.app.vault);
+				await saveEntityNotes(entities, targetPath, this.app.vault);
 				// TODO: Improve this message.
 				new Notice('Saved entities to vault');
 			} catch (err) {

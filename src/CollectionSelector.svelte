@@ -36,7 +36,7 @@
 		<p>Loading…</p>
 	{:else if $collections.status === 'error' && !$collections.data}
 		<p>
-			Failed to load collections.
+			Failed to load investigations.
 			<button onclick={refreshWithFeedback}>Retry</button>
 		</p>
 	{:else if $collections.data}

@@ -23,7 +23,7 @@ export const DEFAULT_INSTANCE: Omit<OpenAlephInstanceSettings, 'id'> = {
 };
 
 export const DEFAULT_SETTINGS: FTMBuilderPluginSettings = {
-	importFolder: 'followthemarkdown',
+	entityFolder: 'followthemarkdown',
 	instances: [],
 };
 
@@ -124,7 +124,7 @@ class InstancesPage extends SettingPage {
 			}),
 		);
 
-		new Setting(box).setName('Instance domain').addText((text) =>
+		new Setting(box).setName('Instance URL').addText((text) =>
 			text
 				.setPlaceholder('https://search.openaleph.org')
 				.setValue(instance.instanceUrl)
@@ -151,7 +151,7 @@ class InstancesPage extends SettingPage {
 		containerEl.empty();
 
 		containerEl.createEl('p', {
-			text: 'Add the domain URL and API key for OpenAleph instances, in order to allow Obsidian to fetch investigations and store entities in them.',
+			text: 'Add the URL and API key for OpenAleph instances, in order to allow Obsidian to fetch investigations and store entities in them.',
 		});
 
 		this.plugin.settings.instances.forEach((instance, index) => {
@@ -190,7 +190,7 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 				desc: 'The created Follow the Money entities will be saved here, as a Markdown note.',
 				control: {
 					type: 'text',
-					key: 'importFolder',
+					key: 'entityFolder',
 					placeholder: 'followthemarkdown',
 				},
 			},

@@ -78,7 +78,7 @@
 		}
 	}
 
-	function writeEntitiesToVault() {
+	function saveEntitiesToVault() {
 		confirmSaveEntities(entities, selectedCollection);
 	}
 
@@ -156,7 +156,7 @@
 	<p>Create an entity to upload or save.</p>
 {:else}
 	<div class="actions">
-		<button class="mod-cta" onclick={writeEntitiesToVault}
+		<button class="mod-cta" onclick={saveEntitiesToVault}
 			>Save {entities.length}
 			{entities.length === 1 ? 'entity' : 'entities'} to this vault</button
 		>

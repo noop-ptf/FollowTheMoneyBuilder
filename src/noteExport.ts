@@ -2,7 +2,7 @@ import { stringifyYaml, type Vault } from 'obsidian';
 import type { Entity } from '@opensanctions/followthemoney';
 import { valueToString } from './ftm';
 
-export function yamlifyEntity(entity: Entity): string {
+export function entityToFrontmatter(entity: Entity): string {
 	const flatEntity: Record<string, string | string[]> = {
 		schema: entity.schema.name,
 		id: entity.id,
@@ -15,7 +15,7 @@ export function yamlifyEntity(entity: Entity): string {
 	return `---\n${stringifyYaml(flatEntity)}---\n`;
 }
 
-export async function writeNotes(
+export async function saveEntityNotes(
 	entities: Entity[],
 	path: string,
 	vault: Vault,
@@ -28,7 +28,7 @@ export async function writeNotes(
 			continue;
 		}
 		const filePath = `${path}/${entity.id}.md`;
-		const fileContent = yamlifyEntity(entity);
+		const fileContent = entityToFrontmatter(entity);
 
 		const existingFile = vault.getFileByPath(filePath);
 		if (existingFile) {

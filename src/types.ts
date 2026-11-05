@@ -1,5 +1,6 @@
 import type { IEntityDatum } from '@opensanctions/followthemoney';
 
+// The user interface shows this as "investigation"
 export interface OpenAlephCollection {
 	id: string;
 	name: string;
@@ -22,7 +23,7 @@ export interface OpenAlephEntityApiResult {
 }
 
 export interface FTMBuilderPluginSettings {
-	importFolder: string;
+	entityFolder: string;
 	instances: OpenAlephInstanceSettings[];
 }
 
