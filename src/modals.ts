@@ -27,7 +27,7 @@ export class ConfirmNoteModal extends Modal {
 		});
 
 		const notePreview = contentEl.createDiv({
-			cls: 'openaleph-note-preview-container',
+			cls: 'ftmbuilder-note-preview-container',
 		});
 
 		const preview =
@@ -37,7 +37,7 @@ export class ConfirmNoteModal extends Modal {
 
 		notePreview.createEl('pre', {
 			text: preview,
-			cls: 'openaleph-note-preview',
+			cls: 'ftmbuilder-note-preview',
 		});
 
 		const buttonContainer = contentEl.createDiv({

@@ -42,7 +42,7 @@ class InstancesPage extends SettingPage {
 		index: number,
 	): void {
 		const box = containerEl.createDiv({
-			cls: 'openaleph-source-box',
+			cls: 'ftmbuilder-source-box',
 		});
 
 		new Setting(box)
@@ -70,11 +70,11 @@ class InstancesPage extends SettingPage {
 						instance.connectionValid ? 'badge-check' : 'plug-zap',
 					);
 					btn.extraSettingsEl.classList.toggle(
-						'openaleph-instance-connection-valid',
+						'ftmbuilder-instance-connection-valid',
 						instance.connectionValid,
 					);
 					btn.extraSettingsEl.classList.toggle(
-						'openaleph-instance-connection-invalid',
+						'ftmbuilder-instance-connection-invalid',
 						!instance.connectionValid,
 					);
 				};
@@ -85,13 +85,13 @@ class InstancesPage extends SettingPage {
 				btn.onClick(async () => {
 					btn.setDisabled(true);
 					btn.extraSettingsEl.classList.remove(
-						'openaleph-instance-connection-valid',
+						'ftmbuilder-instance-connection-valid',
 					);
 					btn.extraSettingsEl.classList.remove(
-						'openaleph-instance-connection-invalid',
+						'ftmbuilder-instance-connection-invalid',
 					);
 					btn.setIcon('loader-2');
-					btn.extraSettingsEl.addClass('openaleph-spin');
+					btn.extraSettingsEl.addClass('ftmbuilder-spin');
 
 					try {
 						const apiKey = this.app.secretStorage.getSecret(
@@ -108,7 +108,7 @@ class InstancesPage extends SettingPage {
 								: 'Could not connect to instance. Check the URL and the API key.',
 						);
 					} finally {
-						btn.extraSettingsEl.classList.remove('openaleph-spin');
+						btn.extraSettingsEl.classList.remove('ftmbuilder-spin');
 						btn.setDisabled(false);
 						setIdleIcon();
 					}
@@ -186,8 +186,8 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 	getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			{
-				name: 'FollowTheMoney entity folder',
-				desc: 'Importing a FollowTheMoney entity from an OpenAleph instance will save it here, as a Markdown note.',
+				name: 'Follow the Money entity folder',
+				desc: 'Importing a Follow the Money entity from an OpenAleph instance will save it here, as a Markdown note.',
 				control: {
 					type: 'text',
 					key: 'importFolder',

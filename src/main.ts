@@ -199,7 +199,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		// In order to clean up previous styles we need to actively throw
 		// them away, otherwise they just pile up on every CSS change.
 		document
-			.querySelectorAll('head style[id^="oab-"]')
+			.querySelectorAll('head style[id^="ftmbuilder-"]')
 			.forEach((el) => el.remove());
 	}
 }

@@ -22,7 +22,7 @@ const context = await esbuild.context({
 				// such that components with identical style blocks don't
 				// share a hash.
 				cssHash: ({ css, filename, hash }) =>
-					`oab-${hash(filename + css)}`,
+					`ftmbuilder-${hash(filename + css)}`,
 			},
 			preprocess: sveltePreprocess(),
 			// Ignore compiler warnings from third-party .svelte sources (e.g. bits-ui)
