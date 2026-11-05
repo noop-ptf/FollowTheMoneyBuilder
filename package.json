@@ -1,6 +1,6 @@
 {
 	"name": "followthemoney-builder",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Manually build structured Follow the Money data and upload to OpenAleph instances.",
 	"main": "main.js",
 	"type": "module",
