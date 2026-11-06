@@ -1,11 +1,14 @@
-import { ItemView, WorkspaceLeaf } from 'obsidian';
+import { ItemView, TextFileView, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import FTMBuilderPlugin from './main';
 import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
+import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
 
-export const VIEW_TYPE_FTM_BUILDER = 'followthemoney-builder-view';
+export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
+export const VIEW_TYPE_FTM_BUILDER_NETWORK =
+	'followthemoney-builder-network-view';
 
 export class FTMBuilderView extends ItemView {
 	grid: ReturnType<typeof EntityCardGrid> | undefined;
@@ -17,7 +20,7 @@ export class FTMBuilderView extends ItemView {
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE_FTM_BUILDER;
+		return VIEW_TYPE_FTM_BUILDER_LIST;
 	}
 
 	getDisplayText(): string {
@@ -60,5 +63,52 @@ export class FTMBuilderView extends ItemView {
 			await unmount(this.grid);
 			this.grid = undefined;
 		}
+	}
+}
+
+export class FTMNetworkView extends TextFileView {
+	private network: ReturnType<typeof FTMNetworkDiagram> | undefined;
+
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getIcon(): string {
+		return 'workflow';
+	}
+
+	getDisplayText(): string {
+		return this.file ? this.file.basename : 'FtM Network';
+	}
+
+	getViewData(): string {
+		return this.data;
+	}
+
+	setViewData(data: string, _clear: boolean): void {
+		this.data = data;
+	}
+
+	async onOpen(): Promise<void> {
+		this.network = mount(FTMNetworkDiagram, {
+			target: this.contentEl,
+			props: {},
+		});
+	}
+
+	async onClose(): Promise<void> {
+		if (this.network) {
+			// Remove the EntityCardGrid from the ItemView.
+			await unmount(this.network);
+			this.network = undefined;
+		}
+	}
+
+	clear(): void {
+		this.data = '';
+	}
+
+	getViewType(): string {
+		return VIEW_TYPE_FTM_BUILDER_NETWORK;
 	}
 }

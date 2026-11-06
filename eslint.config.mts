@@ -63,6 +63,7 @@ export default defineConfig(
 					brands: [
 						'OpenAleph',
 						'FtM',
+						'FtM Network',
 						'Follow the Money',
 						'Follow the Money Builder',
 						'Obsidian',

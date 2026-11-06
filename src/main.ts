@@ -2,6 +2,7 @@ import {
 	Plugin,
 	Notice,
 	WorkspaceLeaf,
+	TFile,
 	type App,
 	normalizePath,
 } from 'obsidian';
@@ -11,7 +12,12 @@ import type {
 	OpenAlephInstanceSettings,
 	FTMBuilderPluginSettings,
 } from './types';
-import { FTMBuilderView, VIEW_TYPE_FTM_BUILDER } from './view';
+import {
+	FTMBuilderView,
+	FTMNetworkView,
+	VIEW_TYPE_FTM_BUILDER_NETWORK,
+	VIEW_TYPE_FTM_BUILDER_LIST,
+} from './view';
 import {
 	getCollections,
 	bulkEntityUpload,
@@ -30,6 +36,8 @@ interface ResizableSidebarSplit {
 	collapse(): void;
 }
 
+const FTM_NETWORK_EXTENSIONS = ['ftm-network'];
+
 export default class FTMBuilderPlugin extends Plugin {
 	settings!: FTMBuilderPluginSettings;
 
@@ -39,12 +47,29 @@ export default class FTMBuilderPlugin extends Plugin {
 		this.addSettingTab(new FTMBuilderSettingTab(this.app, this));
 
 		this.registerView(
-			VIEW_TYPE_FTM_BUILDER,
+			VIEW_TYPE_FTM_BUILDER_LIST,
 			(leaf) => new FTMBuilderView(leaf, this),
+		);
+		this.registerView(
+			VIEW_TYPE_FTM_BUILDER_NETWORK,
+			(leaf) => new FTMNetworkView(leaf),
+		);
+
+		this.registerExtensions(
+			FTM_NETWORK_EXTENSIONS,
+			VIEW_TYPE_FTM_BUILDER_NETWORK,
 		);
 
 		this.addRibbonIcon('factory', 'Follow the Money Builder', () => {
-			this.activateView().catch((err: unknown) => {
+			this.activateEntityListView().catch((err: unknown) => {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			});
+		});
+
+		this.addRibbonIcon('workflow', 'Create new FtM Network', () => {
+			this.createNetworkView().catch((err: unknown) => {
 				const message =
 					err instanceof Error ? err.message : String(err);
 				new Notice(message);
@@ -79,17 +104,17 @@ export default class FTMBuilderPlugin extends Plugin {
 		}
 	}
 
-	async activateView(): Promise<void> {
+	async activateEntityListView(): Promise<void> {
 		const { workspace } = this.app;
 
 		let leaf: WorkspaceLeaf | null =
-			workspace.getLeavesOfType(VIEW_TYPE_FTM_BUILDER)[0] ?? null;
+			workspace.getLeavesOfType(VIEW_TYPE_FTM_BUILDER_LIST)[0] ?? null;
 
 		if (!leaf) {
 			leaf = workspace.getLeftLeaf(false);
 			if (!leaf) return;
 			await leaf.setViewState({
-				type: VIEW_TYPE_FTM_BUILDER,
+				type: VIEW_TYPE_FTM_BUILDER_LIST,
 				active: true,
 			});
 		}
@@ -102,6 +127,46 @@ export default class FTMBuilderPlugin extends Plugin {
 		}
 
 		await workspace.revealLeaf(leaf);
+	}
+
+	async openFTMNetworkFile(file: TFile): Promise<void> {
+		const leaf = this.app.workspace.getLeaf(false);
+		await leaf.setViewState({
+			type: VIEW_TYPE_FTM_BUILDER_NETWORK,
+			state: { file: file.path },
+			active: true,
+		});
+	}
+
+	// Creates a new ftm-network file, similarly to "Create new canvas"
+	async createNetworkView(): Promise<void> {
+		const file = await this.createUntitledFile();
+		if (!file) {
+			return;
+		}
+		const leaf = this.app.workspace.getLeaf(false);
+		await leaf.setViewState({
+			type: VIEW_TYPE_FTM_BUILDER_NETWORK,
+			active: true,
+			state: { file: file.path },
+		});
+	}
+
+	async createUntitledFile(): Promise<TFile | null> {
+		try {
+			let path = normalizePath(`Untitled.${FTM_NETWORK_EXTENSIONS[0]}`);
+			for (let n = 2; this.app.vault.getAbstractFileByPath(path); n++)
+				path = normalizePath(
+					`Untitled ${n}.${FTM_NETWORK_EXTENSIONS[0]}`,
+				);
+			const initialContent = '{}';
+			return await this.app.vault.create(path, initialContent);
+		} catch (e) {
+			new Notice(
+				`FtM Builder: could not create the FtM network (${(e as Error).message})`,
+			);
+			return null;
+		}
 	}
 
 	async loadCollections(): Promise<OpenAlephCollection[]> {
