@@ -159,7 +159,7 @@ export default class FTMBuilderPlugin extends Plugin {
 				path = normalizePath(
 					`Untitled ${n}.${FTM_NETWORK_EXTENSIONS[0]}`,
 				);
-			const initialContent = '{}';
+			const initialContent = '';
 			return await this.app.vault.create(path, initialContent);
 		} catch (e) {
 			new Notice(

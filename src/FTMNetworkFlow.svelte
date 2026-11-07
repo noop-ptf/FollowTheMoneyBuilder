@@ -19,13 +19,22 @@
 	} from './entityCard';
 	import { listEntitySchemata, model } from './ftm';
 	import EntityEditor from './EntityEditor.svelte';
+	import type { NetworkState } from './networkState.svelte';
 
 	const uid = $props.id();
 
-	export const cards = $state<CardState[]>([]);
-	export const canvasPositions = $state<
-		Record<string, { x: number; y: number }>
-	>({});
+	let {
+		network,
+		onChange,
+	}: {
+		network: NetworkState;
+		onChange: () => void;
+	} = $props();
+
+	const cards = $derived(network.cards);
+	const canvasPositions = $derived<Record<string, { x: number; y: number }>>(
+		network.positions,
+	);
 
 	const nodeTypes = { entity: EntityNode };
 	const schemata = listEntitySchemata();
@@ -117,6 +126,7 @@
 		canvasPositions[card.key] = pendingInput.flowPos;
 		cards.push(card);
 		pendingInput = null;
+		onChange();
 	}
 
 	function onKeydown(
@@ -141,11 +151,13 @@
 		if (index !== -1) cards.splice(index, 1);
 		delete canvasPositions[selectedCard.key];
 		closeSidebar();
+		onChange();
 	}
 
 	function onNodeDragStop({ targetNode }: { targetNode: Node | null }) {
 		if (!targetNode) return;
 		canvasPositions[targetNode.id] = { ...targetNode.position };
+		onChange();
 	}
 </script>
 

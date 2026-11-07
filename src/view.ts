@@ -5,6 +5,7 @@ import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
+import { NetworkState } from './networkState.svelte';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
 export const VIEW_TYPE_FTM_BUILDER_NETWORK =
@@ -67,7 +68,8 @@ export class FTMBuilderView extends ItemView {
 }
 
 export class FTMNetworkView extends TextFileView {
-	private network: ReturnType<typeof FTMNetworkDiagram> | undefined;
+	private component: ReturnType<typeof FTMNetworkDiagram> | undefined;
+	private network: NetworkState = new NetworkState();
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -81,31 +83,35 @@ export class FTMNetworkView extends TextFileView {
 		return this.file ? this.file.basename : 'FtM Network';
 	}
 
+	// The data to save to the file before closing it
 	getViewData(): string {
-		return this.data;
+		return this.network.serialize();
 	}
 
+	// Sets the data loaded from the file after opening it
 	setViewData(data: string, _clear: boolean): void {
-		this.data = data;
+		this.network.load(data);
 	}
 
 	async onOpen(): Promise<void> {
-		this.network = mount(FTMNetworkDiagram, {
+		this.component = mount(FTMNetworkDiagram, {
 			target: this.contentEl,
-			props: {},
+			props: {
+				network: this.network,
+				onChange: () => this.requestSave(),
+			},
 		});
 	}
 
 	async onClose(): Promise<void> {
-		if (this.network) {
-			// Remove the EntityCardGrid from the ItemView.
-			await unmount(this.network);
-			this.network = undefined;
+		if (this.component) {
+			await unmount(this.component);
+			this.component = undefined;
 		}
 	}
 
 	clear(): void {
-		this.data = '';
+		this.network.load('');
 	}
 
 	getViewType(): string {
