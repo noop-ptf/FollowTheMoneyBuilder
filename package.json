@@ -14,7 +14,7 @@
 		"svelte-check": "svelte-check --tsconfig tsconfig.json",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"allchecks": "npm run build && npm run lint && npm run svelte-check && npm run format:check && echo \"all checks passed\""
+		"all-checks": "npm run build && npm run lint && npm run svelte-check && npm run format:check && echo \"\nAll checks passed!\""
 	},
 	"keywords": [],
 	"license": "AGPL-3.0-or-later",
