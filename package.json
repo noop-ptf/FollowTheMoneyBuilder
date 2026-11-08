@@ -13,7 +13,8 @@
 		"lint": "eslint .",
 		"svelte-check": "svelte-check --tsconfig tsconfig.json",
 		"format": "prettier --write .",
-		"format:check": "prettier --check ."
+		"format:check": "prettier --check .",
+		"allchecks": "npm run build && npm run lint && npm run svelte-check && npm run format:check && echo \"all checks passed\""
 	},
 	"keywords": [],
 	"license": "AGPL-3.0-or-later",
