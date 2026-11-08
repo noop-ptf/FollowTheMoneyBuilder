@@ -10,6 +10,7 @@
 		type XYPosition,
 		type Node,
 		ViewportPortal,
+		type IsValidConnection,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import ContextPanel from './ContextPanel.svelte';
@@ -189,6 +190,41 @@
 		canvasPositions[targetNode.id] = { ...targetNode.position };
 		onChange();
 	}
+
+	/*
+	For a new connection, I want to
+	- check validity with isValidConnection => only allow those that can actually be realized
+	- after adding the pending connection I want to be able to select the connection type
+		- either it's an Interval, which means we'll have it's own Entity for the connection
+		- or it's a simple property
+	- after the user chose, I want to reflect the connection type on the FtM Entity, and I want to know what kind of connection we're dealing with
+	*/
+	// We start with a pending connection, then turn it into an actual persisted FtM connection
+
+	// TODO: This maybe has to be efficiently calculated / stored,
+	// as this callback can run many times while the handle is hovered.
+	// As compatibility is on Schema level, it should be easy to precompute.
+	const isValidConnection: IsValidConnection = (connection) => {
+		// 1. What is the source entity type?
+		const sourceEntity = cards.find(
+			(c) => c.key === connection.source,
+		)?.entity;
+		if (sourceEntity === undefined) return false;
+		// 2. What is the target entity type?
+		const targetEntity = cards.find(
+			(c) => c.key === connection.target,
+		)?.entity;
+		if (targetEntity === undefined) return false;
+		// 3. (What) relationships are possible in between them? => This will also be relevant later
+		for (const property of sourceEntity.schema
+			.getEditableProperties()
+			.filter((p) => p.type.isEntity)) {
+			if (targetEntity.schema.isA(property.getRange())) {
+				return true;
+			}
+		}
+		return false;
+	};
 </script>
 
 <div class="workspace">
@@ -201,6 +237,7 @@
 			onnodeclick={onNodeClick}
 			onnodedragstop={onNodeDragStop}
 			onpaneclick={closeSidebar}
+			{isValidConnection}
 			zoomOnDoubleClick={false}
 			fitView
 			colorMode="system"
