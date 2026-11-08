@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		type Edge,
 		SvelteFlow,
 		useSvelteFlow,
 		Controls,
@@ -17,7 +18,7 @@
 		getCardCaption,
 		type CardState,
 	} from './entityCard';
-	import { listEntitySchemata, model } from './ftm';
+	import { listEntitySchemata, model, valueToString } from './ftm';
 	import EntityEditor from './EntityEditor.svelte';
 	import type { NetworkState } from './networkState.svelte';
 
@@ -39,7 +40,36 @@
 	const nodeTypes = { entity: EntityNode };
 	const schemata = listEntitySchemata();
 
-	let edges = $state.raw([]);
+	let edges = $derived.by(() => {
+		const entities = cards
+			.map((c) => c.entity)
+			.filter((e) => e !== undefined);
+		const id2key = new Map(
+			cards
+				.filter((c) => c.entity !== undefined)
+				.map((c) => [c.entity!.id, c.key]),
+		);
+		const result: Edge[] = [];
+		for (const entity of entities) {
+			// Not entirely sure how to enumerate edges... I think only an entity type can be an edge?
+			for (const property of entity
+				.getProperties()
+				.filter((p) => p.type.isEntity)) {
+				const sourceEntityId = id2key.get(entity.id);
+				if (!sourceEntityId) continue;
+				for (const value of entity.getProperty(property)) {
+					const targetEntityId = id2key.get(valueToString(value));
+					if (!targetEntityId) continue;
+					result.push({
+						id: `${sourceEntityId}-${targetEntityId}`,
+						source: sourceEntityId,
+						target: targetEntityId,
+					});
+				}
+			}
+		}
+		return result;
+	});
 
 	// Nodes are a projection of the shared `cards` store. <SvelteFlow> writes
 	// back into `nodes` (drag, selection, measurements); a writable $derived
@@ -49,7 +79,7 @@
 		cards.map((card) => ({
 			id: card.key,
 			type: 'entity',
-			position: canvasPositions[card.key] ?? { x: 0, y: 0 },
+			position: { ...(canvasPositions[card.key] ?? { x: 0, y: 0 }) },
 			data: {
 				caption: getCardCaption(card),
 				schema: card.entity?.schema,
