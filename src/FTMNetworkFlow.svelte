@@ -10,15 +10,25 @@
 		type XYPosition,
 		type Node,
 		ViewportPortal,
+		type OnConnectEnd,
+		type Connection,
 		type IsValidConnection,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
+	import PendingEdge from './PendingEdge.svelte';
 	import ContextPanel from './ContextPanel.svelte';
 	import { createCardStateFromEntity } from './entityCard';
-	import { listEntitySchemata, model, valueToString } from './ftm';
+	import {
+		listEntitySchemata,
+		model,
+		valueToString,
+		edgeTypes as ftmEdgeTypes,
+	} from './ftm';
+	import type EdgeType from './EdgeType';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import EntityEditor from './EntityEditor.svelte';
 	import type { NetworkState } from './networkState.svelte';
+	import EdgeTypeChooser from './EdgeTypeChooser.svelte';
 
 	const uid = $props.id();
 
@@ -36,9 +46,13 @@
 	);
 
 	const nodeTypes = { entity: EntityNode };
+	// TODO: pending connection: Indicate that we're still working on that one.
+	const edgeTypes = { pending: PendingEdge };
 	const schemata = listEntitySchemata();
 
+	let edgesVersion = $state(0);
 	let edges = $derived.by(() => {
+		edgesVersion;
 		const result: Edge[] = [];
 		for (const entity of entities) {
 			// Not entirely sure how to enumerate edges... I think only an entity type can be an edge?
@@ -65,6 +79,8 @@
 	// back into `nodes` (drag, selection, measurements); a writable $derived
 	// keeps those overrides until `entities`/`canvasPositions` change, at which
 	// point it recomputes. Drags persist via onNodeDragStop -> canvasPositions.
+	//
+	// TODO: turn this into a raw state and rather keep the entities in networkState.
 	let nodes = $derived.by(() =>
 		entities.map((entity) => ({
 			id: entity.id,
@@ -77,7 +93,7 @@
 		})),
 	);
 
-	// Cards created outside the canvas (e.g. in the grid) have no position yet.
+	// Entities created outside the canvas (e.g. in the grid) have no position yet.
 	// Lay them out in a grid below the already-positioned nodes, and persist
 	// the result so they stay put rather than reflowing as other nodes move.
 	const LAYOUT = { cols: 4, dx: 220, dy: 110 };
@@ -103,9 +119,19 @@
 	});
 
 	let pendingInput = $state<{ flowPos: XYPosition } | null>(null);
+	let pendingEdgeId = $state<string | null>(null);
+	type PendingSelectRelationshipType = {
+		position: XYPosition;
+		edgeId?: string;
+		source?: Entity;
+		target?: Entity;
+		edgeTypes?: EdgeType[];
+	};
+	let pendingSelectRelationshipType =
+		$state<PendingSelectRelationshipType | null>(null);
 	let inputEl = $state<HTMLInputElement>();
 
-	// A direct reference into `cards`, so sidebar edits flow to the node face
+	// A direct reference into `entities`, so sidebar edits flow to the node face
 	// (and the grid, and storage) without any writeback.
 	let selectedEntity = $state<Entity | null>(null);
 
@@ -150,6 +176,7 @@
 		if (event.key === 'Escape') pendingInput = null;
 	}
 
+	// TODO: rename to handle...?
 	function onNodeClick({ node }: { node: Node }) {
 		if (node.type !== 'entity') return;
 		selectedEntity = entities.find((e) => e.id === node.id) ?? null;
@@ -168,6 +195,7 @@
 		onChange();
 	}
 
+	// TODO: rename to handle...?
 	function onNodeDragStop({ targetNode }: { targetNode: Node | null }) {
 		if (!targetNode) return;
 		canvasPositions[targetNode.id] = { ...targetNode.position };
@@ -204,6 +232,53 @@
 		}
 		return false;
 	};
+	function handleBeforeConnect(connection: Connection): Edge {
+		const edgeId = `${connection.source}-${connection.sourceHandle}-${connection.target}-${connection.targetHandle}`;
+		pendingEdgeId = edgeId;
+		return {
+			...connection,
+			id: edgeId,
+			type: 'pending',
+			animated: true,
+		};
+	}
+
+	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
+		if (event instanceof TouchEvent) {
+			throw new Error('Mobile not supported');
+		}
+		if (!connectionState.isValid) {
+			return;
+		}
+		const flowPos = screenToFlowPosition({
+			x: event.clientX,
+			y: event.clientY,
+		});
+		const sourceEntity = entities.find(
+			(e) => e.id === connectionState.fromNode?.id,
+		);
+		if (sourceEntity === undefined) return;
+		const targetEntity = entities.find(
+			(e) => e.id === connectionState.toNode?.id,
+		);
+		if (targetEntity === undefined) return;
+		const edgeTypes = getEdgeTypes(sourceEntity, targetEntity);
+		pendingSelectRelationshipType = {
+			position: flowPos,
+			source: sourceEntity,
+			target: targetEntity,
+			edgeTypes,
+		};
+	};
+
+	function getEdgeTypes(source: Entity, target: Entity): EdgeType[] {
+		if (source && target) {
+			return ftmEdgeTypes.filter(
+				(et) => et.match(source, target) || et.match(target, source),
+			);
+		}
+		return [];
+	}
 </script>
 
 <div class="workspace">
@@ -213,10 +288,13 @@
 			bind:nodes
 			bind:edges
 			{nodeTypes}
+			{edgeTypes}
 			onnodeclick={onNodeClick}
 			onnodedragstop={onNodeDragStop}
 			onpaneclick={closeSidebar}
 			{isValidConnection}
+			onbeforeconnect={handleBeforeConnect}
+			onconnectend={handleConnectEnd}
 			zoomOnDoubleClick={false}
 			fitView
 			colorMode="system"
@@ -233,6 +311,58 @@
 							onblur={() => commit()}
 							placeholder="Node label…"
 						/>
+					</div>
+				{/if}
+				{#if pendingSelectRelationshipType && pendingSelectRelationshipType.edgeTypes}
+					<div
+						class="nodrag nopan"
+						style="position:absolute; pointer-events:all; left:{pendingSelectRelationshipType
+							.position.x}px; top:{pendingSelectRelationshipType
+							.position.y}px;"
+					>
+						<EdgeTypeChooser
+							items={pendingSelectRelationshipType.edgeTypes}
+							onSelect={(value: string) => {
+								// TODO: set the Edge in the Entity data
+
+								const chosenEdgeType = ftmEdgeTypes.find(
+									(et) => et.key === value,
+								);
+								if (!pendingSelectRelationshipType) {
+									return;
+								}
+								if (chosenEdgeType) {
+									const s =
+										pendingSelectRelationshipType.source;
+									const t =
+										pendingSelectRelationshipType.target;
+									if (!s || !t) {
+										return;
+									}
+									if (chosenEdgeType.isPropertyEdgeType()) {
+										s.setProperty(
+											chosenEdgeType.property!,
+											t.id,
+										);
+									} else {
+										// TODO: we need to add the edge entity with source and target accordingly
+										// see: https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L279
+									}
+								}
+
+								// drop the pending edge
+								edges = edges.filter(
+									(e) => e.id !== pendingEdgeId,
+								);
+								pendingEdgeId = null;
+
+								// then close the Dialog by resetting the state
+								pendingSelectRelationshipType = null;
+								// TODO: get rid of this hack by properly organizing the state
+								edgesVersion++;
+								onChange();
+							}}
+						></EdgeTypeChooser>
 					</div>
 				{/if}
 			</ViewportPortal>

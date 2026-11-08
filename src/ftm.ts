@@ -1,7 +1,9 @@
 import { Model, defaultModel } from '@opensanctions/followthemoney';
 import type { Schema, Property, Value } from '@opensanctions/followthemoney';
+import EdgeType from './EdgeType';
 
 export const model = new Model(defaultModel);
+export const edgeTypes = EdgeType.getAll(model);
 
 export const FIELD_GROUPS = {
 	order: [
@@ -322,7 +324,7 @@ export function valueToString(value: Value): string {
 export function listEntitySchemata() {
 	return model
 		.getSchemata()
-		.filter((s) => !s.generated && !s.abstract && s.isA('Thing'))
+		.filter((s) => !s.generated && !s.abstract)
 		.sort((a, b) => a.label.localeCompare(b.label));
 }
 
