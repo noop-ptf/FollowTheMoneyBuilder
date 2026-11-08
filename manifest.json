@@ -5,5 +5,5 @@
 	"minAppVersion": "1.13.0",
 	"description": "Manually build structured Follow the Money data and upload to OpenAleph instances.",
 	"author": "noop",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }
