@@ -46,6 +46,10 @@ export class NetworkState {
 			this.positions = {};
 			return;
 		}
+		// TODO: Better handling of invalid incoming data.
+		// - try-catch in the caller (as we throw a lot here)
+		// - allow an error state in NetworkState
+		// - display the error in the view instead of the SvelteFlow canvas.
 		let data: unknown;
 		try {
 			data = JSON.parse(text);
@@ -65,6 +69,18 @@ export class NetworkState {
 	serialize(): string {
 		const text = JSON.stringify(this.toPersisted());
 		return text;
+	}
+
+	addCardFromExternal(pc: PersistedCard) {
+		const card = this.rehydrateCard(pc);
+		const existingCardIndex = this.cards.findIndex(
+			(c) => c.key === card.key,
+		);
+		if (existingCardIndex !== -1) {
+			this.cards[existingCardIndex] = card;
+		} else {
+			this.cards.push(card);
+		}
 	}
 
 	private rehydrateCard(pc: PersistedCard): CardState {

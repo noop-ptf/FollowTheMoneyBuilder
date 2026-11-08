@@ -1,11 +1,12 @@
-import { ItemView, TextFileView, WorkspaceLeaf } from 'obsidian';
+import { ItemView, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import FTMBuilderPlugin from './main';
 import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
-import { NetworkState } from './networkState.svelte';
+import { NetworkState, type PersistedCard } from './networkState.svelte';
+import type { CardState } from './entityCard';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
 export const VIEW_TYPE_FTM_BUILDER_NETWORK =
@@ -54,8 +55,29 @@ export class FTMBuilderView extends ItemView {
 						(instance) => instance.id === id,
 					)?.name,
 				openPluginSettings: () => this.plugin.openPluginSettings(),
+				addToNetwork: (card: CardState) => this.addToNetwork(card),
 			},
 		});
+	}
+
+	async addToNetwork(card: CardState) {
+		const leaf = this.app.workspace.getLeavesOfType(
+			VIEW_TYPE_FTM_BUILDER_NETWORK,
+		)[0];
+		// TODO: Maybe instead call revealLeaf? https://docs.obsidian.md/plugins/guides/defer-views
+		await leaf?.loadIfDeferred();
+		const view = leaf?.view;
+		if (view && view instanceof FTMNetworkView) {
+			// TODO: where to actually put the serialization?
+			// Or should we rather send the plain Entity?
+			const persistedCard = {
+				key: card.key,
+				entity: card.entity?.toJSON(),
+			};
+			view.addCardFromExternal(persistedCard);
+		} else {
+			new Notice('No FtM Network found to transfer the entity to');
+		}
 	}
 
 	async onClose(): Promise<void> {
@@ -91,6 +113,10 @@ export class FTMNetworkView extends TextFileView {
 	// Sets the data loaded from the file after opening it
 	setViewData(data: string, _clear: boolean): void {
 		this.network.load(data);
+	}
+
+	addCardFromExternal(persistedCard: PersistedCard) {
+		this.network.addCardFromExternal(persistedCard);
 	}
 
 	async onOpen(): Promise<void> {

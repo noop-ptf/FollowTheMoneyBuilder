@@ -17,6 +17,7 @@
 		confirmSaveEntities,
 		getInstanceName,
 		openPluginSettings,
+		addToNetwork,
 	}: {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
 		bulkEntityUpload: (
@@ -33,6 +34,7 @@
 		) => void;
 		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
+		addToNetwork: (card: CardState) => Promise<void>;
 	} = $props();
 	const schemata: Schema[] = listEntitySchemata();
 
@@ -120,6 +122,7 @@
 		<EntityCard
 			bind:card={() => card, (c) => (cards[index] = c)}
 			{schemata}
+			{addToNetwork}
 			onRemove={() => removeCard(index)}
 		/>
 	{/each}

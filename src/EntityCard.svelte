@@ -9,10 +9,12 @@
 	let {
 		card = $bindable(),
 		schemata,
+		addToNetwork,
 		onRemove,
 	}: {
 		card: CardState;
 		schemata: Schema[];
+		addToNetwork: (card: CardState) => Promise<void>;
 		onRemove: () => void;
 	} = $props();
 
@@ -46,7 +48,7 @@
 		></button>
 	</div>
 	{#if card.editing}
-		<EntityEditor bind:card {schemata} />
+		<EntityEditor bind:card {schemata} {addToNetwork} />
 	{:else}
 		<EntitySummary {card} />
 	{/if}

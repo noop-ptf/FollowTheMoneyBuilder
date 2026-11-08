@@ -9,10 +9,12 @@
 	let {
 		card = $bindable(),
 		schemata,
+		addToNetwork,
 		onDelete,
 	}: {
 		card: CardState;
 		schemata: Schema[];
+		addToNetwork?: (card: CardState) => Promise<void>;
 		onDelete?: () => void;
 	} = $props();
 
@@ -75,6 +77,9 @@
 			addedProperties={new Set(card.addedProps.map((ap) => ap.property))}
 			onSelectProperty={toggleProp}
 		/>
+	{/if}
+	{#if addToNetwork}
+		<button onclick={() => addToNetwork(card)}>==&gt;</button>
 	{/if}
 	{#if onDelete}
 		<button onclick={onDelete}>Delete entity</button>

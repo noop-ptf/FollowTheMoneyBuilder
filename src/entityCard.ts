@@ -6,6 +6,7 @@ export interface AddedProperty {
 	values: string[];
 }
 
+// TODO: add toJSON functionality for self-serialization?
 export interface CardState {
 	key: string; // stable id for #each/DnD; independent of entity.id
 	entity: Entity | undefined; // created lazily once a schema is first chosen
