@@ -6,9 +6,11 @@
 	let {
 		network,
 		onChange,
+		chooseEntityType,
 	}: {
 		network: NetworkState;
 		onChange: () => void;
+		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
 	} = $props();
 </script>
 
@@ -16,7 +18,7 @@
 	<!-- The Provider needs to be in its own component, 
 		 such that useSvelteFlow and other hooks can work. -->
 	<SvelteFlowProvider>
-		<FTMNetworkFlow {network} {onChange} />
+		<FTMNetworkFlow {network} {onChange} {chooseEntityType} />
 	</SvelteFlowProvider>
 </div>
 

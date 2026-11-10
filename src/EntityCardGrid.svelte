@@ -3,7 +3,10 @@
 	import { obsidianIcon } from './attachments';
 	import type { Schema } from '@opensanctions/followthemoney';
 	import { listEntitySchemata } from './ftm';
-	import { createCardState, type CardState } from './entityCard';
+	import {
+		createCardStateFromEntityType,
+		type CardState,
+	} from './entityCard';
 	import EntityCard from './EntityCard.svelte';
 	import CollectionSelector from './CollectionSelector.svelte';
 	import type { OpenAlephCollection } from './types';
@@ -18,6 +21,7 @@
 		getInstanceName,
 		openPluginSettings,
 		addToNetwork,
+		chooseEntityType,
 	}: {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
 		bulkEntityUpload: (
@@ -35,6 +39,7 @@
 		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
 		addToNetwork: (card: CardState) => Promise<void>;
+		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
 	} = $props();
 	const schemata: Schema[] = listEntitySchemata();
 
@@ -43,7 +48,14 @@
 	setCards(() => cards);
 
 	function addCard() {
-		cards.push(createCardState(true));
+		chooseEntityType(async (entityType?: string) => {
+			if (entityType) {
+				const card = await createCardStateFromEntityType(entityType);
+				cards.push(card);
+			} else {
+				new Notice("No entity type selected, can't create entity");
+			}
+		});
 	}
 
 	function removeCard(index: number) {

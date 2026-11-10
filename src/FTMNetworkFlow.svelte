@@ -37,9 +37,11 @@
 	let {
 		network,
 		onChange,
+		chooseEntityType,
 	}: {
 		network: NetworkState;
 		onChange: () => void;
+		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
 	} = $props();
 
 	const entities = $derived(network.entities);
@@ -181,11 +183,9 @@
 		) {
 			return;
 		}
-		const flowPos = screenToFlowPosition({
-			x: event.clientX,
-			y: event.clientY,
-		});
-		pendingInput = { flowPos };
+		chooseEntityType(
+			() => /* create entity */ new Promise((resolve) => resolve()),
+		);
 	}
 
 	// focus the input as soon as it exists in the DOM

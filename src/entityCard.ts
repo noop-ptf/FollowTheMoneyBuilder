@@ -24,6 +24,21 @@ export function createCardState(autofocus = false): CardState {
 	);
 }
 
+export async function createCardStateFromEntityType(
+	entityType: string,
+): Promise<CardState> {
+	const entity = await model.createEntity(entityType);
+	const { featured } = getCardProperties(entity.schema);
+	const addedProps = featured.map((p) => ({ property: p, values: [] }));
+	return {
+		key: model.generateRandomId(),
+		entity,
+		addedProps,
+		autofocus: false,
+		editing: true,
+	};
+}
+
 // Canonical constructor: builds a CardState from an (optional) entity.
 export function createCardStateFromEntity(
 	key: string,

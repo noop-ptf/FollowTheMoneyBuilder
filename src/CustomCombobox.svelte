@@ -172,6 +172,7 @@ side, the component will still be type-checked correctly.
 		background-color: var(--suggestion-background);
 		backdrop-filter: var(--suggestion-backdrop-filter);
 		border-radius: var(--radius-m);
+		z-index: var(--layer-menu);
 	}
 
 	:global(.options [data-combobox-item]) {

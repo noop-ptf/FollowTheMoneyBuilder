@@ -24,7 +24,7 @@ import {
 	validateEntityUpload,
 } from './requests';
 import type { Entity } from '@opensanctions/followthemoney';
-import { ConfirmSaveModal } from './modals';
+import { ConfirmSaveModal, ChooseEntityTypeModal } from './modals';
 import { entityToFrontmatter, saveEntityNotes } from './noteExport';
 
 interface ResizableSidebarSplit {
@@ -52,7 +52,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		);
 		this.registerView(
 			VIEW_TYPE_FTM_BUILDER_NETWORK,
-			(leaf) => new FTMNetworkView(leaf),
+			(leaf) => new FTMNetworkView(leaf, this),
 		);
 
 		this.registerExtensions(
@@ -231,6 +231,10 @@ export default class FTMBuilderPlugin extends Plugin {
 				);
 			}
 		}).open();
+	}
+
+	chooseEntityType(callback: (value?: string) => Promise<void>) {
+		new ChooseEntityTypeModal(this.app, callback).open();
 	}
 
 	getInstanceSettings(id: string): OpenAlephInstanceSettings {
