@@ -11,6 +11,7 @@
 		ViewportPortal,
 		type OnConnectEnd,
 		type IsValidConnection,
+		type OnDelete,
 		type OnBeforeConnect,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
@@ -283,6 +284,20 @@
 		}
 		return [];
 	}
+
+	const handleDelete: OnDelete<Node, FtMFlowEdge> = ({
+		edges: deletedEdges,
+	}) => {
+		for (const edge of deletedEdges) {
+			if (edge.type === 'property') {
+				const entity = entities.find((e) => e.id === edge.source);
+				if (entity) {
+					entity.getProperty(edge.data.property).remove(edge.target);
+				}
+			}
+		}
+		onChange();
+	};
 </script>
 
 <div class="workspace">
@@ -299,6 +314,7 @@
 			{isValidConnection}
 			onbeforeconnect={handleBeforeConnect}
 			onconnectend={handleConnectEnd}
+			ondelete={handleDelete}
 			zoomOnDoubleClick={false}
 			fitView
 			colorMode="system"
