@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type EdgeType from './EdgeType';
-	type Props = { items: EdgeType[]; onSelect: (value: string) => void };
+	import type LinkType from './LinkType';
+	type Props = { items: LinkType[]; onSelect: (value: string) => void };
 	const { items, onSelect }: Props = $props();
 </script>
 

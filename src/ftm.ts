@@ -1,9 +1,9 @@
 import { Model, defaultModel } from '@opensanctions/followthemoney';
 import type { Schema, Property, Value } from '@opensanctions/followthemoney';
-import EdgeType from './EdgeType';
+import LinkType from './LinkType';
 
 export const model = new Model(defaultModel);
-export const edgeTypes = EdgeType.getAll(model);
+export const linkTypes = LinkType.getAll(model);
 
 export const FIELD_GROUPS = {
 	order: [

@@ -1,7 +1,7 @@
 // Copied from https://github.com/openaleph/openaleph/blob/aae62831fae48d347f037d4dc43db100d6b69ea0/ui/src/react-ftm/types/EdgeType.ts
 import { Entity, Model, Schema, Property } from '@opensanctions/followthemoney';
 
-class EdgeType {
+class LinkType {
 	public schema?: Schema;
 	public property?: Property;
 	public label: string;
@@ -39,22 +39,22 @@ class EdgeType {
 		return false;
 	}
 
-	isPropertyEdgeType() {
+	isPropertyLinkType() {
 		return this.property !== undefined;
 	}
 
-	static getAll(model: Model): EdgeType[] {
-		const types = new Array<EdgeType>();
+	static getAll(model: Model): LinkType[] {
+		const types = new Array<LinkType>();
 		model.getSchemata().forEach((schema) => {
-			types.push(new EdgeType(schema));
+			types.push(new LinkType(schema));
 		});
 		model.getProperties().forEach((prop) => {
 			if (prop.type.grouped && !prop.stub && prop.hasRange) {
-				types.push(new EdgeType(undefined, prop));
+				types.push(new LinkType(undefined, prop));
 			}
 		});
 		return types.sort((a, b) => a.label.localeCompare(b.label));
 	}
 }
 
-export default EdgeType;
+export default LinkType;

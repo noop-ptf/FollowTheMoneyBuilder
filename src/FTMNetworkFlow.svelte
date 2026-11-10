@@ -18,17 +18,12 @@
 	import PendingEdge from './PendingEdge.svelte';
 	import ContextPanel from './ContextPanel.svelte';
 	import { createCardStateFromEntity } from './entityCard';
-	import {
-		listEntitySchemata,
-		model,
-		valueToString,
-		edgeTypes as ftmEdgeTypes,
-	} from './ftm';
-	import type EdgeType from './EdgeType';
+	import { listEntitySchemata, model, valueToString, linkTypes } from './ftm';
+	import type LinkType from './LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import EntityEditor from './EntityEditor.svelte';
 	import type { NetworkState } from './networkState.svelte';
-	import EdgeTypeChooser from './EdgeTypeChooser.svelte';
+	import LinkTypeChooser from './LinkTypeChooser.svelte';
 
 	const uid = $props.id();
 
@@ -125,7 +120,7 @@
 		edgeId?: string;
 		source?: Entity;
 		target?: Entity;
-		edgeTypes?: EdgeType[];
+		linkTypes?: LinkType[];
 	};
 	let pendingSelectRelationshipType =
 		$state<PendingSelectRelationshipType | null>(null);
@@ -262,18 +257,18 @@
 			(e) => e.id === connectionState.toNode?.id,
 		);
 		if (targetEntity === undefined) return;
-		const edgeTypes = getEdgeTypes(sourceEntity, targetEntity);
+		const linkTypes = getLinkTypes(sourceEntity, targetEntity);
 		pendingSelectRelationshipType = {
 			position: flowPos,
 			source: sourceEntity,
 			target: targetEntity,
-			edgeTypes,
+			linkTypes,
 		};
 	};
 
-	function getEdgeTypes(source: Entity, target: Entity): EdgeType[] {
+	function getLinkTypes(source: Entity, target: Entity): LinkType[] {
 		if (source && target) {
-			return ftmEdgeTypes.filter(
+			return linkTypes.filter(
 				(et) => et.match(source, target) || et.match(target, source),
 			);
 		}
@@ -313,25 +308,25 @@
 						/>
 					</div>
 				{/if}
-				{#if pendingSelectRelationshipType && pendingSelectRelationshipType.edgeTypes}
+				{#if pendingSelectRelationshipType && pendingSelectRelationshipType.linkTypes}
 					<div
 						class="nodrag nopan"
 						style="position:absolute; pointer-events:all; left:{pendingSelectRelationshipType
 							.position.x}px; top:{pendingSelectRelationshipType
 							.position.y}px;"
 					>
-						<EdgeTypeChooser
-							items={pendingSelectRelationshipType.edgeTypes}
+						<LinkTypeChooser
+							items={pendingSelectRelationshipType.linkTypes}
 							onSelect={(value: string) => {
 								// TODO: set the Edge in the Entity data
 
-								const chosenEdgeType = ftmEdgeTypes.find(
+								const chosenLinkType = linkTypes.find(
 									(et) => et.key === value,
 								);
 								if (!pendingSelectRelationshipType) {
 									return;
 								}
-								if (chosenEdgeType) {
+								if (chosenLinkType) {
 									const s =
 										pendingSelectRelationshipType.source;
 									const t =
@@ -339,9 +334,9 @@
 									if (!s || !t) {
 										return;
 									}
-									if (chosenEdgeType.isPropertyEdgeType()) {
+									if (chosenLinkType.isPropertyLinkType()) {
 										s.setProperty(
-											chosenEdgeType.property!,
+											chosenLinkType.property!,
 											t.id,
 										);
 									} else {
@@ -362,7 +357,7 @@
 								edgesVersion++;
 								onChange();
 							}}
-						></EdgeTypeChooser>
+						></LinkTypeChooser>
 					</div>
 				{/if}
 			</ViewportPortal>
