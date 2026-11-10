@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		type Edge,
 		SvelteFlow,
 		useSvelteFlow,
 		Controls,
@@ -11,8 +10,8 @@
 		type Node,
 		ViewportPortal,
 		type OnConnectEnd,
-		type Connection,
 		type IsValidConnection,
+		type OnBeforeConnect,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import PendingEdge from './PendingEdge.svelte';
@@ -24,6 +23,11 @@
 	import EntityEditor from './EntityEditor.svelte';
 	import type { NetworkState } from './networkState.svelte';
 	import LinkTypeChooser from './LinkTypeChooser.svelte';
+	import type {
+		FtMFlowNode,
+		FtMFlowEdge,
+		PropertyFlowEdge,
+	} from './flowTypes';
 
 	const uid = $props.id();
 
@@ -48,9 +52,8 @@
 	let edgesVersion = $state(0);
 	let edges = $derived.by(() => {
 		edgesVersion;
-		const result: Edge[] = [];
+		const result: FtMFlowEdge[] = [];
 		for (const entity of entities) {
-			// Not entirely sure how to enumerate edges... I think only an entity type can be an edge?
 			for (const property of entity
 				.getProperties()
 				.filter((p) => p.type.isEntity)) {
@@ -59,11 +62,17 @@
 				for (const value of entity.getProperty(property)) {
 					const targetEntityId = valueToString(value);
 					if (!targetEntityId) continue;
-					result.push({
-						id: `${sourceEntityId}-${targetEntityId}`,
+					const newEdge: PropertyFlowEdge = {
+						// TODO: this ID is not enough, as there can be multiple edges between source and target
+						id: `${sourceEntityId}:${property.name}:${targetEntityId}`,
 						source: sourceEntityId,
 						target: targetEntityId,
-					});
+						data: {
+							property: property.name,
+						},
+						type: 'property',
+					};
+					result.push(newEdge);
 				}
 			}
 		}
@@ -76,7 +85,7 @@
 	// point it recomputes. Drags persist via onNodeDragStop -> canvasPositions.
 	//
 	// TODO: turn this into a raw state and rather keep the entities in networkState.
-	let nodes = $derived.by(() =>
+	let nodes: FtMFlowNode[] = $derived.by(() =>
 		entities.map((entity) => ({
 			id: entity.id,
 			type: 'entity',
@@ -210,7 +219,7 @@
 	// TODO: This maybe has to be efficiently calculated / stored,
 	// as this callback can run many times while the handle is hovered.
 	// As compatibility is on Schema level, it should be easy to precompute.
-	const isValidConnection: IsValidConnection = (connection) => {
+	const isValidConnection: IsValidConnection<FtMFlowEdge> = (connection) => {
 		// 1. What is the source entity type?
 		const sourceEntity = entities.find((e) => e.id === connection.source);
 		if (sourceEntity === undefined) return false;
@@ -227,7 +236,7 @@
 		}
 		return false;
 	};
-	function handleBeforeConnect(connection: Connection): Edge {
+	const handleBeforeConnect: OnBeforeConnect<FtMFlowEdge> = (connection) => {
 		const edgeId = `${connection.source}-${connection.sourceHandle}-${connection.target}-${connection.targetHandle}`;
 		pendingEdgeId = edgeId;
 		return {
@@ -236,7 +245,7 @@
 			type: 'pending',
 			animated: true,
 		};
-	}
+	};
 
 	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
 		if (event instanceof TouchEvent) {
