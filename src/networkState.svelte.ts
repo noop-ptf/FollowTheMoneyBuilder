@@ -8,7 +8,7 @@ export interface PersistedCard {
 	entity?: IEntityDatum;
 }
 
-export interface PersistedInvestigation {
+export interface PersistedNetwork {
 	version: 1;
 	cards: PersistedCard[];
 	positions: Record<string, XYPosition>;
@@ -24,7 +24,7 @@ function isPersistedCard(v: unknown): v is PersistedCard {
 function isXYPosition(v: unknown): v is XYPosition {
 	return isRecord(v) && typeof v.x === 'number' && typeof v.y === 'number';
 }
-function isPersistedInvestigation(v: unknown): v is PersistedInvestigation {
+function isPersistedNetwork(v: unknown): v is PersistedNetwork {
 	return (
 		isRecord(v) &&
 		v.version === 1 &&
@@ -56,12 +56,12 @@ export class NetworkState {
 		} catch {
 			throw new Error('Invalid JSON while loading FtM Network');
 		}
-		if (!isPersistedInvestigation(data)) {
+		if (!isPersistedNetwork(data)) {
 			throw new Error(
 				'Detected incompatible data while loading FtM Network',
 			);
 		}
-		const { cards, positions }: PersistedInvestigation = data;
+		const { cards, positions }: PersistedNetwork = data;
 		this.cards = cards.map((c) => this.rehydrateCard(c));
 		this.positions = positions;
 	}
@@ -88,7 +88,7 @@ export class NetworkState {
 		return createCardStateFromEntity(pc.key, entity);
 	}
 
-	private toPersisted(): PersistedInvestigation {
+	private toPersisted(): PersistedNetwork {
 		return {
 			version: 1,
 			cards: this.cards.map((c) => ({
