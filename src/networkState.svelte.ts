@@ -1,16 +1,11 @@
-import { createCardStateFromEntity, type CardState } from './entityCard';
 import { type XYPosition } from '@xyflow/svelte';
-import { type IEntityDatum } from '@opensanctions/followthemoney';
+import type { IEntityDatum, Entity } from '@opensanctions/followthemoney';
 import { model } from './ftm';
 
-export interface PersistedCard {
-	key: string;
-	entity?: IEntityDatum;
-}
-
+export type PersistedEntity = IEntityDatum;
 export interface PersistedNetwork {
 	version: 1;
-	cards: PersistedCard[];
+	entities: PersistedEntity[];
 	positions: Record<string, XYPosition>;
 }
 
@@ -18,8 +13,12 @@ export interface PersistedNetwork {
 function isRecord(v: unknown): v is Record<string, unknown> {
 	return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
-function isPersistedCard(v: unknown): v is PersistedCard {
-	return isRecord(v) && typeof v.key === 'string';
+function isPersistedEntity(v: unknown): v is PersistedEntity {
+	// At least we have an id and a schema, doesn't check the optional fields,
+	// that will be checked later by trying to parse it in rehydrateEntity...
+	return (
+		isRecord(v) && typeof v.id === 'string' && typeof v.schema === 'string'
+	);
 }
 function isXYPosition(v: unknown): v is XYPosition {
 	return isRecord(v) && typeof v.x === 'number' && typeof v.y === 'number';
@@ -28,21 +27,21 @@ function isPersistedNetwork(v: unknown): v is PersistedNetwork {
 	return (
 		isRecord(v) &&
 		v.version === 1 &&
-		Array.isArray(v.cards) &&
-		v.cards.every(isPersistedCard) &&
+		Array.isArray(v.entities) &&
+		v.entities.every(isPersistedEntity) &&
 		isRecord(v.positions) &&
 		Object.values(v.positions).every(isXYPosition)
 	);
 }
 
 export class NetworkState {
-	cards = $state<CardState[]>([]);
+	entities = $state<Entity[]>([]);
 	positions = $state<Record<string, XYPosition>>({});
 
 	load(text: string): void {
 		// An empty text needs to be initialized.
 		if (text === '') {
-			this.cards = [];
+			this.entities = [];
 			this.positions = {};
 			return;
 		}
@@ -61,8 +60,8 @@ export class NetworkState {
 				'Detected incompatible data while loading FtM Network',
 			);
 		}
-		const { cards, positions }: PersistedNetwork = data;
-		this.cards = cards.map((c) => this.rehydrateCard(c));
+		const { entities, positions }: PersistedNetwork = data;
+		this.entities = entities.map((e) => this.rehydrateEntity(e));
 		this.positions = positions;
 	}
 
@@ -71,30 +70,29 @@ export class NetworkState {
 		return text;
 	}
 
-	addCardFromExternal(pc: PersistedCard) {
-		const card = this.rehydrateCard(pc);
-		const existingCardIndex = this.cards.findIndex(
-			(c) => c.key === card.key,
+	addEntityFromExternal(pe: PersistedEntity) {
+		const entity = this.rehydrateEntity(pe);
+		const existingEntityIndex = this.entities.findIndex(
+			(e) => e.id === entity.id,
 		);
-		if (existingCardIndex !== -1) {
-			this.cards[existingCardIndex] = card;
+		if (existingEntityIndex !== -1) {
+			this.entities[existingEntityIndex] = entity;
 		} else {
-			this.cards.push(card);
+			this.entities.push(entity);
 		}
 	}
 
-	private rehydrateCard(pc: PersistedCard): CardState {
-		const entity = pc.entity ? model.getEntity(pc.entity) : undefined;
-		return createCardStateFromEntity(pc.key, entity);
+	// Wrapping this is a bit questionable, as it's only used in two
+	// places locally. But we might add error handling or change the
+	// format of PersistedEntity later (maybe turning it into a reference only).
+	private rehydrateEntity(pe: PersistedEntity): Entity {
+		return model.getEntity(pe);
 	}
 
 	private toPersisted(): PersistedNetwork {
 		return {
 			version: 1,
-			cards: this.cards.map((c) => ({
-				key: c.key,
-				entity: c.entity?.toJSON(),
-			})),
+			entities: this.entities.map((e) => e.toJSON()),
 			positions: { ...this.positions },
 		};
 	}

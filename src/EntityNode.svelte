@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
-	import type { Entity, Schema } from '@opensanctions/followthemoney';
+	import type { Schema } from '@opensanctions/followthemoney';
 	import { getSchemaCategory } from './schemaStyle';
 	import SchemaIcon from './SchemaIcon.svelte';
 
 	type EntityNodeData = {
 		caption: string;
 		schema?: Schema;
-		entity?: Entity;
 	};
 
 	let { data }: NodeProps & { data: EntityNodeData } = $props();

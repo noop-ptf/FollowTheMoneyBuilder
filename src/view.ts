@@ -5,7 +5,7 @@ import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
-import { NetworkState, type PersistedCard } from './networkState.svelte';
+import { NetworkState, type PersistedEntity } from './networkState.svelte';
 import type { CardState } from './entityCard';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
@@ -68,13 +68,11 @@ export class FTMBuilderView extends ItemView {
 		await leaf?.loadIfDeferred();
 		const view = leaf?.view;
 		if (view && view instanceof FTMNetworkView) {
-			// TODO: where to actually put the serialization?
-			// Or should we rather send the plain Entity?
-			const persistedCard = {
-				key: card.key,
-				entity: card.entity?.toJSON(),
-			};
-			view.addCardFromExternal(persistedCard);
+			if (!card.entity) {
+				new Notice('No entity found to transfer');
+				return;
+			}
+			view.addEntityFromExternal(card.entity.toJSON());
 		} else {
 			new Notice('No FtM Network found to transfer the entity to');
 		}
@@ -115,8 +113,8 @@ export class FTMNetworkView extends TextFileView {
 		this.network.load(data);
 	}
 
-	addCardFromExternal(persistedCard: PersistedCard) {
-		this.network.addCardFromExternal(persistedCard);
+	addEntityFromExternal(persistedEntity: PersistedEntity) {
+		this.network.addEntityFromExternal(persistedEntity);
 	}
 
 	async onOpen(): Promise<void> {
