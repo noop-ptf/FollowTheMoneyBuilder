@@ -285,6 +285,38 @@
 		return [];
 	}
 
+	function createLink(linkType: string) {
+		// TODO: set the Edge in the Entity data
+
+		const chosenLinkType = linkTypes.find((et) => et.key === linkType);
+		if (!pendingSelectRelationshipType) {
+			return;
+		}
+		if (chosenLinkType) {
+			const s = pendingSelectRelationshipType.source;
+			const t = pendingSelectRelationshipType.target;
+			if (!s || !t) {
+				return;
+			}
+			if (chosenLinkType.isPropertyLinkType()) {
+				s.setProperty(chosenLinkType.property!, t.id);
+			} else {
+				// TODO: we need to add the edge entity with source and target accordingly
+				// see: https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L279
+			}
+		}
+
+		// drop the pending edge
+		edges = edges.filter((e) => e.id !== pendingEdgeId);
+		pendingEdgeId = null;
+
+		// then close the Dialog by resetting the state
+		pendingSelectRelationshipType = null;
+		// TODO: get rid of this hack by properly organizing the state
+		edgesVersion++;
+		onChange();
+	}
+
 	const handleDelete: OnDelete<Node, FtMFlowEdge> = ({
 		edges: deletedEdges,
 	}) => {
@@ -342,46 +374,7 @@
 					>
 						<LinkTypeChooser
 							items={pendingSelectRelationshipType.linkTypes}
-							onSelect={(value: string) => {
-								// TODO: set the Edge in the Entity data
-
-								const chosenLinkType = linkTypes.find(
-									(et) => et.key === value,
-								);
-								if (!pendingSelectRelationshipType) {
-									return;
-								}
-								if (chosenLinkType) {
-									const s =
-										pendingSelectRelationshipType.source;
-									const t =
-										pendingSelectRelationshipType.target;
-									if (!s || !t) {
-										return;
-									}
-									if (chosenLinkType.isPropertyLinkType()) {
-										s.setProperty(
-											chosenLinkType.property!,
-											t.id,
-										);
-									} else {
-										// TODO: we need to add the edge entity with source and target accordingly
-										// see: https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L279
-									}
-								}
-
-								// drop the pending edge
-								edges = edges.filter(
-									(e) => e.id !== pendingEdgeId,
-								);
-								pendingEdgeId = null;
-
-								// then close the Dialog by resetting the state
-								pendingSelectRelationshipType = null;
-								// TODO: get rid of this hack by properly organizing the state
-								edgesVersion++;
-								onChange();
-							}}
+							onSelect={createLink}
 						></LinkTypeChooser>
 					</div>
 				{/if}
