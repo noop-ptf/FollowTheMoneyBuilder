@@ -28,7 +28,9 @@
 		FtMFlowNode,
 		FtMFlowEdge,
 		PropertyFlowEdge,
+		InterstitialFlowEdge,
 	} from './flowTypes';
+	import InterstitialEdge from './InterstitialEdge.svelte';
 
 	const uid = $props.id();
 
@@ -47,7 +49,7 @@
 
 	const nodeTypes = { entity: EntityNode };
 	// TODO: pending connection: Indicate that we're still working on that one.
-	const edgeTypes = { pending: PendingEdge };
+	const edgeTypes = { pending: PendingEdge, interstitial: InterstitialEdge };
 	const schemata = listEntitySchemata();
 
 	let edgesVersion = $state(0);
@@ -55,25 +57,49 @@
 		edgesVersion;
 		const result: FtMFlowEdge[] = [];
 		for (const entity of entities) {
-			for (const property of entity
-				.getProperties()
-				.filter((p) => p.type.isEntity)) {
-				const sourceEntityId = entity.id;
-				if (!sourceEntityId) continue;
-				for (const value of entity.getProperty(property)) {
-					const targetEntityId = valueToString(value);
-					if (!targetEntityId) continue;
-					const newEdge: PropertyFlowEdge = {
-						// TODO: this ID is not enough, as there can be multiple edges between source and target
-						id: `${sourceEntityId}:${property.name}:${targetEntityId}`,
-						source: sourceEntityId,
-						target: targetEntityId,
-						data: {
-							property: property.name,
-						},
-						type: 'property',
-					};
-					result.push(newEdge);
+			// interstitial edge
+			if (entity.schema.isEdge && entity.schema.edge) {
+				const edge = entity.schema.edge;
+				for (const sourceValue of entity.getProperty(edge.source)) {
+					for (const targetValue of entity.getProperty(edge.target)) {
+						const sourceEntityId = valueToString(sourceValue);
+						const targetEntityId = valueToString(targetValue);
+
+						const newEdge: InterstitialFlowEdge = {
+							id: `${sourceEntityId}<${entity.id}>${targetEntityId}`,
+							source: sourceEntityId,
+							target: targetEntityId,
+							data: {
+								interstitialEntityId: entity.id,
+								label:
+									entity.schema.edge.label ||
+									entity.schema.label,
+							},
+							type: 'interstitial',
+						};
+						result.push(newEdge);
+					}
+				}
+			} else {
+				for (const property of entity
+					.getProperties()
+					.filter((p) => p.type.isEntity)) {
+					const sourceEntityId = entity.id;
+					if (!sourceEntityId) continue;
+					for (const value of entity.getProperty(property)) {
+						const targetEntityId = valueToString(value);
+						if (!targetEntityId) continue;
+						const newEdge: PropertyFlowEdge = {
+							id: `${sourceEntityId}:${property.name}:${targetEntityId}`,
+							source: sourceEntityId,
+							target: targetEntityId,
+							data: {
+								property: property.name,
+							},
+							type: 'property',
+						};
+						result.push(newEdge);
+					}
 				}
 			}
 		}
@@ -87,15 +113,17 @@
 	//
 	// TODO: turn this into a raw state and rather keep the entities in networkState.
 	let nodes: FtMFlowNode[] = $derived.by(() =>
-		entities.map((entity) => ({
-			id: entity.id,
-			type: 'entity',
-			position: { ...(canvasPositions[entity.id] ?? { x: 0, y: 0 }) },
-			data: {
-				caption: entity.getCaption(),
-				schema: entity.schema,
-			},
-		})),
+		entities
+			.filter((e) => !e.schema.isEdge)
+			.map((entity) => ({
+				id: entity.id,
+				type: 'entity',
+				position: { ...(canvasPositions[entity.id] ?? { x: 0, y: 0 }) },
+				data: {
+					caption: entity.getCaption(),
+					schema: entity.schema,
+				},
+			})),
 	);
 
 	// Entities created outside the canvas (e.g. in the grid) have no position yet.
@@ -341,6 +369,11 @@
 				if (entity) {
 					entity.getProperty(edge.data.property).remove(edge.target);
 				}
+			} else if (edge.type === 'interstitial') {
+				const index = entities.findIndex(
+					(e) => e.id === edge.data.interstitialEntityId,
+				);
+				if (index !== -1) entities.splice(index, 1);
 			}
 		}
 		onChange();
