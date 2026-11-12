@@ -318,8 +318,16 @@
 	}
 
 	const handleDelete: OnDelete<Node, FtMFlowEdge> = ({
+		nodes: deletedNodes,
 		edges: deletedEdges,
 	}) => {
+		for (const node of deletedNodes) {
+			// TODO: handle removal of edges, if there are any referencing this entity
+			// TODO: extract this code and merge/deduplicate with deleteSelectedNode.
+			const index = entities.findIndex((e) => e.id === node.id);
+			if (index !== -1) entities.splice(index, 1);
+			delete canvasPositions[node.id];
+		}
 		for (const edge of deletedEdges) {
 			if (edge.type === 'property') {
 				const entity = entities.find((e) => e.id === edge.source);
