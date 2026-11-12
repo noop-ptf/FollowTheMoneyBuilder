@@ -285,7 +285,9 @@
 		return [];
 	}
 
-	function createLink(linkType: string) {
+	// This function is orienting itself on onEdgeCreate of OpenAleph
+	// https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L261
+	async function createLink(linkType: string) {
 		// TODO: set the Edge in the Entity data
 
 		const chosenLinkType = linkTypes.find((et) => et.key === linkType);
@@ -300,9 +302,14 @@
 			}
 			if (chosenLinkType.isPropertyLinkType()) {
 				s.setProperty(chosenLinkType.property!, t.id);
-			} else {
-				// TODO: we need to add the edge entity with source and target accordingly
-				// see: https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L279
+			} else if (chosenLinkType.schema && chosenLinkType.schema.edge) {
+				const interstitialEntity = await model.createEntity(
+					chosenLinkType.schema,
+				);
+				const edge = chosenLinkType.schema.edge;
+				interstitialEntity.setProperty(edge.source, s.id);
+				interstitialEntity.setProperty(edge.target, t.id);
+				entities.push(interstitialEntity);
 			}
 		}
 
