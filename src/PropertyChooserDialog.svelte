@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Dialog from './Dialog.svelte';
-	import GroupedPropertyChooser from './GroupedPropertyChooser.svelte';
+	import GroupedItemChooser from './GroupedItemChooser.svelte';
 	import { getGroupedProperties, FIELD_GROUPS } from './ftm';
 	import { fuzzyFilter } from './fuzzy';
 	import type { Property, Schema } from '@opensanctions/followthemoney';
@@ -57,14 +57,14 @@
 	}}
 >
 	{#snippet title()}
-		Property Selection
+		Property selection
 	{/snippet}
 	{#snippet description()}
 		Choose a property to add to the entity.
 	{/snippet}
 	<input type="text" bind:this={filterInput} bind:value={searchValue} />
 	<div class="scroll">
-		<GroupedPropertyChooser
+		<GroupedItemChooser
 			groupedItems={filteredGroups}
 			{groupLabels}
 			groupOrder={FIELD_GROUPS.order}
@@ -72,7 +72,7 @@
 				onSelectProperty(p);
 				open = false;
 			}}
-		></GroupedPropertyChooser>
+		></GroupedItemChooser>
 	</div>
 </Dialog>
 
