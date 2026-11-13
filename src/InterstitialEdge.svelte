@@ -27,6 +27,7 @@
 
 <BaseEdge {id} path={edgePath} />
 {#if data}
+	<!-- TODO: is it possible to select the edge on label click? -->
 	<EdgeLabel x={labelX} y={labelY}>
 		<div class="edge-label">
 			{data.label}

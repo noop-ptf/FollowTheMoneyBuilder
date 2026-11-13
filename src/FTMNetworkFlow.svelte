@@ -341,15 +341,21 @@
 			}
 		}
 
+		// TODO: find a better name. linkCreationCleanup?
+		cancelLinkCreation();
+
+		// TODO: get rid of this hack by properly organizing the state
+		edgesVersion++;
+		onChange();
+	}
+
+	function cancelLinkCreation() {
 		// drop the pending edge
 		edges = edges.filter((e) => e.id !== pendingEdgeId);
 		pendingEdgeId = null;
 
 		// then close the Dialog by resetting the state
 		pendingSelectRelationshipType = null;
-		// TODO: get rid of this hack by properly organizing the state
-		edgesVersion++;
-		onChange();
 	}
 
 	const handleDelete: OnDelete<Node, FtMFlowEdge> = ({
@@ -421,8 +427,9 @@
 							.position.y}px;"
 					>
 						<LinkTypeChooser
-							items={pendingSelectRelationshipType.linkTypes}
+							linkTypes={pendingSelectRelationshipType.linkTypes}
 							onSelect={createLink}
+							onClose={cancelLinkCreation}
 						></LinkTypeChooser>
 					</div>
 				{/if}
