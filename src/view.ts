@@ -61,17 +61,39 @@ export class FTMBuilderView extends ItemView {
 	}
 
 	async addToNetwork(card: CardState) {
-		const leaf = this.app.workspace.getLeavesOfType(
-			VIEW_TYPE_FTM_BUILDER_NETWORK,
-		)[0];
-		// TODO: Maybe instead call revealLeaf? https://docs.obsidian.md/plugins/guides/defer-views
-		await leaf?.loadIfDeferred();
-		const view = leaf?.view;
-		if (view && view instanceof FTMNetworkView) {
-			if (!card.entity) {
-				new Notice('No entity found to transfer');
+		if (!card.entity) {
+			new Notice('No entity found to copy');
+			return;
+		}
+		let leaf = this.app.workspace.getMostRecentLeaf();
+		// I'm not sure if all this fallback code is useful at the current point in time...
+		// Probably only relevant if there are multiple views open in split view, and even
+		// then I'm not sure it works.
+		if (
+			leaf === null ||
+			!leaf.view ||
+			!(leaf.view instanceof FTMNetworkView)
+		) {
+			const leaves = this.app.workspace
+				.getLeavesOfType(VIEW_TYPE_FTM_BUILDER_NETWORK)
+				.filter(
+					(view) =>
+						view instanceof FTMNetworkView &&
+						view.containerEl.isShown(),
+				);
+			if (leaves.length === 0) {
+				new Notice('No open FtM Network found to copy the entity to');
 				return;
 			}
+			leaf = leaves[0] ? leaves[0] : null;
+			if (leaves.length > 1) {
+				new Notice(
+					`Multiple open FtM networks found, choosing ${leaf?.getDisplayText()}`,
+				);
+			}
+		}
+		const view = leaf?.view;
+		if (view && view instanceof FTMNetworkView) {
 			view.addEntityFromExternal(card.entity.toJSON());
 		} else {
 			new Notice('No FtM Network found to transfer the entity to');
@@ -114,6 +136,7 @@ export class FTMNetworkView extends TextFileView {
 	}
 
 	addEntityFromExternal(persistedEntity: PersistedEntity) {
+		// TODO: should we focus to this specific entity when adding it?
 		this.network.addEntityFromExternal(persistedEntity);
 	}
 

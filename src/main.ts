@@ -129,15 +129,6 @@ export default class FTMBuilderPlugin extends Plugin {
 		await workspace.revealLeaf(leaf);
 	}
 
-	async openFTMNetworkFile(file: TFile): Promise<void> {
-		const leaf = this.app.workspace.getLeaf(false);
-		await leaf.setViewState({
-			type: VIEW_TYPE_FTM_BUILDER_NETWORK,
-			state: { file: file.path },
-			active: true,
-		});
-	}
-
 	// Creates a new ftm-network file, similarly to "Create new canvas"
 	async createNetworkView(): Promise<void> {
 		const file = await this.createUntitledFile();
