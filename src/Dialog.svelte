@@ -4,7 +4,7 @@
 	import { obsidianIcon } from './attachments';
 
 	type Props = Dialog.RootProps & {
-		buttonText: string;
+		buttonText?: string;
 		title: Snippet;
 		description: Snippet;
 		contentProps?: WithoutChild<Dialog.ContentProps>;
@@ -22,9 +22,11 @@
 </script>
 
 <Dialog.Root bind:open {...restProps}>
-	<Dialog.Trigger>
-		{buttonText}
-	</Dialog.Trigger>
+	{#if buttonText}
+		<Dialog.Trigger>
+			{buttonText}
+		</Dialog.Trigger>
+	{/if}
 	<Dialog.Portal>
 		<Dialog.Overlay class="ftmbuilder-dialog-overlay" />
 		<Dialog.Content class="ftmbuilder-dialog-content" {...contentProps}>
