@@ -22,7 +22,7 @@
 	const currentCard = getCurrentCard();
 	const range = $derived(property.getRange());
 	const candidates = $derived(
-		cards.filter(
+		cards().filter(
 			(c) =>
 				c.entity !== undefined &&
 				c.entity.id !== currentCard().entity?.id &&

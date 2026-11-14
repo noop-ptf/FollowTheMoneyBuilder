@@ -40,7 +40,7 @@
 
 	// The shared store array: only ever mutated in place, never reassigned.
 	const cards = $state<CardState[]>([]);
-	setCards(cards);
+	setCards(() => cards);
 
 	function addCard() {
 		cards.push(createCardState(true));

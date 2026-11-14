@@ -10,7 +10,7 @@
 	const cards = getCards();
 
 	function getCaption(entityId: string) {
-		const card = cards.find((c) => c.entity?.id === entityId);
+		const card = cards().find((c) => c.entity?.id === entityId);
 		return card ? getCardCaption(card) : '<unknown entity reference>';
 	}
 </script>
