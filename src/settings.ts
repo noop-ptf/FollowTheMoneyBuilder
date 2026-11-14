@@ -183,7 +183,7 @@ export class FTMBuilderSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	getSettingDefinitions(): SettingDefinitionItem[] {
+	override getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			{
 				name: 'Follow the Money entity folder',

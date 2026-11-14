@@ -17,7 +17,7 @@ export class ConfirmSaveModal extends Modal {
 		this.onConfirm = onConfirm;
 	}
 
-	onOpen() {
+	override onOpen() {
 		const { contentEl } = this;
 
 		contentEl.createEl('h2', { text: 'Save entities to vault' });
@@ -61,7 +61,7 @@ export class ConfirmSaveModal extends Modal {
 		});
 	}
 
-	onClose() {
+	override onClose() {
 		this.contentEl.empty();
 	}
 }

@@ -39,9 +39,9 @@ interface ResizableSidebarSplit {
 const FTM_NETWORK_EXTENSIONS = ['ftm-network'];
 
 export default class FTMBuilderPlugin extends Plugin {
-	settings!: FTMBuilderPluginSettings;
+	override settings!: FTMBuilderPluginSettings;
 
-	async onload() {
+	override async onload() {
 		await this.loadSettings();
 
 		this.addSettingTab(new FTMBuilderSettingTab(this.app, this));
@@ -250,7 +250,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	onunload() {
+	override onunload() {
 		// This is mostly relevant for hot reloading during development:
 		// In order to clean up previous styles we need to actively throw
 		// them away, otherwise they just pile up on every CSS change.

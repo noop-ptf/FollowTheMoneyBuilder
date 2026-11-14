@@ -29,11 +29,11 @@ export class FTMBuilderView extends ItemView {
 		return 'Follow the Money Builder';
 	}
 
-	getIcon(): string {
+	override getIcon(): string {
 		return 'factory';
 	}
 
-	async onOpen(): Promise<void> {
+	override async onOpen(): Promise<void> {
 		this.grid = mount(EntityCardGrid, {
 			target: this.contentEl,
 			props: {
@@ -100,7 +100,7 @@ export class FTMBuilderView extends ItemView {
 		}
 	}
 
-	async onClose(): Promise<void> {
+	override async onClose(): Promise<void> {
 		if (this.grid) {
 			// Remove the EntityCardGrid from the ItemView.
 			await unmount(this.grid);
@@ -117,11 +117,11 @@ export class FTMNetworkView extends TextFileView {
 		super(leaf);
 	}
 
-	getIcon(): string {
+	override getIcon(): string {
 		return 'workflow';
 	}
 
-	getDisplayText(): string {
+	override getDisplayText(): string {
 		return this.file ? this.file.basename : 'FtM Network';
 	}
 
@@ -140,7 +140,7 @@ export class FTMNetworkView extends TextFileView {
 		this.network.addEntityFromExternal(persistedEntity);
 	}
 
-	async onOpen(): Promise<void> {
+	override async onOpen(): Promise<void> {
 		this.component = mount(FTMNetworkDiagram, {
 			target: this.contentEl,
 			props: {
@@ -150,7 +150,7 @@ export class FTMNetworkView extends TextFileView {
 		});
 	}
 
-	async onClose(): Promise<void> {
+	override async onClose(): Promise<void> {
 		if (this.component) {
 			await unmount(this.component);
 			this.component = undefined;
