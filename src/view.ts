@@ -1,12 +1,11 @@
-import { ItemView, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
+import { ItemView, TextFileView, TFile, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import FTMBuilderPlugin from './main';
 import EntityCardGrid from './EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
-import { NetworkState, type PersistedEntity } from './networkState.svelte';
-import type { CardState } from './entityCard';
+import { NetworkState } from './networkState.svelte';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
 export const VIEW_TYPE_FTM_BUILDER_NETWORK =
@@ -55,46 +54,11 @@ export class FTMBuilderView extends ItemView {
 						(instance) => instance.id === id,
 					)?.name,
 				openPluginSettings: () => this.plugin.openPluginSettings(),
-				addToNetwork: (card: CardState) => this.addToNetwork(card),
 				chooseEntityType: () => this.plugin.chooseEntityType(),
+				createFTMNetwork: () => this.plugin.createNetworkView(),
+				builderState: this.plugin.builderState,
 			},
 		});
-	}
-
-	async addToNetwork(card: CardState) {
-		let leaf = this.app.workspace.getMostRecentLeaf();
-		// I'm not sure if all this fallback code is useful at the current point in time...
-		// Probably only relevant if there are multiple views open in split view, and even
-		// then I'm not sure it works.
-		if (
-			leaf === null ||
-			!leaf.view ||
-			!(leaf.view instanceof FTMNetworkView)
-		) {
-			const leaves = this.app.workspace
-				.getLeavesOfType(VIEW_TYPE_FTM_BUILDER_NETWORK)
-				.filter(
-					(view) =>
-						view instanceof FTMNetworkView &&
-						view.containerEl.isShown(),
-				);
-			if (leaves.length === 0) {
-				new Notice('No open FtM Network found to copy the entity to');
-				return;
-			}
-			leaf = leaves[0] ? leaves[0] : null;
-			if (leaves.length > 1) {
-				new Notice(
-					`Multiple open FtM networks found, choosing ${leaf?.getDisplayText()}`,
-				);
-			}
-		}
-		const view = leaf?.view;
-		if (view && view instanceof FTMNetworkView) {
-			view.addEntityFromExternal(card.entity.toJSON());
-		} else {
-			new Notice('No FtM Network found to transfer the entity to');
-		}
 	}
 
 	override async onClose(): Promise<void> {
@@ -107,13 +71,17 @@ export class FTMBuilderView extends ItemView {
 }
 
 export class FTMNetworkView extends TextFileView {
+	network: NetworkState = new NetworkState(() => this.requestSave());
 	private component: ReturnType<typeof FTMNetworkDiagram> | undefined;
-	private network: NetworkState = new NetworkState();
 	private plugin: FTMBuilderPlugin;
 
 	constructor(leaf: WorkspaceLeaf, plugin: FTMBuilderPlugin) {
 		super(leaf);
 		this.plugin = plugin;
+	}
+
+	getViewType(): string {
+		return VIEW_TYPE_FTM_BUILDER_NETWORK;
 	}
 
 	override getIcon(): string {
@@ -134,11 +102,6 @@ export class FTMNetworkView extends TextFileView {
 		this.network.load(data);
 	}
 
-	addEntityFromExternal(persistedEntity: PersistedEntity) {
-		// TODO: should we focus to this specific entity when adding it?
-		this.network.addEntityFromExternal(persistedEntity);
-	}
-
 	override async onOpen(): Promise<void> {
 		this.component = mount(FTMNetworkDiagram, {
 			target: this.contentEl,
@@ -150,7 +113,25 @@ export class FTMNetworkView extends TextFileView {
 		});
 	}
 
+	override async onLoadFile(file: TFile): Promise<void> {
+		await super.onLoadFile(file);
+		if (!this.plugin.builderState.networkView) {
+			this.plugin.builderState.attach(this);
+		}
+	}
+
+	override async onUnloadFile(file: TFile): Promise<void> {
+		await super.onUnloadFile(file);
+		this.plugin.builderState.detach(this);
+	}
+
+	override async onRename(file: TFile): Promise<void> {
+		await super.onRename(file);
+		this.plugin.builderState.rename(this);
+	}
+
 	override async onClose(): Promise<void> {
+		this.plugin.builderState.detach(this);
 		if (this.component) {
 			await unmount(this.component);
 			this.component = undefined;
@@ -159,9 +140,5 @@ export class FTMNetworkView extends TextFileView {
 
 	clear(): void {
 		this.network.load('');
-	}
-
-	getViewType(): string {
-		return VIEW_TYPE_FTM_BUILDER_NETWORK;
 	}
 }

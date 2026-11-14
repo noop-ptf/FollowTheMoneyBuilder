@@ -15,8 +15,8 @@ import type {
 import {
 	FTMBuilderView,
 	FTMNetworkView,
-	VIEW_TYPE_FTM_BUILDER_NETWORK,
 	VIEW_TYPE_FTM_BUILDER_LIST,
+	VIEW_TYPE_FTM_BUILDER_NETWORK,
 } from './view';
 import {
 	getCollections,
@@ -26,6 +26,7 @@ import {
 import type { Entity } from '@opensanctions/followthemoney';
 import { ConfirmSaveModal, ChooseEntityTypeModal } from './modals';
 import { entityToFrontmatter, saveEntityNotes } from './noteExport';
+import { BuilderState } from './builderState.svelte';
 
 interface ResizableSidebarSplit {
 	collapsed: boolean;
@@ -40,6 +41,7 @@ const FTM_NETWORK_EXTENSIONS = ['ftm-network'];
 
 export default class FTMBuilderPlugin extends Plugin {
 	override settings!: FTMBuilderPluginSettings;
+	builderState: BuilderState = new BuilderState();
 
 	override async onload() {
 		await this.loadSettings();
@@ -75,6 +77,14 @@ export default class FTMBuilderPlugin extends Plugin {
 				new Notice(message);
 			});
 		});
+
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', (leaf) => {
+				if (leaf?.view instanceof FTMNetworkView) {
+					this.builderState.attach(leaf.view);
+				}
+			}),
+		);
 	}
 
 	async loadSettings(): Promise<void> {
@@ -107,17 +117,11 @@ export default class FTMBuilderPlugin extends Plugin {
 	async activateEntityListView(): Promise<void> {
 		const { workspace } = this.app;
 
-		let leaf: WorkspaceLeaf | null =
-			workspace.getLeavesOfType(VIEW_TYPE_FTM_BUILDER_LIST)[0] ?? null;
-
-		if (!leaf) {
-			leaf = workspace.getLeftLeaf(false);
-			if (!leaf) return;
-			await leaf.setViewState({
-				type: VIEW_TYPE_FTM_BUILDER_LIST,
-				active: true,
-			});
-		}
+		const leaf: WorkspaceLeaf = await workspace.ensureSideLeaf(
+			VIEW_TYPE_FTM_BUILDER_LIST,
+			'left',
+			{ active: true, reveal: true },
+		);
 
 		const leftSplit =
 			workspace.leftSplit as unknown as ResizableSidebarSplit;
@@ -142,6 +146,20 @@ export default class FTMBuilderPlugin extends Plugin {
 			state: { file: file.path },
 		});
 	}
+
+	/* 
+	async openEntityEditorView(entity: Entity): Promise<void> {
+		const { workspace } = this.app;
+		let leaf: WorkspaceLeaf = await workspace.ensureSideLeaf(
+			VIEW_TYPE_FTM_BUILDER_EDITOR,
+			'left',
+			{ active: true, reveal: true },
+		);
+		await workspace.revealLeaf(leaf);
+		if (leaf.view instanceof FTMEditorView)
+			leaf.view.setEntity(entity, onChange);
+	}
+	*/
 
 	async createUntitledFile(): Promise<TFile | null> {
 		try {

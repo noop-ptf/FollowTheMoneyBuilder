@@ -1,30 +1,36 @@
 <script lang="ts">
-	import { getCards } from './cardsContext';
-	import { getCardCaption, type CardState } from './entityCard';
+	import type { Entity } from '@opensanctions/followthemoney';
+	import type { CardState } from './cardState.svelte';
+	import { valueToString } from './ftm';
+	import { getNetwork } from './entitiesContext';
 	let {
 		card,
+		entity,
 	}: {
 		card: CardState;
+		entity: Entity;
 	} = $props();
-
-	const cards = getCards();
-
-	function getCaption(entityId: string) {
-		const card = cards().find((c) => c.entity?.id === entityId);
-		return card ? getCardCaption(card) : '<unknown entity reference>';
-	}
+	const network = getNetwork();
 </script>
 
 <ul>
-	{#each card.addedProps as ap (ap.property.name)}
-		{#if ap.values.length > 0}
-			{#each ap.values as value, i (i)}
+	{#each card.visibleProperties(entity) as property (property.name)}
+		{const values = entity.getProperty(property)}
+		{#if values.length > 0}
+			{#each values as value, i (i)}
 				<li class="separated-value">
-					<span aria-label={ap.property.label}>
-						{#if ap.property.type.values.size > 0}
-							{ap.property.type.values.get(value)}
-						{:else if ap.property.type.name === 'entity'}
-							{getCaption(value)}
+					<span aria-label={property.label}>
+						{#if property.type.values.size > 0}
+							{property.type.values.get(valueToString(value))}
+						{:else if property.type.name === 'entity'}
+							{const entityId = entity
+								.getProperty(property)
+								.map(valueToString)[0]}
+							{#if entityId}
+								{network()?.getCaption(entityId)}
+							{:else}
+								Unknown reference
+							{/if}
 						{:else}
 							{value}
 						{/if}

@@ -1,5 +1,5 @@
 import { Model, defaultModel } from '@opensanctions/followthemoney';
-import type { Schema, Property, Value } from '@opensanctions/followthemoney';
+import type { Property, Value } from '@opensanctions/followthemoney';
 import LinkType from './LinkType';
 
 export const model = new Model(defaultModel);
@@ -334,16 +334,11 @@ function isPropertyGroup(key: string): key is PropertyGroup {
 	return key in FIELD_GROUPS.byProp;
 }
 
-export function getGroupedProperties(
-	entitySchema?: Schema,
-	filter?: Set<Property>,
-): {
+export function getGroupedProperties(availableProperties: Property[]): {
 	[key: string]: Property[];
 } {
 	const grouped: { [key: string]: Property[] } = {};
-
-	entitySchema?.getEditableProperties().forEach((p) => {
-		if (filter?.has(p)) return;
+	availableProperties.forEach((p) => {
 		const group: string = isPropertyGroup(p.name)
 			? FIELD_GROUPS.byProp[p.name]
 			: 'other';
@@ -352,6 +347,5 @@ export function getGroupedProperties(
 		}
 		grouped[group].push(p);
 	});
-
 	return grouped;
 }

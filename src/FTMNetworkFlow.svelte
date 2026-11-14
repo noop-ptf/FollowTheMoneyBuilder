@@ -16,12 +16,9 @@
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import PendingEdge from './PendingEdge.svelte';
-	import ContextPanel from './ContextPanel.svelte';
-	import { createCardStateFromEntity } from './entityCard';
 	import { model, valueToString, linkTypes } from './ftm';
 	import type LinkType from './LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
-	import EntityEditor from './EntityEditor.svelte';
 	import type { NetworkState } from './networkState.svelte';
 	import LinkTypeChooser from './LinkTypeChooser.svelte';
 	import type {
@@ -31,6 +28,7 @@
 		InterstitialFlowEdge,
 	} from './flowTypes';
 	import InterstitialEdge from './InterstitialEdge.svelte';
+	import { Notice } from 'obsidian';
 
 	const uid = $props.id();
 
@@ -50,12 +48,9 @@
 	);
 
 	const nodeTypes = { entity: EntityNode };
-	// TODO: pending connection: Indicate that we're still working on that one.
 	const edgeTypes = { pending: PendingEdge, interstitial: InterstitialEdge };
 
-	let edgesVersion = $state(0);
 	let edges = $derived.by(() => {
-		edgesVersion;
 		const result: FtMFlowEdge[] = [];
 		for (const entity of entities) {
 			// interstitial edge
@@ -95,7 +90,7 @@
 							source: sourceEntityId,
 							target: targetEntityId,
 							data: {
-								property: property.name,
+								propertyName: property.name,
 							},
 							type: 'property',
 						};
@@ -150,24 +145,19 @@
 				y: top + Math.floor(i / LAYOUT.cols) * LAYOUT.dy,
 			};
 		});
+		onChange();
 	});
 
-	let pendingInput = $state<{ flowPos: XYPosition } | null>(null);
 	let pendingEdgeId = $state<string | null>(null);
 	type PendingSelectRelationshipType = {
 		position: XYPosition;
 		edgeId?: string;
-		source?: Entity;
-		target?: Entity;
+		sourceId?: string;
+		targetId?: string;
 		linkTypes?: LinkType[];
 	};
 	let pendingSelectRelationshipType =
 		$state<PendingSelectRelationshipType | null>(null);
-	let inputEl = $state<HTMLInputElement>();
-
-	// A direct reference into `entities`, so sidebar edits flow to the node face
-	// (and the grid, and storage) without any writeback.
-	let selectedEntity = $state<Entity | null>(null);
 
 	// This hook will only work if the component it's used in
 	// is a child of <SvelteFlowProvider />
@@ -182,47 +172,27 @@
 		) {
 			return;
 		}
-		await chooseEntityType();
+		const entityType = await chooseEntityType();
+		if (entityType) {
+			const flowPosition = screenToFlowPosition({
+				x: event.clientX,
+				y: event.clientY,
+			});
+			await network.addEntityByType(entityType, flowPosition);
+		}
 	}
 
-	// focus the input as soon as it exists in the DOM
-	$effect(() => {
-		if (pendingInput && inputEl) inputEl.focus();
-	});
-
-	function commit() {
-		// Enter commits and clears pendingInput, which unmounts the input and
-		// fires a blur — guard so that trailing blur-commit doesn't run again.
-		if (!pendingInput) return;
-		// TODO: create an entity here
-		pendingInput = null;
-		onChange();
-	}
-
-	function onKeydown(
-		event: KeyboardEvent & { currentTarget: HTMLInputElement },
-	) {
-		if (event.key === 'Enter') commit();
-		if (event.key === 'Escape') pendingInput = null;
-	}
-
-	// TODO: rename to handle...?
-	function onNodeClick({ node }: { node: Node }) {
+	function handleNodeClick(/*{ node }: { node: Node }*/) {
+		new Notice(`Edit the entity on the left sidebar in the builder`);
+		// TODO: support opening the sidebar
+		// 1. call this.plugin.activateEntityListView
+		// 2. builderState.focusEntity(id) (setting focusedEntityId state)
+		// 3. in EntityCard => $effect => editing = true & scrollIntoView()
+		/*
 		if (node.type !== 'entity') return;
-		selectedEntity = entities.find((e) => e.id === node.id) ?? null;
-	}
-
-	function closeSidebar() {
-		selectedEntity = null;
-	}
-
-	function deleteSelectedNode() {
-		if (!selectedEntity) return;
-		const index = entities.findIndex((e) => e.id === selectedEntity?.id);
-		if (index !== -1) entities.splice(index, 1);
-		delete canvasPositions[selectedEntity.id];
-		closeSidebar();
-		onChange();
+		const entity = entities.find((e) => e.id === node.id) ?? null;
+		if (entity) openEntityEditor(entity);
+		*/
 	}
 
 	// TODO: rename to handle...?
@@ -295,8 +265,8 @@
 		const linkTypes = getLinkTypes(sourceEntity, targetEntity);
 		pendingSelectRelationshipType = {
 			position: flowPos,
-			source: sourceEntity,
-			target: targetEntity,
+			sourceId: sourceEntity.id,
+			targetId: targetEntity.id,
 			linkTypes,
 		};
 	};
@@ -304,6 +274,8 @@
 	function getLinkTypes(source: Entity, target: Entity): LinkType[] {
 		if (source && target) {
 			return linkTypes.filter(
+				// TODO: there's a bug: Some links are directional, so we should not merge them.
+				// Or detect whether it's going "backwards" and use the backwards edge.
 				(et) => et.match(source, target) || et.match(target, source),
 			);
 		}
@@ -313,37 +285,34 @@
 	// This function is orienting itself on onEdgeCreate of OpenAleph
 	// https://github.com/openaleph/openaleph/blob/f89ff18d83fcfebdadc6b2db83fb9e2fbb5397c2/ui/src/react-ftm/components/NetworkDiagram/NetworkDiagram.tsx#L261
 	async function createLink(linkType: string) {
-		// TODO: set the Edge in the Entity data
-
 		const chosenLinkType = linkTypes.find((et) => et.key === linkType);
 		if (!pendingSelectRelationshipType) {
 			return;
 		}
 		if (chosenLinkType) {
-			const s = pendingSelectRelationshipType.source;
-			const t = pendingSelectRelationshipType.target;
-			if (!s || !t) {
+			const sourceId = pendingSelectRelationshipType.sourceId;
+			const targetId = pendingSelectRelationshipType.targetId;
+			if (!sourceId || !targetId) {
 				return;
 			}
 			if (chosenLinkType.isPropertyLinkType()) {
-				s.setProperty(chosenLinkType.property!, t.id);
+				network.addValue(sourceId, chosenLinkType.property!, targetId);
+				// s.setProperty(chosenLinkType.property!, t.id);
 			} else if (chosenLinkType.schema && chosenLinkType.schema.edge) {
+				// TODO: put this creation into the hands of network as well?
+				// like network.createInterstitial...
 				const interstitialEntity = await model.createEntity(
 					chosenLinkType.schema,
 				);
 				const edge = chosenLinkType.schema.edge;
-				interstitialEntity.setProperty(edge.source, s.id);
-				interstitialEntity.setProperty(edge.target, t.id);
-				entities.push(interstitialEntity);
+				interstitialEntity.setProperty(edge.source, sourceId);
+				interstitialEntity.setProperty(edge.target, targetId);
+				network.addEntity(interstitialEntity);
 			}
 		}
 
 		// TODO: find a better name. linkCreationCleanup?
 		cancelLinkCreation();
-
-		// TODO: get rid of this hack by properly organizing the state
-		edgesVersion++;
-		onChange();
 	}
 
 	function cancelLinkCreation() {
@@ -360,26 +329,19 @@
 		edges: deletedEdges,
 	}) => {
 		for (const node of deletedNodes) {
-			// TODO: handle removal of edges, if there are any referencing this entity
-			// TODO: extract this code and merge/deduplicate with deleteSelectedNode.
-			const index = entities.findIndex((e) => e.id === node.id);
-			if (index !== -1) entities.splice(index, 1);
-			delete canvasPositions[node.id];
+			network.removeEntity(node.id);
 		}
 		for (const edge of deletedEdges) {
 			if (edge.type === 'property') {
-				const entity = entities.find((e) => e.id === edge.source);
-				if (entity) {
-					entity.getProperty(edge.data.property).remove(edge.target);
-				}
-			} else if (edge.type === 'interstitial') {
-				const index = entities.findIndex(
-					(e) => e.id === edge.data.interstitialEntityId,
+				network.removeValue(
+					edge.source,
+					edge.data.propertyName,
+					edge.target,
 				);
-				if (index !== -1) entities.splice(index, 1);
+			} else if (edge.type === 'interstitial') {
+				network.removeEntity(edge.data.interstitialEntityId);
 			}
 		}
-		onChange();
 	};
 </script>
 
@@ -391,9 +353,8 @@
 			bind:edges
 			{nodeTypes}
 			{edgeTypes}
-			onnodeclick={onNodeClick}
+			onnodeclick={handleNodeClick}
 			onnodedragstop={onNodeDragStop}
-			onpaneclick={closeSidebar}
 			{isValidConnection}
 			onbeforeconnect={handleBeforeConnect}
 			onconnectend={handleConnectEnd}
@@ -403,19 +364,6 @@
 			colorMode="system"
 		>
 			<ViewportPortal target="front">
-				{#if pendingInput}
-					<div
-						style="position:absolute; left:{pendingInput.flowPos
-							.x}px; top:{pendingInput.flowPos.y}px;"
-					>
-						<input
-							bind:this={inputEl}
-							onkeydown={onKeydown}
-							onblur={() => commit()}
-							placeholder="Node label…"
-						/>
-					</div>
-				{/if}
 				{#if pendingSelectRelationshipType && pendingSelectRelationshipType.linkTypes}
 					<div
 						class="nodrag nopan"
@@ -436,18 +384,6 @@
 			<Background variant={BackgroundVariant.Dots} gap={12} size={1} />
 		</SvelteFlow>
 	</div>
-	{#if selectedEntity}
-		<ContextPanel>
-			<!-- TODO: Editor doesn't have any effect right now -->
-			<EntityEditor
-				card={createCardStateFromEntity(
-					model.generateRandomId(),
-					selectedEntity,
-				)}
-				onDelete={deleteSelectedNode}
-			/>
-		</ContextPanel>
-	{/if}
 </div>
 
 <style>

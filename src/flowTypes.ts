@@ -8,7 +8,7 @@ export type FtMFlowNode = Node<EntityNodeData, 'entity'> & {
 	data: EntityNodeData;
 };
 
-type PropertyData = { property: string };
+type PropertyData = { propertyName: string };
 export type PropertyFlowEdge = Edge<PropertyData, 'property'> & {
 	type: 'property';
 	data: PropertyData;

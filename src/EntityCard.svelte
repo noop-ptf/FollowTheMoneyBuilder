@@ -1,23 +1,22 @@
 <script lang="ts">
-	import { getCardCaption, type CardState } from './entityCard';
+	import type { CardState } from './cardState.svelte';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
 	import { obsidianIcon } from './attachments';
-	import { setCurrentCard } from './cardsContext';
+	import { setCurrentEntity } from './entitiesContext';
+	import type { Entity } from '@opensanctions/followthemoney';
 
 	let {
-		card = $bindable(),
-		addToNetwork,
+		card,
+		entity,
 		onRemove,
 	}: {
 		card: CardState;
-		addToNetwork: (card: CardState) => Promise<void>;
+		entity: Entity;
 		onRemove: () => void;
 	} = $props();
 
-	setCurrentCard(() => card);
-
-	const caption = $derived(getCardCaption(card));
+	setCurrentEntity(() => entity);
 </script>
 
 <article class="card">
@@ -33,7 +32,7 @@
 				{@attach obsidianIcon('right-triangle')}
 			></div>
 			<div class="caption">
-				{caption}
+				{entity.getCaption()}
 			</div>
 		</button>
 		<button
@@ -45,9 +44,9 @@
 		></button>
 	</div>
 	{#if card.editing}
-		<EntityEditor bind:card {addToNetwork} />
+		<EntityEditor {card} {entity} />
 	{:else}
-		<EntitySummary {card} />
+		<EntitySummary {card} {entity} />
 	{/if}
 </article>
 

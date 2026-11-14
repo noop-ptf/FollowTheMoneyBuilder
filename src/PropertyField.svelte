@@ -5,36 +5,39 @@
 	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
 	import { untrack } from 'svelte';
-	import { getCards, getCurrentCard } from './cardsContext';
-	import { getCardCaption } from './entityCard';
+	import { getNetwork, getCurrentEntity } from './entitiesContext';
+	import { valueToString } from './ftm';
 
 	let {
 		property,
-		values = $bindable(),
 		required = false,
 	}: {
 		property: Property;
-		values: string[];
 		required?: boolean;
 	} = $props();
 
-	const cards = getCards();
-	const currentCard = getCurrentCard();
+	const network = getNetwork();
+	const currentEntity = getCurrentEntity();
 	const range = $derived(property.getRange());
 	const candidates = $derived(
-		cards().filter(
-			(c) =>
-				c.entity.id !== currentCard().entity.id &&
-				c.entity.schema.isA(range),
+		network()?.entities.filter(
+			(e) => e.id !== currentEntity().id && e.schema.isA(range),
 		),
 	);
 
+	// Temporary "copy" of the entity property values, they have to be played back after each change.
+	let draftValues = $derived(
+		currentEntity().getProperty(property).map(valueToString),
+	);
+	function commitValues() {
+		network()?.setValues(currentEntity().id, property, draftValues);
+	}
+
 	const enumValues = $derived.by(() => {
 		if (property.type.name === 'entity') {
-			return candidates.map((card) => ({
-				// The filter in candidates guarantees the existence of entity
-				value: card.entity!.id,
-				label: getCardCaption(card),
+			return candidates?.map((entity) => ({
+				value: entity.id,
+				label: entity.getCaption(),
 			}));
 		}
 		return Array.from(property.type.values).map(([k, v]) => ({
@@ -44,11 +47,24 @@
 	});
 
 	function addValue() {
-		values.push('');
+		draftValues = [...draftValues, ''];
 	}
 
 	function removeValue(index: number) {
-		values.splice(index, 1);
+		draftValues = [
+			...draftValues.slice(0, index),
+			...draftValues.slice(index + 1),
+		];
+		commitValues();
+	}
+
+	function writeValue(index: number, value?: string) {
+		if (value === undefined) return;
+		draftValues = [
+			...draftValues.slice(0, index),
+			value,
+			...draftValues.slice(index + 1),
+		];
 	}
 </script>
 
@@ -62,7 +78,7 @@
 			>{/if}
 	</legend>
 	<div class="values">
-		{#each values, i (i)}
+		{#each draftValues, i (i)}
 			<!-- FtM has 20 property types; only country/gender/language/topic (enum,
            via .values) and date/number/url/email/phone/text/json/html get a
            dedicated widget here. Everything else (address, checksum,
@@ -76,19 +92,23 @@
 							e.relatedTarget as Node | null,
 						)
 					) {
-						if (!values[i]) {
+						if (!draftValues[i]) {
 							removeValue(i);
+						} else {
+							commitValues();
 						}
 					}
 				}}
 			>
-				{#if property.type.name === 'entity' || enumValues.length > 0}
+				{#if property.type.name === 'entity' || (enumValues?.length || 0) > 0}
 					<CustomCombobox
 						items={enumValues}
-						bind:value={values[i]}
+						bind:value={
+							() => draftValues[i], (v) => writeValue(i, v)
+						}
 						inputProps={{
 							[createAttachmentKey()]: focusOnMount(
-								untrack(() => values[i]),
+								untrack(() => draftValues[i]),
 							),
 						}}
 					>
@@ -98,14 +118,18 @@
 					</CustomCombobox>
 				{:else if property.type.name === 'text' || property.type.name === 'json' || property.type.name === 'html'}
 					<textarea
-						bind:value={values[i]}
-						{@attach focusOnMount(untrack(() => values[i]))}
+						bind:value={
+							() => draftValues[i], (v) => writeValue(i, v)
+						}
+						{@attach focusOnMount(untrack(() => draftValues[i]))}
 					></textarea>
 				{:else}
 					<PropertyInput
 						name={property.name}
 						type={property.type.name}
-						bind:value={values[i]}
+						bind:value={
+							() => draftValues[i], (v) => writeValue(i, v)
+						}
 					/>
 				{/if}
 				<button

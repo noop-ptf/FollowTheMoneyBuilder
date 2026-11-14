@@ -28,6 +28,7 @@
 			})),
 	});
 	let open = $state(true);
+	// TODO: can we tie this to an event of the Dialog instead?
 	$effect(() => {
 		if (!open) {
 			onClose();

@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
 	import { obsidianIcon } from './attachments';
-	import {
-		createCardStateFromEntityType,
-		type CardState,
-	} from './entityCard';
 	import EntityCard from './EntityCard.svelte';
 	import CollectionSelector from './CollectionSelector.svelte';
 	import type { OpenAlephCollection } from './types';
 	import type { Entity } from '@opensanctions/followthemoney';
-	import { setCards } from './cardsContext';
+	import type { BuilderState } from './builderState.svelte';
+	import { setNetwork } from './entitiesContext';
 
 	let {
 		loadCollections,
@@ -18,8 +15,9 @@
 		confirmSaveEntities,
 		getInstanceName,
 		openPluginSettings,
-		addToNetwork,
 		chooseEntityType,
+		createFTMNetwork,
+		builderState,
 	}: {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
 		bulkEntityUpload: (
@@ -36,38 +34,44 @@
 		) => void;
 		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
-		addToNetwork: (card: CardState) => Promise<void>;
 		chooseEntityType: () => Promise<string | undefined>;
+		createFTMNetwork: () => Promise<void>;
+		builderState: BuilderState;
 	} = $props();
 
-	// The shared store array: only ever mutated in place, never reassigned.
-	const cards = $state<CardState[]>([]);
-	setCards(() => cards);
+	const entities = $derived(builderState.network?.entities);
+	function getEntity(entityId: string): Entity {
+		const entity = entities?.find((entity) => entity.id === entityId);
+		if (entity === undefined) {
+			throw new Error(
+				`Could not find corresponding entity for ${entityId}`,
+			);
+		}
+		return entity;
+	}
+	const cards = $derived(builderState.cards);
+	setNetwork(() => builderState.network);
 
 	async function addCard() {
 		const type = await chooseEntityType();
 		if (type === undefined) return;
-		const card = await createCardStateFromEntityType(type);
-		cards.push(card);
+		// TODO: maybe turn this into builderState.addCard(type) and make sure CardState is editing = true.
+		await builderState.network?.addEntityByType(type);
 	}
 
-	function removeCard(index: number) {
-		cards.splice(index, 1);
+	function removeEntity(id: string) {
+		builderState.network?.removeEntity(id);
 	}
 
 	let selectedCollection: OpenAlephCollection | null = $state(null);
-	const entities = $derived(
-		cards
-			.map((card) => card.entity)
-			.filter((entity) => entity !== undefined),
-	);
 
 	async function postEntitiesToSelectedCollection() {
 		// Copy to prevent a race condition if these reactive
 		// values are changing during a (longer running) upload.
 		const collection = selectedCollection;
+		if (entities === undefined) return;
 		const entitiesToUpload = entities;
-		const numEntities = entitiesToUpload.length;
+		const numEntities = entitiesToUpload?.length || 0;
 		const numEntitiesLabel = `${numEntities} ${numEntities > 1 ? 'entities' : 'entity'}`;
 		if (!collection || uploadRunning) {
 			return;
@@ -76,8 +80,6 @@
 		try {
 			new Notice(`Uploading ${numEntitiesLabel} to ${collection.label}`);
 			await bulkEntityUpload(entitiesToUpload, collection);
-			// Reset report, as upload changes validation result
-			validationReport = undefined;
 			new Notice(`Uploaded ${numEntitiesLabel} to ${collection.label}`);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
@@ -88,14 +90,20 @@
 	}
 
 	function saveEntitiesToVault() {
-		confirmSaveEntities(entities, selectedCollection);
+		if (entities) confirmSaveEntities(entities, selectedCollection);
 	}
 
-	let validationReport = $state<string | undefined>();
+	let validationReport = $derived.by((): string | undefined => {
+		entities;
+		selectedCollection;
+		// Unset this value as stale, whenever entities or selectedCollection changes
+		return undefined;
+	});
 	async function validateUploadSelectedCollection() {
 		// Copy to prevent a race condition if these reactive
 		// values are changing during a (longer running) validation.
 		const collection = selectedCollection;
+		if (entities === undefined) return;
 		const entitiesToValidate = entities;
 		if (!collection || validationRunning) {
 			return;
@@ -122,25 +130,33 @@
 </script>
 
 <h3>Entities</h3>
-<div class="entities">
-	{#each cards as card, index (card.key)}
-		<EntityCard
-			bind:card={() => card, (c) => (cards[index] = c)}
-			{addToNetwork}
-			onRemove={() => removeCard(index)}
-		/>
-	{/each}
+{#if builderState.network}
+	<p>Showing entities for {builderState.networkFilename}</p>
+	<div class="entities">
+		{#each cards as card (card.entityId)}
+			<EntityCard
+				{card}
+				entity={getEntity(card.entityId)}
+				onRemove={() => removeEntity(card.entityId)}
+			/>
+		{/each}
 
-	<button
-		type="button"
-		class="card ghost"
-		onclick={addCard}
-		aria-label="Add entity"
+		<button
+			type="button"
+			class="card ghost"
+			onclick={addCard}
+			aria-label="Add entity"
+		>
+			<span class="plus" aria-hidden="true">+</span>
+			<span>Add entity</span>
+		</button>
+	</div>
+{:else}
+	<p>Open an FtM Network to edit entities here</p>
+	<button class="mod-cta" onclick={createFTMNetwork}
+		>Create FtM Network</button
 	>
-		<span class="plus" aria-hidden="true">+</span>
-		<span>Add entity</span>
-	</button>
-</div>
+{/if}
 <h3>
 	Investigation<span
 		class="info-hover"
@@ -161,13 +177,13 @@
 		{@attach obsidianIcon('info')}
 	></span>
 </h3>
-{#if entities.length === 0}
+{#if !entities?.length}
 	<p>Create an entity to upload or save.</p>
 {:else}
 	<div class="actions">
 		<button class="mod-cta" onclick={saveEntitiesToVault}
-			>Save {entities.length}
-			{entities.length === 1 ? 'entity' : 'entities'} to this vault</button
+			>Save {entities?.length || 0}
+			{entities?.length === 1 ? 'entity' : 'entities'} to this vault</button
 		>
 		{#if !selectedCollection}
 			<p>Select an investigation to upload entities.</p>
@@ -176,8 +192,8 @@
 				class="mod-cta"
 				onclick={postEntitiesToSelectedCollection}
 				disabled={uploadRunning}
-				>Upload {entities.length}
-				{entities.length === 1 ? 'entity' : 'entities'} to OpenAleph</button
+				>Upload {entities?.length || 0}
+				{entities?.length === 1 ? 'entity' : 'entities'} to OpenAleph</button
 			>
 			<button
 				onclick={validateUploadSelectedCollection}
