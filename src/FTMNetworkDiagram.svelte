@@ -10,7 +10,7 @@
 	}: {
 		network: NetworkState;
 		onChange: () => void;
-		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
+		chooseEntityType: () => Promise<string | undefined>;
 	} = $props();
 </script>
 

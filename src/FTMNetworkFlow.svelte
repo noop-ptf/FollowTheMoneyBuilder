@@ -41,7 +41,7 @@
 	}: {
 		network: NetworkState;
 		onChange: () => void;
-		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
+		chooseEntityType: () => Promise<string | undefined>;
 	} = $props();
 
 	const entities = $derived(network.entities);
@@ -173,7 +173,7 @@
 	// is a child of <SvelteFlowProvider />
 	const { screenToFlowPosition } = useSvelteFlow();
 
-	function onWrapperDblClick(event: MouseEvent) {
+	async function onWrapperDblClick(event: MouseEvent) {
 		// event.target will be inside .svelte-flow__pane if the click landed on empty canvas
 		if (
 			!(event.target as HTMLElement)?.classList.contains(
@@ -182,9 +182,7 @@
 		) {
 			return;
 		}
-		chooseEntityType(
-			() => /* create entity */ new Promise((resolve) => resolve()),
-		);
+		await chooseEntityType();
 	}
 
 	// focus the input as soon as it exists in the DOM

@@ -56,8 +56,7 @@ export class FTMBuilderView extends ItemView {
 					)?.name,
 				openPluginSettings: () => this.plugin.openPluginSettings(),
 				addToNetwork: (card: CardState) => this.addToNetwork(card),
-				chooseEntityType: (callback: (et?: string) => Promise<void>) =>
-					this.plugin.chooseEntityType(callback),
+				chooseEntityType: () => this.plugin.chooseEntityType(),
 			},
 		});
 	}
@@ -146,8 +145,7 @@ export class FTMNetworkView extends TextFileView {
 			props: {
 				network: this.network,
 				onChange: () => this.requestSave(),
-				chooseEntityType: (callback: (et?: string) => Promise<void>) =>
-					this.plugin.chooseEntityType(callback),
+				chooseEntityType: () => this.plugin.chooseEntityType(),
 			},
 		});
 	}

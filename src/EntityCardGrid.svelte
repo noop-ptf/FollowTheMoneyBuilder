@@ -37,22 +37,18 @@
 		getInstanceName: (id: string) => string | undefined;
 		openPluginSettings: () => void;
 		addToNetwork: (card: CardState) => Promise<void>;
-		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
+		chooseEntityType: () => Promise<string | undefined>;
 	} = $props();
 
 	// The shared store array: only ever mutated in place, never reassigned.
 	const cards = $state<CardState[]>([]);
 	setCards(() => cards);
 
-	function addCard() {
-		chooseEntityType(async (entityType?: string) => {
-			if (entityType) {
-				const card = await createCardStateFromEntityType(entityType);
-				cards.push(card);
-			} else {
-				new Notice("No entity type selected, can't create entity");
-			}
-		});
+	async function addCard() {
+		const type = await chooseEntityType();
+		if (type === undefined) return;
+		const card = await createCardStateFromEntityType(type);
+		cards.push(card);
 	}
 
 	function removeCard(index: number) {

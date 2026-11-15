@@ -233,8 +233,10 @@ export default class FTMBuilderPlugin extends Plugin {
 		}).open();
 	}
 
-	chooseEntityType(callback: (value?: string) => Promise<void>) {
-		new ChooseEntityTypeModal(this.app, callback).open();
+	chooseEntityType(): Promise<string | undefined> {
+		return new Promise((resolve) => {
+			new ChooseEntityTypeModal(this.app, resolve).open();
+		});
 	}
 
 	getInstanceSettings(id: string): OpenAlephInstanceSettings {

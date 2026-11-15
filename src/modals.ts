@@ -68,19 +68,20 @@ export class ConfirmSaveModal extends Modal {
 	}
 }
 
+// TODO: turn this into FuzzySuggestModal or Dialog
 export class ChooseEntityTypeModal extends Modal {
-	private onConfirm: (entityType?: string) => Promise<void>;
+	private resolve: (entityType?: string) => void;
 	private result: string | undefined;
-	modal: ReturnType<typeof EntityTypeSelectModal> | undefined;
+	component: ReturnType<typeof EntityTypeSelectModal> | undefined;
 
-	constructor(app: App, onConfirm: (entityType?: string) => Promise<void>) {
+	constructor(app: App, resolve: (entityType?: string) => void) {
 		super(app);
-		this.onConfirm = onConfirm;
+		this.resolve = resolve;
 	}
 
 	override onOpen() {
 		this.result = undefined;
-		this.modal = mount(EntityTypeSelectModal, {
+		this.component = mount(EntityTypeSelectModal, {
 			target: this.contentEl,
 			props: {
 				onConfirm: (entityType: string) => {
@@ -95,12 +96,10 @@ export class ChooseEntityTypeModal extends Modal {
 	}
 
 	override onClose() {
-		if (this.modal) {
-			void unmount(this.modal);
-			this.modal = undefined;
+		if (this.component) {
+			void unmount(this.component);
+			this.component = undefined;
 		}
-		if (this.result !== undefined) {
-			this.onConfirm(this.result).catch((e) => console.error(e));
-		}
+		this.resolve(this.result);
 	}
 }
