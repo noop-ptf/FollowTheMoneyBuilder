@@ -24,8 +24,7 @@
 	const candidates = $derived(
 		cards().filter(
 			(c) =>
-				c.entity !== undefined &&
-				c.entity.id !== currentCard().entity?.id &&
+				c.entity.id !== currentCard().entity.id &&
 				c.entity.schema.isA(range),
 		),
 	);

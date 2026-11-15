@@ -63,10 +63,6 @@ export class FTMBuilderView extends ItemView {
 	}
 
 	async addToNetwork(card: CardState) {
-		if (!card.entity) {
-			new Notice('No entity found to copy');
-			return;
-		}
 		let leaf = this.app.workspace.getMostRecentLeaf();
 		// I'm not sure if all this fallback code is useful at the current point in time...
 		// Probably only relevant if there are multiple views open in split view, and even

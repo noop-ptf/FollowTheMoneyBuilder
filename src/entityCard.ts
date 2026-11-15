@@ -28,7 +28,7 @@ export async function createCardStateFromEntityType(
 	};
 }
 
-// Canonical constructor: builds a CardState from an (optional) entity.
+// Canonical constructor: builds a CardState from an entity.
 export function createCardStateFromEntity(
 	key: string,
 	entity: Entity,
@@ -37,7 +37,7 @@ export function createCardStateFromEntity(
 	return {
 		key,
 		entity,
-		addedProps: entity ? buildAddedPropsFromEntity(entity) : [],
+		addedProps: buildAddedPropsFromEntity(entity),
 		editing,
 	};
 }
@@ -77,9 +77,6 @@ export function buildAddedPropsFromEntity(entity: Entity): AddedProperty[] {
 }
 
 export function getCardCaption(card: CardState): string {
-	if (!card.entity) {
-		return 'unknown entity';
-	}
 	for (const captionProp of card.entity.schema.caption) {
 		const ap = card.addedProps.find(
 			(ap) => ap.property.name === captionProp,

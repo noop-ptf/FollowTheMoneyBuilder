@@ -15,27 +15,25 @@
 	}
 </script>
 
-{#if card.entity}
-	<ul>
-		{#each card.addedProps as ap (ap.property.name)}
-			{#if ap.values.length > 0}
-				{#each ap.values as value, i (i)}
-					<li class="separated-value">
-						<span aria-label={ap.property.label}>
-							{#if ap.property.type.values.size > 0}
-								{ap.property.type.values.get(value)}
-							{:else if ap.property.type.name === 'entity'}
-								{getCaption(value)}
-							{:else}
-								{value}
-							{/if}
-						</span>
-					</li>
-				{/each}
-			{/if}
-		{/each}
-	</ul>
-{/if}
+<ul>
+	{#each card.addedProps as ap (ap.property.name)}
+		{#if ap.values.length > 0}
+			{#each ap.values as value, i (i)}
+				<li class="separated-value">
+					<span aria-label={ap.property.label}>
+						{#if ap.property.type.values.size > 0}
+							{ap.property.type.values.get(value)}
+						{:else if ap.property.type.name === 'entity'}
+							{getCaption(value)}
+						{:else}
+							{value}
+						{/if}
+					</span>
+				</li>
+			{/each}
+		{/if}
+	{/each}
+</ul>
 
 <style>
 	ul,
