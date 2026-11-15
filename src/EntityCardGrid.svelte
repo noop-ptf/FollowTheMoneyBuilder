@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
 	import { obsidianIcon } from './attachments';
-	import type { Schema } from '@opensanctions/followthemoney';
-	import { listEntitySchemata } from './ftm';
 	import {
 		createCardStateFromEntityType,
 		type CardState,
@@ -41,7 +39,6 @@
 		addToNetwork: (card: CardState) => Promise<void>;
 		chooseEntityType: (callback: (et?: string) => Promise<void>) => void;
 	} = $props();
-	const schemata: Schema[] = listEntitySchemata();
 
 	// The shared store array: only ever mutated in place, never reassigned.
 	const cards = $state<CardState[]>([]);
@@ -133,7 +130,6 @@
 	{#each cards as card, index (card.key)}
 		<EntityCard
 			bind:card={() => card, (c) => (cards[index] = c)}
-			{schemata}
 			{addToNetwork}
 			onRemove={() => removeCard(index)}
 		/>

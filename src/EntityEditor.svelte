@@ -1,36 +1,18 @@
 <script lang="ts">
-	import type { Property, Schema } from '@opensanctions/followthemoney';
-	import { model } from './ftm';
+	import type { Property } from '@opensanctions/followthemoney';
 	import { getCardProperties, type CardState } from './entityCard';
 	import AddedPropertyField from './AddedPropertyField.svelte';
-	import SchemaCombobox from './SchemaCombobox.svelte';
 	import PropertyChooserDialog from './PropertyChooserDialog.svelte';
 
 	let {
 		card = $bindable(),
-		schemata,
 		addToNetwork,
 		onDelete,
 	}: {
 		card: CardState;
-		schemata: Schema[];
 		addToNetwork?: (card: CardState) => Promise<void>;
 		onDelete?: () => void;
 	} = $props();
-
-	// Schema → entity lifecycle. Guarded by a token so a rapid type-switch
-	// can't let a stale createEntity() resolution clobber a newer one.
-	let creationToken = 0;
-	async function changeSchema(name: string) {
-		const schema = schemata.find((s) => s.name === name);
-		if (!schema || schema === card.entity?.schema) return;
-		const token = ++creationToken;
-		const entity = await model.createEntity(schema);
-		if (token !== creationToken) return;
-		card.entity = entity;
-		const { featured } = getCardProperties(schema);
-		card.addedProps = featured.map((p) => ({ property: p, values: [] }));
-	}
 
 	const propertyLists = $derived(
 		card.entity
@@ -54,13 +36,6 @@
 		}
 	}
 </script>
-
-<SchemaCombobox
-	selectedSchema={card.entity?.schema.name}
-	{schemata}
-	onSchemaChange={changeSchema}
-	autofocus={card.autofocus}
-/>
 
 {#if card.entity}
 	{#each card.addedProps as ap, apIndex (ap.property.name)}

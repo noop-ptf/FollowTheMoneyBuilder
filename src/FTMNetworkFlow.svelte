@@ -18,7 +18,7 @@
 	import PendingEdge from './PendingEdge.svelte';
 	import ContextPanel from './ContextPanel.svelte';
 	import { createCardStateFromEntity } from './entityCard';
-	import { listEntitySchemata, model, valueToString, linkTypes } from './ftm';
+	import { model, valueToString, linkTypes } from './ftm';
 	import type LinkType from './LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import EntityEditor from './EntityEditor.svelte';
@@ -52,7 +52,6 @@
 	const nodeTypes = { entity: EntityNode };
 	// TODO: pending connection: Indicate that we're still working on that one.
 	const edgeTypes = { pending: PendingEdge, interstitial: InterstitialEdge };
-	const schemata = listEntitySchemata();
 
 	let edgesVersion = $state(0);
 	let edges = $derived.by(() => {
@@ -447,7 +446,6 @@
 					model.generateRandomId(),
 					selectedEntity,
 				)}
-				{schemata}
 				onDelete={deleteSelectedNode}
 			/>
 		</ContextPanel>
