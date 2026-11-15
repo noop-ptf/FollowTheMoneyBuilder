@@ -9,9 +9,8 @@ export interface AddedProperty {
 // TODO: add toJSON functionality for self-serialization?
 export interface CardState {
 	key: string; // stable id for #each/DnD; independent of entity.id
-	entity: Entity; // created lazily once a schema is first chosen
+	entity: Entity;
 	addedProps: AddedProperty[]; // both featured-toggled and "+more"-added properties
-	autofocus: boolean; // true only for the card just created via the ghost tile
 	editing: boolean; // true, when we're currently editing
 }
 
@@ -25,7 +24,6 @@ export async function createCardStateFromEntityType(
 		key: model.generateRandomId(),
 		entity,
 		addedProps,
-		autofocus: false,
 		editing: true,
 	};
 }
@@ -34,14 +32,12 @@ export async function createCardStateFromEntityType(
 export function createCardStateFromEntity(
 	key: string,
 	entity: Entity,
-	autofocus = false,
 	editing = true,
 ): CardState {
 	return {
 		key,
 		entity,
 		addedProps: entity ? buildAddedPropsFromEntity(entity) : [],
-		autofocus,
 		editing,
 	};
 }
