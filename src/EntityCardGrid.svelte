@@ -118,7 +118,13 @@
 	let validationRunning = $state(false);
 </script>
 
-<h3>Entities</h3>
+<h3>
+	Entities<span
+		class="info-hover"
+		aria-label="Edit the entity details of the currently active FtM Network here"
+		{@attach obsidianIcon('info')}
+	></span>
+</h3>
 {#if builderState.network}
 	<p>Showing entities for {builderState.networkFilename}</p>
 	<div class="entities">
@@ -142,7 +148,6 @@
 		</button>
 	</div>
 {:else}
-	<p>Open an FtM Network to edit entities here</p>
 	<button class="mod-cta" onclick={createFTMNetwork}
 		>Create FtM Network</button
 	>
