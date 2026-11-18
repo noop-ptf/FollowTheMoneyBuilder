@@ -39,15 +39,6 @@
 	} = $props();
 
 	const entities = $derived(builderState.network?.entities);
-	function getEntity(entityId: string): Entity {
-		const entity = entities?.find((entity) => entity.id === entityId);
-		if (entity === undefined) {
-			throw new Error(
-				`Could not find corresponding entity for ${entityId}`,
-			);
-		}
-		return entity;
-	}
 	const cards = $derived(builderState.cards);
 
 	async function addCard() {
@@ -134,7 +125,7 @@
 		{#each cards as card (card.entityId)}
 			<EntityCard
 				{card}
-				entity={getEntity(card.entityId)}
+				entity={builderState.network.getEntity(card.entityId)}
 				network={builderState.network}
 				onRemove={() => removeEntity(card.entityId)}
 			/>

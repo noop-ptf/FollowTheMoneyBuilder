@@ -121,6 +121,16 @@ export class NetworkState {
 		this.onChange();
 	}
 
+	getEntity(entityId: string): Entity {
+		const entity = this.entities.find((entity) => entity.id === entityId);
+		if (entity === undefined) {
+			throw new Error(
+				`Could not find corresponding entity for ${entityId}`,
+			);
+		}
+		return entity;
+	}
+
 	async addEntityByType(entityType: string, position?: XYPosition) {
 		const entity = await model.createEntity(entityType);
 		this.addEntity(entity, position);
