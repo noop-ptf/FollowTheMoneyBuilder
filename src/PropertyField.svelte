@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Property } from '@opensanctions/followthemoney';
+	import { obsidianIcon } from './attachments';
 	import CustomCombobox from './CustomCombobox.svelte';
 	import { createAttachmentKey } from 'svelte/attachments';
 	import { focusOnMount } from './attachments';
@@ -11,9 +12,11 @@
 	let {
 		property,
 		required = false,
+		onRemove,
 	}: {
 		property: Property;
 		required?: boolean;
+		onRemove: () => void;
 	} = $props();
 
 	const network = getNetwork();
@@ -68,82 +71,133 @@
 	}
 </script>
 
-<fieldset>
-	<legend
-		class="property-label {property.description ? 'with-description' : ''}"
-		aria-label={property.description ?? undefined}
-	>
-		{property.label}{#if required}<span class="required" aria-hidden="true">
-				*</span
-			>{/if}
-	</legend>
-	<div class="values">
-		{#each draftValues, i (i)}
-			<!-- FtM has 20 property types; only country/gender/language/topic (enum,
+<div class="added-field">
+	<fieldset>
+		<legend
+			class="property-label {property.description
+				? 'with-description'
+				: ''}"
+			aria-label={property.description ?? undefined}
+		>
+			{property.label}{#if required}<span
+					class="required"
+					aria-hidden="true"
+				>
+					*</span
+				>{/if}
+		</legend>
+		<div class="values">
+			{#each draftValues, i (i)}
+				<!-- FtM has 20 property types; only country/gender/language/topic (enum,
            via .values) and date/number/url/email/phone/text/json/html get a
            dedicated widget here. Everything else (address, checksum,
            identifier, ip, mimetype, name, string) falls through to plain text
            below. -->
-			<div
-				class="value"
-				onfocusout={(e) => {
-					if (
-						!e.currentTarget.contains(
-							e.relatedTarget as Node | null,
-						)
-					) {
-						if (!draftValues[i]) {
-							removeValue(i);
-						} else {
-							commitValues();
+				<div
+					class="value"
+					onfocusout={(e) => {
+						if (
+							!e.currentTarget.contains(
+								e.relatedTarget as Node | null,
+							)
+						) {
+							if (!draftValues[i]) {
+								removeValue(i);
+							} else {
+								commitValues();
+							}
 						}
-					}
-				}}
-			>
-				{#if property.type.name === 'entity' || (enumValues?.length || 0) > 0}
-					<CustomCombobox
-						items={enumValues}
-						bind:value={
-							() => draftValues[i], (v) => writeValue(i, v)
-						}
-						inputProps={{
-							[createAttachmentKey()]: focusOnMount(
-								untrack(() => draftValues[i]),
-							),
-						}}
-					>
-						{#snippet itemRow(item)}
-							{item.label}
-						{/snippet}
-					</CustomCombobox>
-				{:else if property.type.name === 'text' || property.type.name === 'json' || property.type.name === 'html'}
-					<textarea
-						bind:value={
-							() => draftValues[i], (v) => writeValue(i, v)
-						}
-						{@attach focusOnMount(untrack(() => draftValues[i]))}
-					></textarea>
-				{:else}
-					<PropertyInput
-						name={property.name}
-						type={property.type.name}
-						bind:value={
-							() => draftValues[i], (v) => writeValue(i, v)
-						}
-					/>
-				{/if}
-				<button
-					type="button"
-					class="remove"
-					onclick={() => removeValue(i)}>×</button
+					}}
 				>
-			</div>
-		{/each}
-		<button type="button" class="add" onclick={addValue}>+ Add</button>
-	</div>
-</fieldset>
+					{#if property.type.name === 'entity' || (enumValues?.length || 0) > 0}
+						<CustomCombobox
+							items={enumValues}
+							bind:value={
+								() => draftValues[i], (v) => writeValue(i, v)
+							}
+							inputProps={{
+								[createAttachmentKey()]: focusOnMount(
+									untrack(() => draftValues[i]),
+								),
+							}}
+						>
+							{#snippet itemRow(item)}
+								{item.label}
+							{/snippet}
+						</CustomCombobox>
+					{:else if property.type.name === 'text' || property.type.name === 'json' || property.type.name === 'html'}
+						<textarea
+							bind:value={
+								() => draftValues[i], (v) => writeValue(i, v)
+							}
+							{@attach focusOnMount(
+								untrack(() => draftValues[i]),
+							)}></textarea>
+					{:else}
+						<PropertyInput
+							name={property.name}
+							type={property.type.name}
+							bind:value={
+								() => draftValues[i], (v) => writeValue(i, v)
+							}
+						/>
+					{/if}
+					<button
+						type="button"
+						class="remove"
+						onclick={() => removeValue(i)}>×</button
+					>
+				</div>
+			{/each}
+			<button type="button" class="add" onclick={addValue}>+ Add</button>
+		</div>
+	</fieldset>
+	<button
+		type="button"
+		class="clickable-icon field-remove"
+		aria-label="Remove property"
+		onclick={onRemove}
+		{@attach obsidianIcon('circle-minus')}
+	></button>
+</div>
 
 <style>
+	.added-field {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.added-field :global(fieldset) {
+		border: none;
+		padding: 0;
+		margin: 0;
+		min-width: 0;
+	}
+	.added-field:hover {
+		background-color: var(--background-secondary);
+		border-radius: 8px;
+	}
+
+	.added-field :global(input),
+	.added-field :global(select),
+	.added-field :global(textarea) {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	/* Sits on the legend's line, which only uses the left side. */
+	.added-field .field-remove {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: var(--size-2-1);
+		opacity: 0;
+	}
+	.added-field:hover .field-remove {
+		opacity: 1;
+	}
 	.property-label.with-description {
 		cursor: help;
 	}

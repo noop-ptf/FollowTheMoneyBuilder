@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Entity } from '@opensanctions/followthemoney';
 	import { type CardState } from './cardState.svelte';
-	import AddedPropertyField from './AddedPropertyField.svelte';
+	import PropertyField from './PropertyField.svelte';
 	import PropertyChooserDialog from './PropertyChooserDialog.svelte';
 	import { getNetwork } from './entitiesContext';
 
@@ -21,7 +21,7 @@
 </script>
 
 {#each card.visibleProperties(entity) as property (property.name)}
-	<AddedPropertyField
+	<PropertyField
 		{property}
 		required={requiredNames.has(property.name)}
 		onRemove={() => {
