@@ -24,7 +24,11 @@ import {
 	validateEntityUpload,
 } from './requests';
 import type { Entity } from '@opensanctions/followthemoney';
-import { ConfirmSaveModal, ChooseEntityTypeModal } from './modals';
+import {
+	ConfirmSaveModal,
+	ChooseEntityTypeModal,
+	OpenNetworkModal,
+} from './modals';
 import { entityToFrontmatter, saveEntityNotes } from './noteExport';
 import { BuilderState } from './builderState.svelte';
 
@@ -37,12 +41,14 @@ interface ResizableSidebarSplit {
 	collapse(): void;
 }
 
-const FTM_NETWORK_EXTENSIONS = ['ftm-network'];
+const FTM_NETWORK_EXTENSION = 'ftm-network';
 
 export default class FTMBuilderPlugin extends Plugin {
 	override settings!: FTMBuilderPluginSettings;
 	builderState: BuilderState = new BuilderState();
 
+	// TODO: create command-palette options for Obsidian power users
+	// for plugin specific actions?
 	override async onload() {
 		await this.loadSettings();
 
@@ -58,7 +64,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		);
 
 		this.registerExtensions(
-			FTM_NETWORK_EXTENSIONS,
+			[FTM_NETWORK_EXTENSION],
 			VIEW_TYPE_FTM_BUILDER_NETWORK,
 		);
 
@@ -71,7 +77,7 @@ export default class FTMBuilderPlugin extends Plugin {
 		});
 
 		this.addRibbonIcon('workflow', 'Create new FtM Network', () => {
-			this.createNetworkView().catch((err: unknown) => {
+			this.createNetwork().catch((err: unknown) => {
 				const message =
 					err instanceof Error ? err.message : String(err);
 				new Notice(message);
@@ -134,40 +140,33 @@ export default class FTMBuilderPlugin extends Plugin {
 	}
 
 	// Creates a new ftm-network file, similarly to "Create new canvas"
-	async createNetworkView(): Promise<void> {
+	async createNetwork(): Promise<void> {
 		const file = await this.createUntitledFile();
 		if (!file) {
 			return;
 		}
-		const leaf = this.app.workspace.getLeaf(false);
-		await leaf.setViewState({
-			type: VIEW_TYPE_FTM_BUILDER_NETWORK,
-			active: true,
-			state: { file: file.path },
-		});
+		this.app.workspace
+			.getLeaf(false)
+			.openFile(file)
+			.catch((err: unknown) => {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			});
 	}
 
-	/* 
-	async openEntityEditorView(entity: Entity): Promise<void> {
-		const { workspace } = this.app;
-		let leaf: WorkspaceLeaf = await workspace.ensureSideLeaf(
-			VIEW_TYPE_FTM_BUILDER_EDITOR,
-			'left',
-			{ active: true, reveal: true },
-		);
-		await workspace.revealLeaf(leaf);
-		if (leaf.view instanceof FTMEditorView)
-			leaf.view.setEntity(entity, onChange);
+	openNetwork(): void {
+		const ftmNetworkFiles = this.app.vault
+			.getFiles()
+			.filter((f) => f.extension === FTM_NETWORK_EXTENSION);
+		new OpenNetworkModal(this.app, ftmNetworkFiles).open();
 	}
-	*/
 
 	async createUntitledFile(): Promise<TFile | null> {
 		try {
-			let path = normalizePath(`Untitled.${FTM_NETWORK_EXTENSIONS[0]}`);
+			let path = normalizePath(`Untitled.${FTM_NETWORK_EXTENSION}`);
 			for (let n = 2; this.app.vault.getAbstractFileByPath(path); n++)
-				path = normalizePath(
-					`Untitled ${n}.${FTM_NETWORK_EXTENSIONS[0]}`,
-				);
+				path = normalizePath(`Untitled ${n}.${FTM_NETWORK_EXTENSION}`);
 			const initialContent = '';
 			return await this.app.vault.create(path, initialContent);
 		} catch (e) {

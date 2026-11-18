@@ -16,6 +16,7 @@
 		openPluginSettings,
 		chooseEntityType,
 		createFTMNetwork,
+		openFTMNetwork,
 		builderState,
 	}: {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
@@ -35,6 +36,7 @@
 		openPluginSettings: () => void;
 		chooseEntityType: () => Promise<string | undefined>;
 		createFTMNetwork: () => Promise<void>;
+		openFTMNetwork: () => void;
 		builderState: BuilderState;
 	} = $props();
 
@@ -151,6 +153,7 @@
 	<button class="mod-cta" onclick={createFTMNetwork}
 		>Create FtM Network</button
 	>
+	<button onclick={openFTMNetwork}>Open FtM Network</button>
 {/if}
 <h3>
 	Investigation<span

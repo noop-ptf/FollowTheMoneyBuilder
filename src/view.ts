@@ -55,7 +55,8 @@ export class FTMBuilderView extends ItemView {
 					)?.name,
 				openPluginSettings: () => this.plugin.openPluginSettings(),
 				chooseEntityType: () => this.plugin.chooseEntityType(),
-				createFTMNetwork: () => this.plugin.createNetworkView(),
+				createFTMNetwork: () => this.plugin.createNetwork(),
+				openFTMNetwork: () => this.plugin.openNetwork(),
 				builderState: this.plugin.builderState,
 			},
 		});

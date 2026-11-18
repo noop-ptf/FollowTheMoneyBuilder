@@ -1,4 +1,4 @@
-import { App, Modal } from 'obsidian';
+import { App, Modal, FuzzySuggestModal, TFile, Notice } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import EntityTypeSelectModal from './EntityTypeSelectModal.svelte';
 
@@ -101,5 +101,36 @@ export class ChooseEntityTypeModal extends Modal {
 			this.component = undefined;
 		}
 		this.resolve(this.result);
+	}
+}
+
+export class OpenNetworkModal extends FuzzySuggestModal<TFile> {
+	private readonly files: TFile[];
+
+	constructor(app: App, files: TFile[]) {
+		super(app);
+		this.files = files;
+		this.emptyStateText = 'No FtM Network found';
+		this.setPlaceholder('Search FtM Networks...');
+	}
+	getItems(): TFile[] {
+		return this.files;
+	}
+
+	getItemText(file: TFile): string {
+		// Drop the extension from the item text (as we're currently
+		// only showing ftm-network files and it's a bit noisy...)
+		return file.path.slice(0, -(file.extension.length + 1));
+	}
+
+	onChooseItem(file: TFile): void {
+		this.app.workspace
+			.getLeaf(false)
+			.openFile(file)
+			.catch((err: unknown) => {
+				const message =
+					err instanceof Error ? err.message : String(err);
+				new Notice(message);
+			});
 	}
 }

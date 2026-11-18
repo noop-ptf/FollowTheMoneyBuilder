@@ -65,6 +65,7 @@ export default defineConfig(
 						'OpenAleph',
 						'FtM',
 						'FtM Network',
+						'FtM Networks',
 						'Follow the Money',
 						'Follow the Money Builder',
 						'Obsidian',
