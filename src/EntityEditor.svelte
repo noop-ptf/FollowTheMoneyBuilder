@@ -24,6 +24,7 @@
 {#each card.visibleProperties(entity) as property (property.name)}
 	<PropertyField
 		{property}
+		{entity}
 		{network}
 		required={requiredNames.has(property.name)}
 		onRemove={() => {

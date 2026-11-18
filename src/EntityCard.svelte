@@ -3,7 +3,6 @@
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
 	import { obsidianIcon } from './attachments';
-	import { setCurrentEntity } from './entitiesContext';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { NetworkState } from './networkState.svelte';
 
@@ -18,8 +17,6 @@
 		network: NetworkState;
 		onRemove: () => void;
 	} = $props();
-
-	setCurrentEntity(() => entity);
 </script>
 
 <article class="card">

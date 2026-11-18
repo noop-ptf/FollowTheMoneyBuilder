@@ -1,22 +1,23 @@
 <script lang="ts">
-	import type { Property } from '@opensanctions/followthemoney';
+	import type { Entity, Property } from '@opensanctions/followthemoney';
 	import { obsidianIcon } from './attachments';
 	import CustomCombobox from './CustomCombobox.svelte';
 	import { createAttachmentKey } from 'svelte/attachments';
 	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
 	import { untrack } from 'svelte';
-	import { getCurrentEntity } from './entitiesContext';
 	import { valueToString } from './ftm';
 	import type { NetworkState } from './networkState.svelte';
 
 	let {
 		property,
+		entity,
 		network,
 		required = false,
 		onRemove,
 	}: {
 		property: Property;
+		entity: Entity;
 		// TODO: we don't need the full NetworkState here, just the list of entities (to determine link candidates)
 		// and a way to set property values to the current entity
 		network: NetworkState;
@@ -24,20 +25,17 @@
 		onRemove: () => void;
 	} = $props();
 
-	const currentEntity = getCurrentEntity();
 	const range = $derived(property.getRange());
 	const candidates = $derived(
 		network.entities.filter(
-			(e) => e.id !== currentEntity().id && e.schema.isA(range),
+			(e) => e.id !== entity.id && e.schema.isA(range),
 		),
 	);
 
 	// Temporary "copy" of the entity property values, they have to be played back after each change.
-	let draftValues = $derived(
-		currentEntity().getProperty(property).map(valueToString),
-	);
+	let draftValues = $derived(entity.getProperty(property).map(valueToString));
 	function commitValues() {
-		network.setValues(currentEntity().id, property, draftValues);
+		network.setValues(entity.id, property, draftValues);
 	}
 
 	const enumValues = $derived.by(() => {
