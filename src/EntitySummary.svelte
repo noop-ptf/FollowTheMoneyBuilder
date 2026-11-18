@@ -2,15 +2,17 @@
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { CardState } from './cardState.svelte';
 	import { valueToString } from './ftm';
-	import { getNetwork } from './entitiesContext';
+	import type { NetworkState } from './networkState.svelte';
 	let {
 		card,
 		entity,
+		network,
 	}: {
 		card: CardState;
 		entity: Entity;
+		// TODO: network is just here to get the caption. Simplify?
+		network: NetworkState;
 	} = $props();
-	const network = getNetwork();
 </script>
 
 <ul>
@@ -27,7 +29,7 @@
 								.getProperty(property)
 								.map(valueToString)[0]}
 							{#if entityId}
-								{network()?.getCaption(entityId)}
+								{network.getCaption(entityId)}
 							{:else}
 								Unknown reference
 							{/if}

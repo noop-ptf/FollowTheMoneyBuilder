@@ -5,14 +5,17 @@
 	import { obsidianIcon } from './attachments';
 	import { setCurrentEntity } from './entitiesContext';
 	import type { Entity } from '@opensanctions/followthemoney';
+	import type { NetworkState } from './networkState.svelte';
 
 	let {
 		card,
 		entity,
+		network,
 		onRemove,
 	}: {
 		card: CardState;
 		entity: Entity;
+		network: NetworkState;
 		onRemove: () => void;
 	} = $props();
 
@@ -44,9 +47,9 @@
 		></button>
 	</div>
 	{#if card.editing}
-		<EntityEditor {card} {entity} />
+		<EntityEditor {card} {entity} {network} />
 	{:else}
-		<EntitySummary {card} {entity} />
+		<EntitySummary {card} {entity} {network} />
 	{/if}
 </article>
 

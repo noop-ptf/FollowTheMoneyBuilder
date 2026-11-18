@@ -3,30 +3,32 @@
 	import { type CardState } from './cardState.svelte';
 	import PropertyField from './PropertyField.svelte';
 	import PropertyChooserDialog from './PropertyChooserDialog.svelte';
-	import { getNetwork } from './entitiesContext';
+	import type { NetworkState } from './networkState.svelte';
 
 	let {
 		card,
 		entity,
+		network,
 		onDelete,
 	}: {
 		card: CardState;
 		entity: Entity;
+		network: NetworkState;
 		onDelete?: () => void;
 	} = $props();
 
 	const availableProperties = $derived(card.getAddableCardProperties(entity));
 	const requiredNames = $derived(new Set(entity.schema.required ?? []));
-	const network = getNetwork();
 </script>
 
 {#each card.visibleProperties(entity) as property (property.name)}
 	<PropertyField
 		{property}
+		{network}
 		required={requiredNames.has(property.name)}
 		onRemove={() => {
 			card.hideProperty(property);
-			network()?.setValues(entity.id, property, []);
+			network.setValues(entity.id, property, []);
 		}}
 	/>
 {/each}

@@ -6,24 +6,28 @@
 	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
 	import { untrack } from 'svelte';
-	import { getNetwork, getCurrentEntity } from './entitiesContext';
+	import { getCurrentEntity } from './entitiesContext';
 	import { valueToString } from './ftm';
+	import type { NetworkState } from './networkState.svelte';
 
 	let {
 		property,
+		network,
 		required = false,
 		onRemove,
 	}: {
 		property: Property;
+		// TODO: we don't need the full NetworkState here, just the list of entities (to determine link candidates)
+		// and a way to set property values to the current entity
+		network: NetworkState;
 		required?: boolean;
 		onRemove: () => void;
 	} = $props();
 
-	const network = getNetwork();
 	const currentEntity = getCurrentEntity();
 	const range = $derived(property.getRange());
 	const candidates = $derived(
-		network()?.entities.filter(
+		network.entities.filter(
 			(e) => e.id !== currentEntity().id && e.schema.isA(range),
 		),
 	);
@@ -33,7 +37,7 @@
 		currentEntity().getProperty(property).map(valueToString),
 	);
 	function commitValues() {
-		network()?.setValues(currentEntity().id, property, draftValues);
+		network.setValues(currentEntity().id, property, draftValues);
 	}
 
 	const enumValues = $derived.by(() => {

@@ -6,7 +6,6 @@
 	import type { OpenAlephCollection } from './types';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { BuilderState } from './builderState.svelte';
-	import { setNetwork } from './entitiesContext';
 
 	let {
 		loadCollections,
@@ -50,7 +49,6 @@
 		return entity;
 	}
 	const cards = $derived(builderState.cards);
-	setNetwork(() => builderState.network);
 
 	async function addCard() {
 		const type = await chooseEntityType();
@@ -137,6 +135,7 @@
 			<EntityCard
 				{card}
 				entity={getEntity(card.entityId)}
+				network={builderState.network}
 				onRemove={() => removeEntity(card.entityId)}
 			/>
 		{/each}
