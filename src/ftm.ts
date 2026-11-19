@@ -324,7 +324,7 @@ export function valueToString(value: Value): string {
 export function listEntitySchemata() {
 	return model
 		.getSchemata()
-		.filter((s) => !s.generated && !s.abstract)
+		.filter((s) => !s.generated && !s.abstract && s.isA('Thing'))
 		.sort((a, b) => a.label.localeCompare(b.label));
 }
 
