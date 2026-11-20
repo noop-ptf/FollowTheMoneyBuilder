@@ -4,7 +4,7 @@
 	import SchemaIcon from './SchemaIcon.svelte';
 	import type { EntityNodeData } from './flowTypes';
 
-	let { data }: NodeProps & { data: EntityNodeData } = $props();
+	let { data, selected }: NodeProps & { data: EntityNodeData } = $props();
 
 	const category = $derived(
 		data.schema ? getSchemaCategory(data.schema) : 'default',
@@ -12,18 +12,23 @@
 </script>
 
 <Handle type="target" position={Position.Top} />
-<div class="entity-node" data-category={category}>
-	{#if data.schema}
-		<div class="eyebrow">
-			<SchemaIcon schema={data.schema} size={16} />
-			<span>{data.schema.label}</span>
-		</div>
-	{/if}
-	<div class="caption">{data.caption || 'Untitled'}</div>
+<div class="entity-node-wrapper">
+	<div class="entity-node" class:selected data-category={category}>
+		{#if data.schema}
+			<div class="eyebrow">
+				<SchemaIcon schema={data.schema} size={16} />
+				<span>{data.schema.label}</span>
+			</div>
+		{/if}
+		<div class="caption">{data.caption || 'Untitled'}</div>
+	</div>
 </div>
 <Handle type="source" position={Position.Bottom} />
 
 <style>
+	.entity-node-wrapper {
+		background-color: white;
+	}
 	.entity-node {
 		display: flex;
 		flex-direction: column;
@@ -31,8 +36,6 @@
 		min-width: 160px;
 		padding: 0.6em 0.8em;
 		border-radius: 8px;
-		border-left: 4px solid var(--schema-default-fg);
-		background: #ffffff;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	}
 
@@ -46,6 +49,11 @@
 
 	.entity-node[data-category='document'] {
 		border-left-color: var(--schema-document-fg);
+	}
+
+	.entity-node.selected {
+		box-shadow: 0 0 0 2px var(--schema-default-fg);
+		background-color: var(--background-modifier-hover);
 	}
 
 	.eyebrow {
