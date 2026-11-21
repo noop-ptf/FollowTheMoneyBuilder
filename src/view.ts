@@ -1,4 +1,4 @@
-import { ItemView, TextFileView, TFile, WorkspaceLeaf } from 'obsidian';
+import { ItemView, Notice, TextFileView, TFile, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import FTMBuilderPlugin from './main';
 import EntityCardGrid from './EntityCardGrid.svelte';
@@ -109,6 +109,17 @@ export class FTMNetworkView extends TextFileView {
 			props: {
 				network: this.network,
 				onChange: () => this.requestSave(),
+				openEntityBuilder: () => {
+					this.plugin
+						.activateEntityListView()
+						.catch((err: unknown) => {
+							const message =
+								err instanceof Error
+									? err.message
+									: String(err);
+							new Notice(message);
+						});
+				},
 				chooseEntityType: () => this.plugin.chooseEntityType(),
 			},
 		});

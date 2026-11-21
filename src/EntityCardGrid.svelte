@@ -46,8 +46,9 @@
 	async function addCard() {
 		const type = await chooseEntityType();
 		if (type === undefined) return;
-		// TODO: maybe turn this into builderState.addCard(type) and make sure CardState is editing = true.
-		await builderState.network?.addEntityByType(type);
+		const network = builderState.network;
+		if (network === undefined) return;
+		await network.addEntityByType(type);
 	}
 
 	function removeEntity(id: string) {

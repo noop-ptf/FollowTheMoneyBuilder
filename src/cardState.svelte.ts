@@ -4,7 +4,6 @@ export class CardState {
 	// We are using the entity id as a reference into the entities in NetworkState, so it must not change
 	readonly entityId: string;
 	readonly schema: Schema;
-	editing = $state(false);
 	shownProperties = $state<Property[]>([]);
 
 	constructor(entity: Entity) {

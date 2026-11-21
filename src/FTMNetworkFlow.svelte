@@ -13,6 +13,7 @@
 		type IsValidConnection,
 		type OnDelete,
 		type OnBeforeConnect,
+		type OnSelectionChange,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import PendingEdge from './PendingEdge.svelte';
@@ -28,17 +29,18 @@
 		InterstitialFlowEdge,
 	} from './flowTypes';
 	import InterstitialEdge from './InterstitialEdge.svelte';
-	import { Notice } from 'obsidian';
 
 	const uid = $props.id();
 
 	let {
 		network,
 		onChange,
+		openEntityBuilder,
 		chooseEntityType,
 	}: {
 		network: NetworkState;
 		onChange: () => void;
+		openEntityBuilder: () => void;
 		chooseEntityType: () => Promise<string | undefined>;
 	} = $props();
 
@@ -65,6 +67,7 @@
 							id: `${sourceEntityId}<${entity.id}>${targetEntityId}`,
 							source: sourceEntityId,
 							target: targetEntityId,
+							selected: network.focusedEntity === entity.id,
 							data: {
 								interstitialEntityId: entity.id,
 								label:
@@ -114,6 +117,7 @@
 			.map((entity) => ({
 				id: entity.id,
 				type: 'entity',
+				selected: network.focusedEntity === entity.id,
 				position: { ...(canvasPositions[entity.id] ?? { x: 0, y: 0 }) },
 				data: {
 					caption: entity.getCaption(),
@@ -182,18 +186,24 @@
 		}
 	}
 
-	function handleNodeClick(/*{ node }: { node: Node }*/) {
-		new Notice(`Edit the entity on the left sidebar in the builder`);
-		// TODO: support opening the sidebar
-		// 1. call this.plugin.activateEntityListView
-		// 2. builderState.focusEntity(id) (setting focusedEntityId state)
-		// 3. in EntityCard => $effect => editing = true & scrollIntoView()
-		/*
-		if (node.type !== 'entity') return;
-		const entity = entities.find((e) => e.id === node.id) ?? null;
-		if (entity) openEntityEditor(entity);
-		*/
-	}
+	const handleSelectionChange: OnSelectionChange<Node, FtMFlowEdge> = ({
+		nodes: selectedNodes,
+		edges: selectedEdges,
+	}) => {
+		if (selectedNodes.length === 1) {
+			openEntityBuilder();
+			const node = selectedNodes[0]!; // Has to exist, as we just checked nodes.length
+			network.focusedEntity = node.id;
+		} else if (selectedEdges.length === 1) {
+			const edge = selectedEdges[0]!; // Has to exist.
+			if (edge.type === 'interstitial') {
+				openEntityBuilder();
+				network.focusedEntity = edge.data.interstitialEntityId;
+			}
+		} else if (selectedNodes.length === 0 && selectedEdges.length === 0) {
+			network.focusedEntity = null;
+		}
+	};
 
 	// TODO: rename to handle...?
 	function onNodeDragStop({ targetNode }: { targetNode: Node | null }) {
@@ -353,7 +363,7 @@
 			bind:edges
 			{nodeTypes}
 			{edgeTypes}
-			onnodeclick={handleNodeClick}
+			onselectionchange={handleSelectionChange}
 			onnodedragstop={onNodeDragStop}
 			{isValidConnection}
 			onbeforeconnect={handleBeforeConnect}

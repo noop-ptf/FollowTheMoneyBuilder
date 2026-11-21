@@ -17,18 +17,32 @@
 		network: NetworkState;
 		onRemove: () => void;
 	} = $props();
+
+	let articleRef: HTMLElement;
+
+	const editing = $derived(network.focusedEntity === card.entityId);
+
+	$effect(() => {
+		if (editing && articleRef) {
+			articleRef.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+		}
+	});
 </script>
 
-<article class="card">
+<article bind:this={articleRef} class="card">
 	<div class="entity-header">
 		<button
 			class="entity-toggle"
 			onclick={() => {
-				card.editing = !card.editing;
+				if (editing) {
+					network.focusedEntity = null;
+				} else {
+					network.focusedEntity = card.entityId;
+				}
 			}}
 		>
 			<div
-				class="collapse-icon {card.editing ? '' : 'is-collapsed'}"
+				class="collapse-icon {editing ? '' : 'is-collapsed'}"
 				{@attach obsidianIcon('right-triangle')}
 			></div>
 			<div class="caption">
@@ -37,13 +51,13 @@
 		</button>
 		<button
 			type="button"
-			class="clickable-icon {card.editing ? '' : 'invisible'}"
+			class="clickable-icon {editing ? '' : 'invisible'}"
 			aria-label="Remove entity"
 			onclick={onRemove}
 			{@attach obsidianIcon('trash')}
 		></button>
 	</div>
-	{#if card.editing}
+	{#if editing}
 		<EntityEditor {card} {entity} {network} />
 	{:else}
 		<EntitySummary {card} {entity} {network} />
