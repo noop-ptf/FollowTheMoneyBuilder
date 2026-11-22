@@ -16,7 +16,6 @@
 		type OnSelectionChange,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
-	import PendingEdge from './PendingEdge.svelte';
 	import { model, valueToString, linkTypes } from './ftm';
 	import type LinkType from './LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
@@ -50,7 +49,12 @@
 	);
 
 	const nodeTypes = { entity: EntityNode };
-	const edgeTypes = { pending: PendingEdge, interstitial: InterstitialEdge };
+	// We have three different edge types:
+	// - pending (created in handleBeforeConnect)
+	// - property (derived from entities in edges)
+	// - interstitial (derived from entities in edges)
+	// but only the last one needs a non-default component.
+	const edgeTypes = { interstitial: InterstitialEdge };
 
 	let edges = $derived.by(() => {
 		const result: FtMFlowEdge[] = [];
@@ -79,6 +83,7 @@
 						result.push(newEdge);
 					}
 				}
+				// property edge
 			} else {
 				for (const property of entity
 					.getProperties()
@@ -248,7 +253,6 @@
 		return {
 			...connection,
 			id: edgeId,
-			type: 'pending',
 			animated: true,
 		};
 	};
@@ -284,9 +288,14 @@
 	function getLinkTypes(source: Entity, target: Entity): LinkType[] {
 		if (source && target) {
 			return linkTypes.filter(
-				// TODO: there's a bug: Some links are directional, so we should not merge them.
-				// Or detect whether it's going "backwards" and use the backwards edge.
-				(et) => et.match(source, target) || et.match(target, source),
+				// Note that we only offer the link types in one direction,
+				// so the user is offered a different set of links depending on
+				// how they're drawing the edge. Not sure if that is "good",
+				// it seems to be a bit un-intuitive.
+				//
+				// OpenAleph has a nicer dialog for this, not sure if we should
+				// try to replicate that.
+				(et) => et.match(source, target),
 			);
 		}
 		return [];
