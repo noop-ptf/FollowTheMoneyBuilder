@@ -1,19 +1,54 @@
 <script lang="ts">
-	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
+	import {
+		Handle,
+		Position,
+		useConnection,
+		type NodeProps,
+	} from '@xyflow/svelte';
 	import { getSchemaCategory } from './schemaStyle';
 	import SchemaIcon from './SchemaIcon.svelte';
 	import type { EntityNodeData } from './flowTypes';
+	import { Schema } from '@opensanctions/followthemoney';
 
-	let { data, selected }: NodeProps & { data: EntityNodeData } = $props();
+	let { id, data, selected }: NodeProps & { data: EntityNodeData } = $props();
 
 	const category = $derived(
 		data.schema ? getSchemaCategory(data.schema) : 'default',
 	);
+
+	const connection = useConnection();
+
+	// It would be possible to make a more complicated validity calculation here,
+	// but unless a non-standard Schema is used, each target will always be valid,
+	// because "Unknown Link" will be a valid option.
+	// https://followthemoney.tech/explorer/schemata/UnknownLink/
+	let isTarget = $derived.by(() => {
+		const inProgress = connection.current.inProgress;
+		const differentNode = connection.current.fromHandle?.nodeId !== id;
+		return inProgress && differentNode;
+	});
 </script>
 
-<Handle type="target" position={Position.Top} />
 <div class="entity-node-wrapper">
-	<div class="entity-node" class:selected data-category={category}>
+	<div
+		class="entity-node"
+		class:selected
+		class:isTarget
+		data-category={category}
+	>
+		<Handle
+			class="customHandle"
+			aria-label="Drag to create a link to another entity"
+			position={Position.Right}
+			type="source"
+			style="z-index: 1;"
+		/>
+		<Handle
+			class="customHandle"
+			position={Position.Left}
+			type="target"
+			isConnectableStart={false}
+		/>
 		{#if data.schema}
 			<div class="eyebrow">
 				<SchemaIcon schema={data.schema} size={16} />
@@ -23,7 +58,6 @@
 		<div class="caption">{data.caption || 'Untitled'}</div>
 	</div>
 </div>
-<Handle type="source" position={Position.Bottom} />
 
 <style>
 	.entity-node-wrapper {
@@ -54,6 +88,22 @@
 	.entity-node.selected {
 		box-shadow: 0 0 0 2px var(--schema-default-fg);
 		background-color: var(--background-modifier-hover);
+	}
+
+	.entity-node.isTarget {
+		outline: 2px dashed var(--schema-default-fg);
+	}
+
+	:global(.customHandle) {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-radius: 0;
+		transform: none;
+		border: none;
+		opacity: 0;
 	}
 
 	.eyebrow {
