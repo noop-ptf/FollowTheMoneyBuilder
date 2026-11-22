@@ -10,6 +10,7 @@
 		targetX,
 		targetY,
 		targetPosition,
+		markerEnd,
 		data,
 	}: InterstitialFlowEdgeProps = $props();
 
@@ -25,7 +26,7 @@
 	);
 </script>
 
-<BaseEdge {id} path={edgePath} />
+<BaseEdge {id} path={edgePath} {markerEnd} />
 {#if data}
 	<EdgeLabel x={labelX} y={labelY} selectEdgeOnClick={true}>
 		<div class="edge-label">

@@ -14,6 +14,7 @@
 		type OnDelete,
 		type OnBeforeConnect,
 		type OnSelectionChange,
+		MarkerType,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import { model, valueToString, linkTypes } from './ftm';
@@ -66,12 +67,19 @@
 					for (const targetValue of entity.getProperty(edge.target)) {
 						const sourceEntityId = valueToString(sourceValue);
 						const targetEntityId = valueToString(targetValue);
+						const selected = network.focusedEntity === entity.id;
 
 						const newEdge: InterstitialFlowEdge = {
 							id: `${sourceEntityId}<${entity.id}>${targetEntityId}`,
 							source: sourceEntityId,
 							target: targetEntityId,
-							selected: network.focusedEntity === entity.id,
+							selected,
+							markerEnd: {
+								type: MarkerType.ArrowClosed,
+								height: 20,
+								width: 20,
+								color: selected ? 'black' : '#b1b1b7',
+							},
 							data: {
 								interstitialEntityId: entity.id,
 								label:
@@ -253,6 +261,11 @@
 		return {
 			...connection,
 			id: edgeId,
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				height: 20,
+				width: 20,
+			},
 			animated: true,
 		};
 	};
