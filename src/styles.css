@@ -49,3 +49,21 @@
 .ftmbuilder-note-preview {
 	white-space: pre-wrap;
 }
+
+.ftmbuilder-network {
+	--xy-background-color: var(--background-primary);
+	--xy-background-pattern-dots-color: var(--text-faint);
+	--xy-edge-stroke: var(--text-faint);
+	--xy-edge-stroke-selected: var(--text-normal);
+	--xy-connectionline-stroke: var(--text-faint);
+	--xy-edge-label-color: var(--text-muted);
+	--xy-edge-label-background-color: transparent;
+	--xy-minimap-background-color: var(--background-secondary);
+	--xy-minimap-node-background-color: var(--background-modifier-border);
+	--xy-minimap-mask-background-color: var(--background-modifier-cover);
+	--xy-controls-button-background-color: var(--interactive-normal);
+	--xy-controls-button-background-color-hover: var(--interactive-hover);
+	--xy-controls-button-color: var(--text-normal);
+	--xy-controls-button-border-color: var(--background-modifier-border);
+	--xy-attribution-background-color: transparent;
+}

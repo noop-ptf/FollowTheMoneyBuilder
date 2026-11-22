@@ -6,9 +6,8 @@
 		type NodeProps,
 	} from '@xyflow/svelte';
 	import { getSchemaCategory } from './schemaStyle';
-	import SchemaIcon from './SchemaIcon.svelte';
 	import type { EntityNodeData } from './flowTypes';
-	import { Schema } from '@opensanctions/followthemoney';
+	import { obsidianIcon } from './attachments';
 
 	let { id, data, selected }: NodeProps & { data: EntityNodeData } = $props();
 
@@ -36,6 +35,11 @@
 		class:isTarget
 		data-category={category}
 	>
+		<span
+			class="drag-grip"
+			aria-label="Drag the entity"
+			{@attach obsidianIcon('grip-horizontal')}
+		></span>
 		<Handle
 			class="customHandle"
 			aria-label="Drag to create a link to another entity"
@@ -49,56 +53,52 @@
 			type="target"
 			isConnectableStart={false}
 		/>
+		<div class="caption">{data.caption}</div>
 		{#if data.schema}
 			<div class="eyebrow">
-				<SchemaIcon schema={data.schema} size={16} />
 				<span>{data.schema.label}</span>
 			</div>
 		{/if}
-		<div class="caption">{data.caption || 'Untitled'}</div>
 	</div>
 </div>
 
 <style>
 	.entity-node-wrapper {
-		background-color: white;
+		background-color: var(--background-primary);
+		border-radius: 8px;
 	}
 	.entity-node {
 		display: flex;
+		align-items: center;
 		flex-direction: column;
 		gap: 0.3em;
 		min-width: 160px;
-		padding: 0.6em 0.8em;
+		padding: 4px 16px 8px 16px;
 		border-radius: 8px;
+		border: 1px solid var(--background-modifier-border);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	}
 
-	.entity-node[data-category='person'] {
-		border-left-color: var(--schema-person-fg);
-	}
-
-	.entity-node[data-category='legalEntity'] {
-		border-left-color: var(--schema-legalentity-fg);
-	}
-
-	.entity-node[data-category='document'] {
-		border-left-color: var(--schema-document-fg);
-	}
-
 	.entity-node.selected {
-		box-shadow: 0 0 0 2px var(--schema-default-fg);
+		box-shadow: 0 0 0 2px var(--text-muted);
 		background-color: var(--background-modifier-hover);
 	}
 
 	.entity-node.isTarget {
-		outline: 2px dashed var(--schema-default-fg);
+		outline: 2px dashed var(--text-muted);
+	}
+
+	.drag-grip {
+		display: flex;
+		color: var(--text-faint);
+		--icon-size: var(--icon-s);
 	}
 
 	:global(.customHandle) {
 		width: 100%;
-		height: 100%;
+		height: 75%;
 		position: absolute;
-		top: 0;
+		top: 25%;
 		left: 0;
 		border-radius: 0;
 		transform: none;
@@ -115,13 +115,7 @@
 	}
 
 	.caption {
-		font-weight: 600;
-		font-size: 0.95em;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.entity-node {
-			background: #0f0f0f98;
-		}
+		font-weight: 700;
+		font-size: 1em;
 	}
 </style>

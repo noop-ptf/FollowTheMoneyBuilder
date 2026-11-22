@@ -16,7 +16,7 @@
 	} = $props();
 </script>
 
-<div class="ftm-network">
+<div class="ftmbuilder-network">
 	<!-- The Provider needs to be in its own component, 
 		 such that useSvelteFlow and other hooks can work. -->
 	<SvelteFlowProvider>
@@ -30,7 +30,7 @@
 </div>
 
 <style>
-	.ftm-network {
+	.ftmbuilder-network {
 		height: 100%;
 	}
 </style>

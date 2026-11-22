@@ -78,7 +78,9 @@
 								type: MarkerType.ArrowClosed,
 								height: 20,
 								width: 20,
-								color: selected ? 'black' : '#b1b1b7',
+								color: selected
+									? 'var(--xy-edge-stroke-selected)'
+									: 'var(--xy-edge-stroke)',
 							},
 							data: {
 								interstitialEntityId: entity.id,
@@ -392,8 +394,8 @@
 			onconnectend={handleConnectEnd}
 			ondelete={handleDelete}
 			zoomOnDoubleClick={false}
+			defaultMarkerColor="var(--xy-edge-stroke)"
 			fitView
-			colorMode="system"
 		>
 			<ViewportPortal target="front">
 				{#if pendingSelectRelationshipType && pendingSelectRelationshipType.linkTypes}

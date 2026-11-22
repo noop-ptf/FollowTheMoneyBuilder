@@ -235,7 +235,7 @@
 	.card.ghost:hover,
 	.card.ghost:focus-visible {
 		opacity: 1;
-		border-color: var(--schema-default-fg);
+		border-color: var(--text-muted);
 	}
 
 	.card.ghost .plus {
