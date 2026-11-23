@@ -1,6 +1,6 @@
 # Follow the Money Builder for Obsidian
 
-This Obsidian plug-in allows the user to create [Follow the Money](https://followthemoney.tech/) entities independent of, but optionally for, OpenAleph.
+This Obsidian plug-in allows the user to create [Follow the Money](https://followthemoney.tech/) entities independent of, but optionally for, OpenAleph. You can also use it to visualize entities in a network, and create connections between them.
 
 ⚠️ This plug-in is in an Alpha stage. It _may_ still contain bugs. If you would like to report a bug or request a feature, please [open an Issue](https://github.com/noop-ptf/FollowTheMoneyBuilder/issues).
 
@@ -10,13 +10,15 @@ You must have [Obsidian](https://obsidian.md/) installed in order to use this pl
 
 Your Obsidian app version must be equal or newer `1.13.0`. You can see the version by opening the **Settings** and navigating to the **General** section. If you have an older version of Obsidian, [upgrade to a more recent version](https://obsidian.md/help/updates).
 
-This plug-in can be installed directly via the Obsidian Community plug-ins catalogue. Two other installation methods are detailed below.
+This plug-in can be installed directly via the Obsidian [Community plug-ins catalogue](https://community.obsidian.md/plugins/followthemoney-builder). Either click the "Add to Obsidian" button following the link, or enter "Follow the Money Builder" into the Community plugin browser in Obsidian.
+
+Two other installation methods are detailed below.
 
 ### Install using the BRAT plug-in
 
 If you already have the Beta Reviewers Auto-update Tester plug-in (called BRAT), you can add `https://github.com/noop-ptf/FollowTheMoneyBuilder` and select the latest version of this plug-in.
 
-<p align="center"><img src="src/assets/brat.png" alt="Screenshot demonstrating how to add the GitHub URL for  OpenAleph Explore plug-in to BRAT" width="500" height="1100"></p>
+<p align="center"><img src="assets/brat.png" alt="Screenshot demonstrating how to add the GitHub URL for OpenAleph Explore plug-in to BRAT" width="500" height="1100"></p>
 
 ### Install from source code
 
@@ -29,14 +31,15 @@ If you already have the Beta Reviewers Auto-update Tester plug-in (called BRAT),
 ## Related projects
 
 [OpenAleph Search](https://github.com/noop-ptf/OpenAlephSearch) allows a user to search through many different OpenAleph instances simultaneously.
+[OpenAleph OmniSearch](https://github.com/noop-ptf/OpenAlephOmniSearch) allows to run multiple searches across multiple OpenAleph instances.
 [OpenAleph Explore](https://github.com/noop-ptf/OpenAlephExplore) allows a user to send a note to all the OpenAleph instances they have access to in order to extract structured Follow the Money data and related terms.
 
 ## Sponsor
 
 Follow the Money Builder: an Obsidian Plug-in is funded by the German **Federal Ministry of Research, Technology and Space (BMFTR)** through the **[Prototype Fund](https://prototypefund.de)** under funding code (Förderkennzeichen) **16IS26S15**.
 
-<img src="src/assets/bmftr-funding.png" alt="Funded by the German Federal Ministry of Research, Technology and Space (BMFTR)" width="200">
-<img src="src/assets/prototype-fund-en.png" alt="Funded through the Prototype Fund" width="200">
+<img src="assets/bmftr-funding.png" alt="Funded by the German Federal Ministry of Research, Technology and Space (BMFTR)" width="200">
+<img src="assets/prototype-fund-en.png" alt="Funded through the Prototype Fund" width="200">
 
 ## Generative Artificial Intelligence Disclaimer
 
