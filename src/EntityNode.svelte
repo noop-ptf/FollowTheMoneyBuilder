@@ -5,15 +5,10 @@
 		useConnection,
 		type NodeProps,
 	} from '@xyflow/svelte';
-	import { getSchemaCategory } from './schemaStyle';
 	import type { EntityNodeData } from './flowTypes';
 	import { obsidianIcon } from './attachments';
 
 	let { id, data, selected }: NodeProps & { data: EntityNodeData } = $props();
-
-	const category = $derived(
-		data.schema ? getSchemaCategory(data.schema) : 'default',
-	);
 
 	const connection = useConnection();
 
@@ -29,12 +24,7 @@
 </script>
 
 <div class="entity-node-wrapper">
-	<div
-		class="entity-node"
-		class:selected
-		class:isTarget
-		data-category={category}
-	>
+	<div class="entity-node" class:selected class:isTarget>
 		<span
 			class="drag-grip"
 			aria-label="Drag the entity"

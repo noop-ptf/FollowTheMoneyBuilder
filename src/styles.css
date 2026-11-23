@@ -1,15 +1,5 @@
 @import '@xyflow/svelte/dist/style.css';
 
-:root {
-	--schema-person-fg: #bd401f;
-	--schema-person-bg: #faeae8;
-	--schema-legalentity-fg: #f9841c;
-	--schema-legalentity-bg: #fffee8;
-	--schema-document-fg: #311b92;
-	--schema-document-bg: #ede7f6;
-	--schema-default-fg: #595959;
-	--schema-default-bg: #f2f2f2;
-}
 .ftmbuilder-source-box {
 	border: 1px solid var(--background-modifier-border);
 	border-radius: 6px;
