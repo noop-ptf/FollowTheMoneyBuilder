@@ -2,14 +2,17 @@
 	import FTMNetworkFlow from './FTMNetworkFlow.svelte';
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import type { NetworkState } from '../networkState.svelte';
+	import type { UIState } from '../uiState.svelte';
 
 	let {
 		network,
+		ui,
 		onChange,
 		openEntityBuilder,
 		chooseEntityType,
 	}: {
 		network: NetworkState;
+		ui: UIState;
 		onChange: () => void;
 		openEntityBuilder: () => void;
 		chooseEntityType: () => Promise<string | undefined>;
@@ -22,6 +25,7 @@
 	<SvelteFlowProvider>
 		<FTMNetworkFlow
 			{network}
+			{ui}
 			{onChange}
 			{openEntityBuilder}
 			{chooseEntityType}

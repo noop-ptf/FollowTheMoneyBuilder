@@ -48,11 +48,15 @@
 		if (type === undefined) return;
 		const network = builderState.network;
 		if (network === undefined) return;
-		await network.addEntityByType(type);
+		const entityId = await network.addEntityByType(type);
+		if (builderState.ui) {
+			builderState.ui.focusedEntity = entityId;
+		}
 	}
 
 	function removeEntity(id: string) {
 		builderState.network?.removeEntity(id);
+		builderState.ui?.forget(id);
 	}
 
 	let selectedCollection: OpenAlephCollection | null = $state(null);
@@ -128,7 +132,7 @@
 		{@attach obsidianIcon('info')}
 	></span>
 </h3>
-{#if builderState.network}
+{#if builderState.network && builderState.ui}
 	<p>Showing entities for {builderState.networkFilename}</p>
 	<div class="entities">
 		{#each cards as card (card.entityId)}
@@ -136,6 +140,7 @@
 				{card}
 				entity={builderState.network.getEntity(card.entityId)}
 				network={builderState.network}
+				ui={builderState.ui}
 				onRemove={() => removeEntity(card.entityId)}
 			/>
 		{/each}

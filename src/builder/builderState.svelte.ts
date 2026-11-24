@@ -4,6 +4,7 @@ import { CardState } from './cardState.svelte';
 export class BuilderState {
 	networkView = $state.raw<FTMNetworkView | null>(null);
 	network = $derived(this.networkView?.network);
+	ui = $derived(this.networkView?.ui);
 	networkFilename = $derived(this.networkView?.file?.basename ?? null);
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain cache, only read and replaced inside the cards $derived; must not be reactive
 	#cache = new Map<string, CardState>();

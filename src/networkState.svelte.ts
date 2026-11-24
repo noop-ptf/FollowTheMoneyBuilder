@@ -41,7 +41,6 @@ function isPersistedNetwork(v: unknown): v is PersistedNetwork {
 
 export class NetworkState {
 	entities = $state<Entity[]>([]);
-	focusedEntity = $state<string | null>(null);
 	positions = $state<Record<string, XYPosition>>({});
 	onChange: () => void;
 
@@ -120,9 +119,6 @@ export class NetworkState {
 		if (position) {
 			this.positions[entity.id] = position;
 		}
-		// TODO: is it ok to set this here?
-		// It's a bit of a hack to make the card "editing" right after it's created.
-		this.focusedEntity = entity.id;
 		this.onChange();
 	}
 
@@ -136,9 +132,13 @@ export class NetworkState {
 		return entity;
 	}
 
-	async addEntityByType(entityType: string, position?: XYPosition) {
+	async addEntityByType(
+		entityType: string,
+		position?: XYPosition,
+	): Promise<string> {
 		const entity = await model.createEntity(entityType);
 		this.addEntity(entity, position);
+		return entity.id;
 	}
 
 	private isEdgeTouching(entity: Entity, entityId: string): boolean {
@@ -187,8 +187,6 @@ export class NetworkState {
 					: e,
 			);
 		delete this.positions[entityId];
-		this.focusedEntity =
-			this.focusedEntity === entityId ? null : this.focusedEntity;
 		this.onChange();
 	}
 

@@ -22,6 +22,7 @@
 	import type LinkType from '../ftm/LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { NetworkState } from '../networkState.svelte';
+	import type { UIState } from '../uiState.svelte';
 	import LinkTypeChooser from './LinkTypeChooser.svelte';
 	import type {
 		FtMFlowNode,
@@ -35,11 +36,13 @@
 
 	let {
 		network,
+		ui,
 		onChange,
 		openEntityBuilder,
 		chooseEntityType,
 	}: {
 		network: NetworkState;
+		ui: UIState;
 		onChange: () => void;
 		openEntityBuilder: () => void;
 		chooseEntityType: () => Promise<string | undefined>;
@@ -68,7 +71,7 @@
 					for (const targetValue of entity.getProperty(edge.target)) {
 						const sourceEntityId = valueToString(sourceValue);
 						const targetEntityId = valueToString(targetValue);
-						const selected = network.focusedEntity === entity.id;
+						const selected = ui.focusedEntity === entity.id;
 
 						const newEdge: InterstitialFlowEdge = {
 							id: `${sourceEntityId}<${entity.id}>${targetEntityId}`,
@@ -133,7 +136,7 @@
 			.map((entity) => ({
 				id: entity.id,
 				type: 'entity',
-				selected: network.focusedEntity === entity.id,
+				selected: ui.focusedEntity === entity.id,
 				position: { ...(canvasPositions[entity.id] ?? { x: 0, y: 0 }) },
 				data: {
 					caption: entity.getCaption(),
@@ -198,7 +201,11 @@
 				x: event.clientX,
 				y: event.clientY,
 			});
-			await network.addEntityByType(entityType, flowPosition);
+			const entityId = await network.addEntityByType(
+				entityType,
+				flowPosition,
+			);
+			ui.focusedEntity = entityId;
 		}
 	}
 
@@ -209,15 +216,15 @@
 		if (selectedNodes.length === 1) {
 			openEntityBuilder();
 			const node = selectedNodes[0]!; // Has to exist, as we just checked nodes.length
-			network.focusedEntity = node.id;
+			ui.focusedEntity = node.id;
 		} else if (selectedEdges.length === 1) {
 			const edge = selectedEdges[0]!; // Has to exist.
 			if (edge.type === 'interstitial') {
 				openEntityBuilder();
-				network.focusedEntity = edge.data.interstitialEntityId;
+				ui.focusedEntity = edge.data.interstitialEntityId;
 			}
 		} else if (selectedNodes.length === 0 && selectedEdges.length === 0) {
-			network.focusedEntity = null;
+			ui.focusedEntity = null;
 		}
 	};
 
@@ -343,6 +350,7 @@
 				interstitialEntity.setProperty(edge.source, sourceId);
 				interstitialEntity.setProperty(edge.target, targetId);
 				network.addEntity(interstitialEntity);
+				ui.focusedEntity = interstitialEntity.id;
 			}
 		}
 
@@ -365,6 +373,7 @@
 	}) => {
 		for (const node of deletedNodes) {
 			network.removeEntity(node.id);
+			ui.forget(node.id);
 		}
 		for (const edge of deletedEdges) {
 			if (edge.type === 'property') {
@@ -374,7 +383,9 @@
 					edge.target,
 				);
 			} else if (edge.type === 'interstitial') {
-				network.removeEntity(edge.data.interstitialEntityId);
+				const entityId = edge.data.interstitialEntityId;
+				network.removeEntity(entityId);
+				ui.forget(entityId);
 			}
 		}
 	};

@@ -5,22 +5,25 @@
 	import { obsidianIcon } from '../lib/attachments';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { NetworkState } from '../networkState.svelte';
+	import type { UIState } from '../uiState.svelte';
 
 	let {
 		card,
 		entity,
 		network,
+		ui,
 		onRemove,
 	}: {
 		card: CardState;
 		entity: Entity;
 		network: NetworkState;
+		ui: UIState;
 		onRemove: () => void;
 	} = $props();
 
 	let articleRef: HTMLElement;
 
-	const editing = $derived(network.focusedEntity === card.entityId);
+	const editing = $derived(ui.focusedEntity === card.entityId);
 
 	$effect(() => {
 		if (editing && articleRef) {
@@ -35,9 +38,9 @@
 			class="entity-toggle"
 			onclick={() => {
 				if (editing) {
-					network.focusedEntity = null;
+					ui.focusedEntity = null;
 				} else {
-					network.focusedEntity = card.entityId;
+					ui.focusedEntity = card.entityId;
 				}
 			}}
 		>

@@ -6,6 +6,7 @@ import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
 import FTMNetworkDiagram from './network/FTMNetworkDiagram.svelte';
 import { NetworkState } from './networkState.svelte';
+import { UIState } from './uiState.svelte';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';
 export const VIEW_TYPE_FTM_BUILDER_NETWORK =
@@ -73,6 +74,7 @@ export class FTMBuilderView extends ItemView {
 
 export class FTMNetworkView extends TextFileView {
 	network: NetworkState = new NetworkState(() => this.requestSave());
+	ui: UIState = new UIState();
 	private component: ReturnType<typeof FTMNetworkDiagram> | undefined;
 	private plugin: FTMBuilderPlugin;
 
@@ -108,6 +110,7 @@ export class FTMNetworkView extends TextFileView {
 			target: this.contentEl,
 			props: {
 				network: this.network,
+				ui: this.ui,
 				onChange: () => this.requestSave(),
 				openEntityBuilder: () => {
 					this.plugin
