@@ -1,8 +1,8 @@
 <script lang="ts">
-	import FTMNetworkFlow from './FTMNetworkFlow.svelte';
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import type { NetworkState } from '../networkState.svelte';
 	import type { UIState } from '../uiState.svelte';
+	import FTMNetworkFlow from './FTMNetworkFlow.svelte';
 
 	let {
 		network,

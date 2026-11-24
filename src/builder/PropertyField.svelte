@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Entity, Property } from '@opensanctions/followthemoney';
+	import { untrack } from 'svelte';
+	import { createAttachmentKey } from 'svelte/attachments';
 	import { obsidianIcon, focusOnMount } from '../lib/attachments';
 	import CustomCombobox from '../ui/CustomCombobox.svelte';
-	import { createAttachmentKey } from 'svelte/attachments';
-	import PropertyInput from './PropertyInput.svelte';
-	import { untrack } from 'svelte';
 	import { valueToString } from '../ftm/util';
 	import type { NetworkState } from '../networkState.svelte';
+	import PropertyInput from './PropertyInput.svelte';
 
 	let {
 		property,

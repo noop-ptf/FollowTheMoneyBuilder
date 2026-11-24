@@ -1,5 +1,5 @@
-import { type XYPosition } from '@xyflow/svelte';
 import type { Entity, Property } from '@opensanctions/followthemoney';
+import type { XYPosition } from '@xyflow/svelte';
 import { model } from './ftm/model';
 import { isEdgeTouching, references, withoutReference } from './ftm/util';
 import { loadPersistedNetwork, serializeNetwork } from './lib/persistence';

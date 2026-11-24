@@ -1,11 +1,11 @@
 <script lang="ts">
+	import type { Entity } from '@opensanctions/followthemoney';
+	import { obsidianIcon } from '../lib/attachments';
+	import type { NetworkState } from '../networkState.svelte';
+	import type { UIState } from '../uiState.svelte';
 	import type { CardState } from './cardState.svelte';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
-	import { obsidianIcon } from '../lib/attachments';
-	import type { Entity } from '@opensanctions/followthemoney';
-	import type { NetworkState } from '../networkState.svelte';
-	import type { UIState } from '../uiState.svelte';
 
 	let {
 		card,

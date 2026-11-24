@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Entity } from '@opensanctions/followthemoney';
-	import type { CardState } from './cardState.svelte';
 	import { valueToString } from '../ftm/util';
 	import type { NetworkState } from '../networkState.svelte';
+	import type { CardState } from './cardState.svelte';
+
 	let {
 		card,
 		entity,

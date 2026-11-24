@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createAttachmentKey } from 'svelte/attachments';
 	import type { Schema } from '@opensanctions/followthemoney';
+	import { createAttachmentKey } from 'svelte/attachments';
 	import CustomCombobox from './CustomCombobox.svelte';
 	import SchemaIcon from './SchemaIcon.svelte';
 

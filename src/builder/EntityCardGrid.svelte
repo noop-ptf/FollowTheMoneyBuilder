@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
+	import type { Entity } from '@opensanctions/followthemoney';
 	import { obsidianIcon } from '../lib/attachments';
+	import type { OpenAlephCollection } from '../types';
+	import type { BuilderState } from './builderState.svelte';
 	import EntityCard from './EntityCard.svelte';
 	import CollectionSelector from './CollectionSelector.svelte';
-	import type { OpenAlephCollection } from '../types';
-	import type { Entity } from '@opensanctions/followthemoney';
-	import type { BuilderState } from './builderState.svelte';
 
 	let {
 		loadCollections,

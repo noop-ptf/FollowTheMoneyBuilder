@@ -12,7 +12,7 @@ import type {
 	OpenAlephInstanceSettings,
 	FTMBuilderPluginSettings,
 } from './types';
-import FTMBuilderPlugin from './main';
+import type FTMBuilderPlugin from './main';
 
 export const DEFAULT_INSTANCE: Omit<OpenAlephInstanceSettings, 'id'> = {
 	apiKeyName: '',

@@ -1,8 +1,8 @@
-import { type XYPosition } from '@xyflow/svelte';
 import type {
 	IEntityDatum as PersistedEntity,
 	Entity,
 } from '@opensanctions/followthemoney';
+import type { XYPosition } from '@xyflow/svelte';
 import { model } from '../ftm/model';
 
 type EntityPositions = Record<string, XYPosition>;

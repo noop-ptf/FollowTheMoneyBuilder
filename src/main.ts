@@ -6,6 +6,8 @@ import {
 	type App,
 	normalizePath,
 } from 'obsidian';
+import type { Entity } from '@opensanctions/followthemoney';
+import { BuilderState } from './builder/builderState.svelte';
 import { DEFAULT_SETTINGS, FTMBuilderSettingTab } from './settings';
 import type {
 	OpenAlephCollection,
@@ -13,24 +15,22 @@ import type {
 	FTMBuilderPluginSettings,
 } from './types';
 import {
-	FTMBuilderView,
-	FTMNetworkView,
-	VIEW_TYPE_FTM_BUILDER_LIST,
-	VIEW_TYPE_FTM_BUILDER_NETWORK,
-} from './view';
-import {
 	getCollections,
 	bulkEntityUpload,
 	validateEntityUpload,
 } from './lib/requests';
-import type { Entity } from '@opensanctions/followthemoney';
+import { entityToFrontmatter, saveEntityNotes } from './lib/noteExport';
 import {
 	ConfirmSaveModal,
 	ChooseEntityTypeModal,
 	OpenNetworkModal,
 } from './ui/modals';
-import { entityToFrontmatter, saveEntityNotes } from './lib/noteExport';
-import { BuilderState } from './builder/builderState.svelte';
+import {
+	FTMBuilderView,
+	FTMNetworkView,
+	VIEW_TYPE_FTM_BUILDER_LIST,
+	VIEW_TYPE_FTM_BUILDER_NETWORK,
+} from './view';
 
 interface ResizableSidebarSplit {
 	collapsed: boolean;

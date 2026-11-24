@@ -1,9 +1,9 @@
 import { ItemView, Notice, TextFileView, TFile, WorkspaceLeaf } from 'obsidian';
-import { mount, unmount } from 'svelte';
-import FTMBuilderPlugin from './main';
-import EntityCardGrid from './builder/EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
+import { mount, unmount } from 'svelte';
+import type FTMBuilderPlugin from './main';
 import type { OpenAlephCollection } from './types';
+import EntityCardGrid from './builder/EntityCardGrid.svelte';
 import FTMNetworkDiagram from './network/FTMNetworkDiagram.svelte';
 import { NetworkState } from './networkState.svelte';
 import { UIState } from './uiState.svelte';

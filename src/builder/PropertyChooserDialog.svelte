@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Property, Schema } from '@opensanctions/followthemoney';
 	import Dialog from '../ui/Dialog.svelte';
 	import GroupedItemChooser from '../ui/GroupedItemChooser.svelte';
 	import {
@@ -6,7 +7,6 @@
 		FIELD_GROUPS,
 	} from '../ftm/propertyGrouping';
 	import { fuzzyFilter } from '../lib/fuzzy';
-	import type { Property, Schema } from '@opensanctions/followthemoney';
 
 	let {
 		schema,

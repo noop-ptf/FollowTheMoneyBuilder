@@ -2,10 +2,10 @@
 	lang="ts"
 	generics="T extends { value: string; label: string; disabled?: boolean }"
 >
+	import type { Snippet } from 'svelte';
 	import { Combobox, type WithoutChildrenOrChild, mergeProps } from 'bits-ui';
 	import { obsidianIcon } from '../lib/attachments';
 	import { fuzzyFilter } from '../lib/fuzzy';
-	import type { Snippet } from 'svelte';
 
 	type Props = Omit<
 		Combobox.RootProps,
