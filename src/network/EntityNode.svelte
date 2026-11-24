@@ -8,7 +8,8 @@
 	import { obsidianIcon } from '../lib/attachments';
 	import type { EntityNodeData } from './types';
 
-	let { id, data, selected }: NodeProps & { data: EntityNodeData } = $props();
+	type Props = NodeProps & { data: EntityNodeData };
+	let { id, data, selected }: Props = $props();
 
 	const connection = useConnection();
 

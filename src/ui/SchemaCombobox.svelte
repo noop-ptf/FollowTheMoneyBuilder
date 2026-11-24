@@ -4,17 +4,18 @@
 	import CustomCombobox from './CustomCombobox.svelte';
 	import SchemaIcon from './SchemaIcon.svelte';
 
+	type Props = {
+		selectedSchema: string | undefined;
+		schemata: Schema[];
+		onSchemaChange: (name: string) => void;
+		autofocus?: boolean;
+	};
 	let {
 		selectedSchema,
 		schemata,
 		onSchemaChange,
 		autofocus = false,
-	}: {
-		selectedSchema: string | undefined;
-		schemata: Schema[];
-		onSchemaChange: (name: string) => void;
-		autofocus?: boolean;
-	} = $props();
+	}: Props = $props();
 
 	const inputProps = {
 		placeholder: 'What kind of entity is this?',

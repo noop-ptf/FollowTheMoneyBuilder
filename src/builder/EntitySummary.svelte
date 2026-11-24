@@ -4,16 +4,13 @@
 	import type { NetworkState } from '../networkState.svelte';
 	import type { CardState } from './cardState.svelte';
 
-	let {
-		card,
-		entity,
-		network,
-	}: {
+	type Props = {
 		card: CardState;
 		entity: Entity;
 		// TODO: network is just here to get the caption. Simplify?
 		network: NetworkState;
-	} = $props();
+	};
+	let { card, entity, network }: Props = $props();
 </script>
 
 <ul>

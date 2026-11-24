@@ -2,11 +2,11 @@
 	import { listEntitySchemata } from '../ftm/model';
 	import SchemaCombobox from './SchemaCombobox.svelte';
 
-	let {
-		onConfirm,
-		onCancel,
-	}: { onConfirm: (entityType: string) => void; onCancel: () => void } =
-		$props();
+	type Props = {
+		onConfirm: (entityType: string) => void;
+		onCancel: () => void;
+	};
+	let { onConfirm, onCancel }: Props = $props();
 
 	let selectedSchema = $state<string | undefined>();
 	const schemata = listEntitySchemata();

@@ -7,19 +7,14 @@
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
 
-	let {
-		card,
-		entity,
-		network,
-		ui,
-		onRemove,
-	}: {
+	type Props = {
 		card: CardState;
 		entity: Entity;
 		network: NetworkState;
 		ui: UIState;
 		onRemove: () => void;
-	} = $props();
+	};
+	let { card, entity, network, ui, onRemove }: Props = $props();
 
 	let articleRef: HTMLElement;
 

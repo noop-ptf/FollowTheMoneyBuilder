@@ -7,18 +7,7 @@
 	import EntityCard from './EntityCard.svelte';
 	import CollectionSelector from './CollectionSelector.svelte';
 
-	let {
-		loadCollections,
-		bulkEntityUpload,
-		validateEntityUpload,
-		confirmSaveEntities,
-		getInstanceName,
-		openPluginSettings,
-		chooseEntityType,
-		createFTMNetwork,
-		openFTMNetwork,
-		builderState,
-	}: {
+	type Props = {
 		loadCollections: () => Promise<OpenAlephCollection[]>;
 		bulkEntityUpload: (
 			entities: Entity[],
@@ -38,7 +27,19 @@
 		createFTMNetwork: () => Promise<void>;
 		openFTMNetwork: () => void;
 		builderState: BuilderState;
-	} = $props();
+	};
+	let {
+		loadCollections,
+		bulkEntityUpload,
+		validateEntityUpload,
+		confirmSaveEntities,
+		getInstanceName,
+		openPluginSettings,
+		chooseEntityType,
+		createFTMNetwork,
+		openFTMNetwork,
+		builderState,
+	}: Props = $props();
 
 	const entities = $derived(builderState.network?.entities);
 	const cards = $derived(builderState.cards);

@@ -34,19 +34,15 @@
 
 	const uid = $props.id();
 
-	let {
-		network,
-		ui,
-		onChange,
-		openEntityBuilder,
-		chooseEntityType,
-	}: {
+	type Props = {
 		network: NetworkState;
 		ui: UIState;
 		onChange: () => void;
 		openEntityBuilder: () => void;
 		chooseEntityType: () => Promise<string | undefined>;
-	} = $props();
+	};
+	let { network, ui, onChange, openEntityBuilder, chooseEntityType }: Props =
+		$props();
 
 	const entities = $derived(network.entities);
 	const canvasPositions = $derived<Record<string, { x: number; y: number }>>(

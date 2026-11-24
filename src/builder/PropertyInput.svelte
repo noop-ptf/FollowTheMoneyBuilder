@@ -3,15 +3,12 @@
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { focusOnMount } from '../lib/attachments';
 
-	let {
-		name,
-		type,
-		value = $bindable(),
-	}: {
+	type Props = {
 		name: string;
 		type: string;
 		value: string | undefined;
-	} = $props();
+	};
+	let { name, type, value = $bindable() }: Props = $props();
 	const typeMapping: Record<
 		string,
 		Pick<HTMLInputAttributes, 'type' | 'placeholder' | 'inputmode'>

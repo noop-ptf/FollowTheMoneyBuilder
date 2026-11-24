@@ -5,17 +5,13 @@
 	import PropertyField from './PropertyField.svelte';
 	import PropertyChooserDialog from './PropertyChooserDialog.svelte';
 
-	let {
-		card,
-		entity,
-		network,
-		onDelete,
-	}: {
+	type Props = {
 		card: CardState;
 		entity: Entity;
 		network: NetworkState;
 		onDelete?: () => void;
-	} = $props();
+	};
+	let { card, entity, network, onDelete }: Props = $props();
 
 	const availableProperties = $derived(card.getAddableCardProperties(entity));
 	const requiredNames = $derived(new Set(entity.schema.required ?? []));

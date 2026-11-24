@@ -8,13 +8,7 @@
 	import type { NetworkState } from '../networkState.svelte';
 	import PropertyInput from './PropertyInput.svelte';
 
-	let {
-		property,
-		entity,
-		network,
-		required = false,
-		onRemove,
-	}: {
+	type Props = {
 		property: Property;
 		entity: Entity;
 		// TODO: we don't need the full NetworkState here, just the list of entities (to determine link candidates)
@@ -22,7 +16,14 @@
 		network: NetworkState;
 		required?: boolean;
 		onRemove: () => void;
-	} = $props();
+	};
+	let {
+		property,
+		entity,
+		network,
+		required = false,
+		onRemove,
+	}: Props = $props();
 
 	const range = $derived(property.getRange());
 	const candidates = $derived(

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { IconRegistry, type Schema } from '@opensanctions/followthemoney';
 
-	let { schema, size = 28 }: { schema: Schema; size?: number } = $props();
+	type Props = { schema: Schema; size?: number };
+	let { schema, size = 28 }: Props = $props();
 
 	const paths = $derived(IconRegistry.getSchemaIcon(schema));
 </script>

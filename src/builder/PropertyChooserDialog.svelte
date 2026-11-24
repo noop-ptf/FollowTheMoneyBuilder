@@ -8,15 +8,12 @@
 	} from '../ftm/propertyGrouping';
 	import { fuzzyFilter } from '../lib/fuzzy';
 
-	let {
-		schema,
-		availableProperties,
-		onSelectProperty,
-	}: {
+	type Props = {
 		schema: Schema;
 		availableProperties: Property[];
 		onSelectProperty: (prop: Property) => void;
-	} = $props();
+	};
+	let { schema, availableProperties, onSelectProperty }: Props = $props();
 
 	const groupedProperties = $derived(
 		getGroupedProperties(availableProperties),
