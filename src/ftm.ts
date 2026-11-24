@@ -1,6 +1,6 @@
 import { Model, defaultModel } from '@opensanctions/followthemoney';
 import type { Value } from '@opensanctions/followthemoney';
-import LinkType from './LinkType';
+import LinkType from './ftm/LinkType';
 
 export const model = new Model(defaultModel);
 export const linkTypes = LinkType.getAll(model);

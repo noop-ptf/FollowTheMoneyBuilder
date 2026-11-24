@@ -18,7 +18,7 @@
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
 	import { model, valueToString, linkTypes } from './ftm';
-	import type LinkType from './LinkType';
+	import type LinkType from './ftm/LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
 	import type { NetworkState } from './networkState.svelte';
 	import LinkTypeChooser from './LinkTypeChooser.svelte';
