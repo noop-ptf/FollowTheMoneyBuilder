@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Dialog from './Dialog.svelte';
 	import GroupedItemChooser from './GroupedItemChooser.svelte';
-	import { getGroupedProperties, FIELD_GROUPS } from './ftm';
+	import { getGroupedProperties, FIELD_GROUPS } from './ftm/propertyGrouping';
 	import { fuzzyFilter } from './fuzzy';
 	import type { Property, Schema } from '@opensanctions/followthemoney';
 
