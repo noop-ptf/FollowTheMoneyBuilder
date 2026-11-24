@@ -1,7 +1,7 @@
 import { type XYPosition } from '@xyflow/svelte';
 import type { Entity, Property } from '@opensanctions/followthemoney';
 import { model } from './ftm/model';
-import { valueToString } from './ftm/util';
+import { isEdgeTouching, references, withoutReference } from './ftm/util';
 import { loadPersistedNetwork, serializeNetwork } from './lib/persistence';
 
 export class NetworkState {
@@ -92,50 +92,13 @@ export class NetworkState {
 		return entity.id;
 	}
 
-	private isEdgeTouching(entity: Entity, entityId: string): boolean {
-		const edge = entity.schema.edge;
-		if (!entity.schema.isEdge || !edge) return false;
-		return [edge.source, edge.target].some((p) =>
-			entity.getProperty(p).some((v) => valueToString(v) === entityId),
-		);
-	}
-
-	private references(entity: Entity, entityId: string): boolean {
-		return entity
-			.getProperties()
-			.filter((p) => p.type.name === 'entity')
-			.some((p) =>
-				entity
-					.getProperty(p)
-					.some((v) => valueToString(v) === entityId),
-			);
-	}
-
-	private withoutReference(entity: Entity, entityId: string): Entity {
-		const next = entity.clone();
-		entity.getProperties().forEach((p) => {
-			if (p.type.name === 'entity') {
-				next.properties.delete(p);
-				entity
-					.getProperty(p)
-					.filter((v) => valueToString(v) !== entityId)
-					.forEach((v) => next.setProperty(p, v));
-			}
-		});
-		return next;
-	}
-
 	removeEntity(entityId: string) {
 		this.entities = this.entities
 			// 1. Filter the entity itself, as well as all interstitial entities that are referencing this entity
-			.filter(
-				(e) => e.id !== entityId && !this.isEdgeTouching(e, entityId),
-			)
+			.filter((e) => e.id !== entityId && !isEdgeTouching(e, entityId))
 			// 2. Remove the now-stale id from other entities.
 			.map((e) =>
-				this.references(e, entityId)
-					? this.withoutReference(e, entityId)
-					: e,
+				references(e, entityId) ? withoutReference(e, entityId) : e,
 			);
 		delete this.positions[entityId];
 		this.onChange();
