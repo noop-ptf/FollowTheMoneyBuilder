@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getBezierPath, BaseEdge, EdgeLabel } from '@xyflow/svelte';
-	import type { InterstitialFlowEdgeProps } from './flowTypes';
+	import type { InterstitialFlowEdgeProps } from './types';
 
 	let {
 		id,

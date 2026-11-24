@@ -3,8 +3,8 @@
 	generics="T extends { value: string; label: string; disabled?: boolean }"
 >
 	import { Combobox, type WithoutChildrenOrChild, mergeProps } from 'bits-ui';
-	import { obsidianIcon } from './attachments';
-	import { fuzzyFilter } from './fuzzy';
+	import { obsidianIcon } from '../lib/attachments';
+	import { fuzzyFilter } from '../lib/fuzzy';
 	import type { Snippet } from 'svelte';
 
 	type Props = Omit<

@@ -4,10 +4,10 @@ import type {
 	OpenAlephCollection,
 	OpenAlephCollectionApiResult,
 	OpenAlephEntityApiResult,
-} from './types';
+} from '../types';
 import type { Entity } from '@opensanctions/followthemoney';
-import { model } from './ftm/model';
-import { valueToString } from './ftm/util';
+import { model } from '../ftm/model';
+import { valueToString } from '../ftm/util';
 
 async function getInstanceCollections(
 	instanceUrl: string,

@@ -3,7 +3,7 @@
 	import { type CardState } from './cardState.svelte';
 	import PropertyField from './PropertyField.svelte';
 	import PropertyChooserDialog from './PropertyChooserDialog.svelte';
-	import type { NetworkState } from './networkState.svelte';
+	import type { NetworkState } from '../networkState.svelte';
 
 	let {
 		card,

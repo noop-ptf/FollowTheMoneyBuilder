@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Notice } from 'obsidian';
-	import { obsidianIcon } from './attachments';
+	import { obsidianIcon } from '../lib/attachments';
 	import { createResource } from './store';
 	import { onMount } from 'svelte';
-	import type { OpenAlephCollection } from './types';
+	import type { OpenAlephCollection } from '../types';
 
 	type Props = {
 		loadCollections: () => Promise<OpenAlephCollection[]>;

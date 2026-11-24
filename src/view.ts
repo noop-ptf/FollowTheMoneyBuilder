@@ -1,10 +1,10 @@
 import { ItemView, Notice, TextFileView, TFile, WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import FTMBuilderPlugin from './main';
-import EntityCardGrid from './EntityCardGrid.svelte';
+import EntityCardGrid from './builder/EntityCardGrid.svelte';
 import type { Entity } from '@opensanctions/followthemoney';
 import type { OpenAlephCollection } from './types';
-import FTMNetworkDiagram from './FTMNetworkDiagram.svelte';
+import FTMNetworkDiagram from './network/FTMNetworkDiagram.svelte';
 import { NetworkState } from './networkState.svelte';
 
 export const VIEW_TYPE_FTM_BUILDER_LIST = 'followthemoney-builder-list-view';

@@ -5,8 +5,8 @@
 		useConnection,
 		type NodeProps,
 	} from '@xyflow/svelte';
-	import type { EntityNodeData } from './flowTypes';
-	import { obsidianIcon } from './attachments';
+	import type { EntityNodeData } from './types';
+	import { obsidianIcon } from '../lib/attachments';
 
 	let { id, data, selected }: NodeProps & { data: EntityNodeData } = $props();
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SchemaCombobox from './SchemaCombobox.svelte';
-	import { listEntitySchemata } from './ftm/model';
+	import { listEntitySchemata } from '../ftm/model';
 
 	let {
 		onConfirm,

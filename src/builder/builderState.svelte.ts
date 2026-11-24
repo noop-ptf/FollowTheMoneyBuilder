@@ -1,4 +1,4 @@
-import type { FTMNetworkView } from './view';
+import type { FTMNetworkView } from '../view';
 import { CardState } from './cardState.svelte';
 
 export class BuilderState {

@@ -22,15 +22,15 @@ import {
 	getCollections,
 	bulkEntityUpload,
 	validateEntityUpload,
-} from './requests';
+} from './lib/requests';
 import type { Entity } from '@opensanctions/followthemoney';
 import {
 	ConfirmSaveModal,
 	ChooseEntityTypeModal,
 	OpenNetworkModal,
-} from './modals';
-import { entityToFrontmatter, saveEntityNotes } from './noteExport';
-import { BuilderState } from './builderState.svelte';
+} from './ui/modals';
+import { entityToFrontmatter, saveEntityNotes } from './lib/noteExport';
+import { BuilderState } from './builder/builderState.svelte';
 
 interface ResizableSidebarSplit {
 	collapsed: boolean;

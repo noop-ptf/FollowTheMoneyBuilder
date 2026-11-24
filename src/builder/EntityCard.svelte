@@ -2,9 +2,9 @@
 	import type { CardState } from './cardState.svelte';
 	import EntityEditor from './EntityEditor.svelte';
 	import EntitySummary from './EntitySummary.svelte';
-	import { obsidianIcon } from './attachments';
+	import { obsidianIcon } from '../lib/attachments';
 	import type { Entity } from '@opensanctions/followthemoney';
-	import type { NetworkState } from './networkState.svelte';
+	import type { NetworkState } from '../networkState.svelte';
 
 	let {
 		card,

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { Dialog, type WithoutChild } from 'bits-ui';
-	import { obsidianIcon } from './attachments';
+	import { obsidianIcon } from '../lib/attachments';
 
 	type Props = Dialog.RootProps & {
 		buttonText?: string;

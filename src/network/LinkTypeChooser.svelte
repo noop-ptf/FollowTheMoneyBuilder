@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Dialog from './Dialog.svelte';
-	import { fuzzyFilter } from './fuzzy';
-	import type LinkType from './ftm/LinkType';
-	import GroupedItemChooser from './GroupedItemChooser.svelte';
+	import Dialog from '../ui/Dialog.svelte';
+	import { fuzzyFilter } from '../lib/fuzzy';
+	import type LinkType from '../ftm/LinkType';
+	import GroupedItemChooser from '../ui/GroupedItemChooser.svelte';
 
 	type Props = {
 		linkTypes: LinkType[];

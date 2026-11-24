@@ -17,18 +17,18 @@
 		MarkerType,
 	} from '@xyflow/svelte';
 	import EntityNode from './EntityNode.svelte';
-	import { model, linkTypes } from './ftm/model';
-	import { valueToString } from './ftm/util';
-	import type LinkType from './ftm/LinkType';
+	import { model, linkTypes } from '../ftm/model';
+	import { valueToString } from '../ftm/util';
+	import type LinkType from '../ftm/LinkType';
 	import type { Entity } from '@opensanctions/followthemoney';
-	import type { NetworkState } from './networkState.svelte';
+	import type { NetworkState } from '../networkState.svelte';
 	import LinkTypeChooser from './LinkTypeChooser.svelte';
 	import type {
 		FtMFlowNode,
 		FtMFlowEdge,
 		PropertyFlowEdge,
 		InterstitialFlowEdge,
-	} from './flowTypes';
+	} from './types';
 	import InterstitialEdge from './InterstitialEdge.svelte';
 
 	const uid = $props.id();
