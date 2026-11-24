@@ -4,7 +4,8 @@ import type {
 	Entity,
 	Property,
 } from '@opensanctions/followthemoney';
-import { model, valueToString } from './ftm';
+import { model } from './ftm/model';
+import { valueToString } from './ftm/util';
 
 export type PersistedEntity = IEntityDatum;
 export interface PersistedNetwork {

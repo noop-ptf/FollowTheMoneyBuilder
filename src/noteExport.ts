@@ -1,6 +1,6 @@
 import { stringifyYaml, type Vault } from 'obsidian';
 import type { Entity } from '@opensanctions/followthemoney';
-import { valueToString } from './ftm';
+import { valueToString } from './ftm/util';
 
 export function entityToFrontmatter(entity: Entity): string {
 	const flatEntity: Record<string, string | string[]> = {

@@ -6,7 +6,7 @@
 	import { focusOnMount } from './attachments';
 	import PropertyInput from './PropertyInput.svelte';
 	import { untrack } from 'svelte';
-	import { valueToString } from './ftm';
+	import { valueToString } from './ftm/util';
 	import type { NetworkState } from './networkState.svelte';
 
 	let {

@@ -6,7 +6,8 @@ import type {
 	OpenAlephEntityApiResult,
 } from './types';
 import type { Entity } from '@opensanctions/followthemoney';
-import { model, valueToString } from './ftm';
+import { model } from './ftm/model';
+import { valueToString } from './ftm/util';
 
 async function getInstanceCollections(
 	instanceUrl: string,
